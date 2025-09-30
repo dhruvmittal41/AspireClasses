@@ -1,0 +1,25 @@
+/* src/pages/Register_Page.css */
+
+/*
+  Bootstrap and react-bootstrap handle almost everything. We just need to
+  define the unique page background and the custom "glassmorphism" card effect.
+*/
+
+.register-page-background {
+  background-color: #eef2ff; /* A light, neutral background */
+  background-image: radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.1), transparent 40%),
+                    radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.1), transparent 40%);
+  font-family: 'Inter', sans-serif;
+}
+
+.register-card-custom {
+  max-width: 500px;
+  width: 100%;
+  
+  /* Glassmorphism Effect */
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  
+  border-radius: 1.25rem;
+}

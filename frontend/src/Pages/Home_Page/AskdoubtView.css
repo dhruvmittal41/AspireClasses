@@ -1,0 +1,34 @@
+/* src/AskDoubtView.css */
+
+/*
+  We only need custom styles for the button gradients and hover effects,
+  as Bootstrap and react-bootstrap handle the rest (layout, cards, shadows, responsiveness).
+*/
+
+.contact-button-email,
+.contact-button-whatsapp {
+  /* Common styles for both buttons */
+  color: white !important;
+  font-weight: 600;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+.contact-button-email:hover,
+.contact-button-whatsapp:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Specific gradient for the Email button */
+.contact-button-email {
+  background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+}
+
+/* Specific gradient for the WhatsApp button */
+.contact-button-whatsapp {
+  background: linear-gradient(135deg, #25d366, #128c7e) !important;
+}

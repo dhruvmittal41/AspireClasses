@@ -1,0 +1,10 @@
+/* src/MyTestView.css */
+
+/*
+  Bootstrap's grid, cards, buttons, and utilities handle almost everything.
+  We just need to add a custom class for the dashed border style on the empty state.
+*/
+
+.border-dashed {
+  border: 2px dashed #d1d5db;
+}

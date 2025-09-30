@@ -1,0 +1,93 @@
+/* --- GENERAL FIXES --- */
+.test-interface-container {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  height: 100vh;
+  overflow: hidden; /* Prevent body lock */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Allow row children to scroll independently */
+.main-row {
+  flex: 1;
+  min-height: 0;
+}
+.main-row > div {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* --- LEGEND & STATUS COLORS --- */
+.legend-box {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  margin-right: 6px;
+  border-radius: 3px;
+  vertical-align: middle;
+}
+
+.answered-review, .btn.answered-review {
+  background-color: #6f42c1 !important;
+  border-color: #6f42c1 !important;
+  color: #fff !important;
+}
+
+.answered-review-legend {
+  background-color: #6f42c1;
+}
+
+/* --- MOBILE SIDEBAR --- */
+.palette-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1045;
+}
+
+.palette-toggle-btn {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  z-index: 1040;
+  padding: 1rem 0.75rem;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease-in-out;
+}
+
+.sidebar-open .palette-toggle-btn {
+  transform: translateY(-50%) translateX(-100%);
+}
+
+@media (max-width: 991.98px) {
+  .palette-sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 300px;
+    max-width: 80%;
+    height: 100vh;
+    z-index: 1050;
+    background: #fff;
+    border-right: 1px solid #dee2e6;
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .palette-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .palette-sidebar .card {
+    border-radius: 0;
+    border: none;
+  }
+}

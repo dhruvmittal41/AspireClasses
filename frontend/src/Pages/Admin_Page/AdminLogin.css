@@ -1,0 +1,10 @@
+/* src/components/AdminLogin.css */
+
+.admin-login-background {
+  background-color: #f0f2f5; /* A light, neutral background */
+}
+
+/* Optional: if you want the card to have a specific background */
+.login-card {
+    background-color: #ffffff;
+}

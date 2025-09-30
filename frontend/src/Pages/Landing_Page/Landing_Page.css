@@ -1,0 +1,105 @@
+/* src/Landing_Page.css */
+
+/* --- 1. Global & Custom Variables --- */
+:root {
+  --bs-primary-rgb: 59, 130, 246;   /* Overrides Bootstrap's default blue */
+  --bs-secondary-rgb: 16, 185, 129; /* Overrides Bootstrap's default gray */
+}
+
+/* --- 2. Custom Component Styles --- */
+
+/* Custom Navbar Style for glass effect */
+.navbar-custom {
+  background-color: rgba(3, 4, 94, 0.7) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);  
+}
+
+.nav-logo-img {
+  height: 60px; /* Responsive height with clamp is also an option */
+  width: auto;
+  transition: transform 0.3s ease;
+}
+.nav-logo-img:hover {
+  transform: scale(1.08);
+}
+
+
+/* Hero Section Height */
+.hero-section {
+  min-height: 100vh;
+  padding-top: 60px; /* Offset for navbar height */
+}
+
+
+/* Reusable Glassmorphism Card Style */
+.glass-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.card-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--bs-primary);
+}
+
+
+/* Testimonial Avatar */
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 3px solid var(--bs-primary);
+  object-fit: cover;
+}
+
+
+
+/* Add this to your existing Landing_Page.css file */
+
+/* 1. Enable Smooth Scrolling for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 2. Styling for the new Test Series Carousel */
+.carousel-item-custom {
+  /* Provides spacing and a minimum height for each slide */
+  padding: 5rem 2rem;
+  min-height: 450px;
+  background-color: #f8f9fa; /* A light background for slides */
+  color: #333; /* Darker text for readability */
+}
+
+/* Make carousel content responsive and well-spaced */
+.carousel-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.carousel-content h3 {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: var(--bs-primary); /* Use your primary theme color */
+  margin-bottom: 1rem;
+}
+
+.carousel-content .lead {
+  max-width: 800px; /* Constrain description width for better reading */
+  margin-bottom: 1.5rem;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  /* Make default controls dark so they are visible on the light background */
+  filter: invert(1) grayscale(100);
+}
+
+
+

@@ -1,0 +1,26 @@
+/* src/components/AdminDashboard.css */
+
+.admin-dashboard-layout {
+  display: flex;
+}
+
+/* Define the look of the sidebar for both desktop and mobile offcanvas */
+.admin-sidebar {
+  width: 250px;
+  flex-shrink: 0; /* Prevents the sidebar from shrinking */
+  background-color: #2c3e50; /* A dark, professional background */
+  color: #ecf0f1;
+  min-height: 100vh;
+}
+
+/* Styles for the main content area to fill the remaining space */
+.admin-content {
+  flex-grow: 1;
+  background-color: #f4f7f6;
+  min-height: 100vh;
+}
+
+/* Ensure offcanvas body has no extra padding if your Sidebar does */
+.admin-sidebar .offcanvas-body {
+    padding: 0;
+}

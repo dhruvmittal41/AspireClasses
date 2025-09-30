@@ -1,0 +1,24 @@
+/* src/components/Sidebar.css */
+
+/*
+  Bootstrap and NavLink handle most of the work. We just need to
+  provide custom colors to match the theme.
+*/
+
+.sidebar-link-custom {
+  color: #bdc3c7; /* Muted color for inactive links */
+  padding: 0.75rem 1rem;
+  font-size: 1.1rem;
+}
+
+.sidebar-link-custom:hover {
+  color: #ffffff;
+  background-color: #34495e;
+}
+
+/* NavLink adds the .active class automatically */
+.sidebar-link-custom.active {
+  background-color: #1abc9c !important; /* Teal for active link */
+  color: #ffffff !important;
+  font-weight: bold;
+}

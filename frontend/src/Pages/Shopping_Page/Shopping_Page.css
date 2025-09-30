@@ -1,0 +1,47 @@
+/* src/pages/Shopping_Page.css */
+
+/*
+  Bootstrap handles all layout, grid, and component styling.
+  We only need custom styles for the background and glass effect.
+*/
+
+.shopping-page-background {
+  min-height: 100vh;
+  background-color: #0d1425; /* Dark blue background */
+}
+
+.card-glassmorphism,
+.modal-glassmorphism {
+  /* Glassmorphism Effect */
+  background: rgba(30, 41, 59, 0.5) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #e2e8f0 !important; /* Light text color */
+}
+
+/* Override default bootstrap colors for modal content */
+.modal-glassmorphism .modal-title,
+.modal-glassmorphism .btn-close {
+  color: #e2e8f0;
+}
+.modal-glassmorphism .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+.modal-glassmorphism .text-muted {
+    color: #94a3b8 !important;
+}
+
+.card-glassmorphism {
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.state-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #0d1425;
+}

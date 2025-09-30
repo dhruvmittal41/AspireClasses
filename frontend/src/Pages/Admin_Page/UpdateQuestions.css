@@ -1,0 +1,20 @@
+/* src/components/UpdateQuestions.css */
+
+/*
+  Bootstrap's grid, cards, forms, and buttons handle almost everything.
+  We just need a few custom styles for unique status indicators.
+*/
+
+/* Custom style for the "Add New Question" button */
+.add-new-btn-custom {
+    border-style: dashed !important;
+    border-width: 2px !important;
+    font-weight: bold;
+}
+
+/* Custom style for highlighting the correct answer in the display list */
+.list-group-item.correct-answer-item {
+    border-left: 4px solid #198754; /* Bootstrap's 'success' green */
+    font-weight: bold;
+    background-color: #e9f7ef;
+}
