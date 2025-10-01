@@ -402,7 +402,7 @@ export const UpdateQuestions = () => {
         <AddQuestionForm
           testId={selectedTest}
           onQuestionAdded={(q) => {
-            setQuestions((p) => [...p, { ...q, marks: q.marks || 1 }]); // Ensure marks default is set
+            setQuestions((p) => [...p, { ...q, marks: q.marks }]); // Ensure marks default is set
             setIsAdding(false);
           }}
           onCancel={() => setIsAdding(false)}
