@@ -31,7 +31,7 @@ import {
 import logo from "./logo.png";
 import e1 from "./open_book.png";
 import e2 from "./microscope.png";
-import e3 from "./graduation_cap.png";
+import e3 from "./graduation_Cap.png";
 import e4 from "./Globe.png";
 import e5 from "./Compass.png";
 import e6 from "./bulb.png";
