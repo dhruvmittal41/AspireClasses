@@ -29,6 +29,18 @@ import {
 } from "react-bootstrap";
 
 import logo from "./logo.png";
+import e1 from "./open_book.png";
+import e2 from "./microscope.png";
+import e3 from "./graduation_cap.png";
+import e4 from "./Globe.png";
+import e5 from "./Compass.png";
+import e6 from "./bulb.png";
+import e7 from "./World_Map.png";
+import e8 from "./Rocket.png";
+import e9 from "./Magnet.png";
+import e10 from "./Test_Tube.png";
+import e11 from "./DNA.png";
+import e12 from "./Coin.png";
 import "./Landing_Page.css"; // We'll use a much smaller CSS file
 
 // Reusable animation variants (unchanged)
@@ -123,7 +135,29 @@ const Hero = () => (
     animate={{ opacity: 1 }}
     transition={{ duration: 1 }}
   >
-    <Container>
+    {/* --- ✨ START: ADDED FLOATING ELEMENTS CONTAINER --- */}
+    <div className="floating-elements-container">
+      {/* TODO: Replace these divs with your actual image or SVG components.
+        For example: <img src={atomIcon} className="floating-element" />
+        The CSS will target them using :nth-child().
+      */}
+      <img src={e1} className="floating-element" />
+      <img src={e2} className="floating-element" />
+      <img src={e3} className="floating-element" />
+      <img src={e4} className="floating-element" />
+      <img src={e5} className="floating-element" />
+      <img src={e6} className="floating-element" />
+      <img src={e7} className="floating-element" />
+      <img src={e8} className="floating-element" />
+      <img src={e9} className="floating-element" />
+      <img src={e10} className="floating-element" />
+      <img src={e11} className="floating-element" />
+      <img src={e12} className="floating-element" />
+    </div>
+
+    <Container style={{ position: "relative", zIndex: 1 }}>
+      {" "}
+      {/* Ensure content is on top */}
       <motion.h1
         className="display-3 fw-bold"
         initial={{ y: 20, opacity: 0 }}
@@ -159,11 +193,10 @@ const Hero = () => (
           Start Your Test Series
         </Button>
         <Button
-          // Changed href to point to the new carousel section
           href="#test-series"
-          variant="outline-secondary"
+          variant="primary btn-success"
           size="lg"
-          className="px-4"
+          className="px-4 bg-color-green    "
         >
           Explore Series
         </Button>
