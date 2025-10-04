@@ -16,7 +16,7 @@
 }
 
 .nav-logo-img {
-  height: 60px; /* Responsive height with clamp is also an option */
+  height: 100px; /* Responsive height with clamp is also an option */
   width: auto;
   transition: transform 0.3s ease;
 }
