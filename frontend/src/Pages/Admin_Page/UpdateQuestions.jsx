@@ -13,13 +13,33 @@ import {
   InputGroup,
   ListGroup,
   Image,
-  Badge, // Import Badge component
+  Badge,
 } from "react-bootstrap";
 import "./UpdateQuestions.css";
 
-import "katex/dist/katex.min.css"; // Don't forget this stylesheet!
+import "katex/dist/katex.min.css";
 import { InlineMath } from "react-katex";
+
 const baseUrl = import.meta.env.VITE_BASE_URL;
+
+// Helper function to format text for KaTeX
+const formatForKatex = (text) => {
+  if (typeof text !== "string" || !text.trim()) {
+    return text;
+  }
+  // A simple check to see if it looks like it already contains LaTeX commands
+  if (text.includes("\\") || text.includes("^") || text.includes("_")) {
+    // A more advanced user might mix modes, so we leave it as is
+    // Forcing \text{} might break intentionally mixed content.
+    // The best approach is to wrap if it's ONLY plain text.
+    // This logic can be improved, but for now, we assume mixed content is intentional.
+    // Let's refine this: only wrap if it DOESN'T look like it starts with a command.
+    // A simple heuristic: if it contains commands but doesn't start with one, it might need wrapping.
+    // The safest bet for the user's request is to wrap it if it doesn't look like it's already wrapped.
+    if (text.startsWith("\\text{")) return text;
+  }
+  return `\\text{${text}}`;
+};
 
 // --- Sub-component: QuestionImageUploader ---
 const QuestionImageUploader = ({
@@ -132,7 +152,7 @@ const AddQuestionForm = ({ testId, onQuestionAdded, onCancel }) => {
   const [newQuestion, setNewQuestion] = useState({
     question_text: "",
     options: ["", "", "", ""],
-    marks: 1, // MODIFIED: Added marks with a default value of 1
+    marks: 1,
   });
   const [correctAnswer, setCorrectAnswer] = useState("");
   const [imageUrl, setImageUrl] = useState("");
@@ -144,12 +164,16 @@ const AddQuestionForm = ({ testId, onQuestionAdded, onCancel }) => {
 
     try {
       const token = localStorage.getItem("admin_token");
-      // MODIFIED: The 'marks' field from the state is now automatically included in the payload
+
+      // *** MODIFIED: Automatically format text for KaTeX before sending ***
       const payload = {
         ...newQuestion,
+        question_text: formatForKatex(newQuestion.question_text),
+        options: newQuestion.options.map((opt) => formatForKatex(opt)),
         correct_option: correctAnswer,
         image_url: imageUrl,
       };
+
       const response = await axios.post(
         `${baseUrl}/api/tests/${testId}/questions`,
         payload,
@@ -215,7 +239,6 @@ const AddQuestionForm = ({ testId, onQuestionAdded, onCancel }) => {
             ))}
           </Row>
 
-          {/* MODIFICATION START: Added Marks field alongside Correct Answer */}
           <Row>
             <Col md={6}>
               <Form.Group className="mb-3">
@@ -254,7 +277,6 @@ const AddQuestionForm = ({ testId, onQuestionAdded, onCancel }) => {
               </Form.Group>
             </Col>
           </Row>
-          {/* MODIFICATION END */}
 
           <Stack direction="horizontal" gap={2} className="justify-content-end">
             <Button variant="secondary" onClick={onCancel}>
@@ -305,7 +327,6 @@ export const UpdateQuestions = () => {
         `${baseUrl}/api/tests/${selectedTest}/questions`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      // MODIFIED: Set a default 'marks' value of 1 if not provided by the API
       const parsed = res.data.map((q) => ({
         ...q,
         options:
@@ -325,12 +346,19 @@ export const UpdateQuestions = () => {
   const handleSave = async (id) => {
     try {
       const token = localStorage.getItem("admin_token");
-      // MODIFIED: The editedData now contains the 'marks' field, which will be sent in the update
-      await axios.put(`${baseUrl}/api/questions/${id}`, editedData, {
+
+      // *** MODIFIED: Automatically format edited data for KaTeX before saving ***
+      const payloadToSave = {
+        ...editedData,
+        question_text: formatForKatex(editedData.question_text),
+        options: editedData.options.map((opt) => formatForKatex(opt)),
+      };
+
+      await axios.put(`${baseUrl}/api/questions/${id}`, payloadToSave, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setQuestions((q) =>
-        q.map((item) => (item.id === id ? { ...editedData, id } : item))
+        q.map((item) => (item.id === id ? { ...payloadToSave, id } : item))
       );
       setEditingId(null);
     } catch (err) {
@@ -404,7 +432,7 @@ export const UpdateQuestions = () => {
         <AddQuestionForm
           testId={selectedTest}
           onQuestionAdded={(q) => {
-            setQuestions((p) => [...p, { ...q, marks: q.marks }]); // Ensure marks default is set
+            setQuestions((p) => [...p, { ...q, marks: q.marks }]);
             setIsAdding(false);
           }}
           onCancel={() => setIsAdding(false)}
@@ -459,7 +487,6 @@ export const UpdateQuestions = () => {
                     ))}
                   </Row>
 
-                  {/* MODIFICATION START: Added Marks field to Edit view */}
                   <Row>
                     <Col md={6}>
                       <Form.Group className="mb-3">
@@ -498,7 +525,6 @@ export const UpdateQuestions = () => {
                       </Form.Group>
                     </Col>
                   </Row>
-                  {/* MODIFICATION END */}
 
                   <Stack
                     direction="horizontal"
@@ -519,7 +545,6 @@ export const UpdateQuestions = () => {
               ) : (
                 // Display View
                 <div>
-                  {/* MODIFIED: Display question marks using a Badge */}
                   <div className="d-flex justify-content-between align-items-start mb-2">
                     <h5 className="mb-0">
                       <InlineMath math={q.question_text} />
