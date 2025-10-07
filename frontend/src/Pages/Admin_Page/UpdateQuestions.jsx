@@ -22,23 +22,28 @@ import { InlineMath } from "react-katex";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
-// Helper function to format text for KaTeX
-const formatForKatex = (text) => {
-  if (typeof text !== "string" || !text.trim()) {
-    return text;
+// --- Sub-component: KatexRenderer ---
+// This component parses a string for '$' delimiters and renders math accordingly
+const KatexRenderer = ({ text }) => {
+  if (typeof text !== "string" || !text) {
+    return null;
   }
-  // A simple check to see if it looks like it already contains LaTeX commands
-  if (text.includes("\\") || text.includes("^") || text.includes("_")) {
-    // A more advanced user might mix modes, so we leave it as is
-    // Forcing \text{} might break intentionally mixed content.
-    // The best approach is to wrap if it's ONLY plain text.
-    // This logic can be improved, but for now, we assume mixed content is intentional.
-    // Let's refine this: only wrap if it DOESN'T look like it starts with a command.
-    // A simple heuristic: if it contains commands but doesn't start with one, it might need wrapping.
-    // The safest bet for the user's request is to wrap it if it doesn't look like it's already wrapped.
-    if (text.startsWith("\\text{")) return text;
-  }
-  return `\\text{${text}}`;
+
+  const parts = text.split("$");
+
+  return (
+    <>
+      {parts.map((part, index) => {
+        if (index % 2 === 1) {
+          // This part was inside $'s, so render it as math
+          return <InlineMath key={index} math={part} />;
+        } else {
+          // This part was outside $'s, so render it as plain text
+          return <span key={index}>{part}</span>;
+        }
+      })}
+    </>
+  );
 };
 
 // --- Sub-component: QuestionImageUploader ---
@@ -165,11 +170,9 @@ const AddQuestionForm = ({ testId, onQuestionAdded, onCancel }) => {
     try {
       const token = localStorage.getItem("admin_token");
 
-      // *** MODIFIED: Automatically format text for KaTeX before sending ***
+      // The payload now sends the raw user input directly
       const payload = {
         ...newQuestion,
-        question_text: formatForKatex(newQuestion.question_text),
-        options: newQuestion.options.map((opt) => formatForKatex(opt)),
         correct_option: correctAnswer,
         image_url: imageUrl,
       };
@@ -347,18 +350,12 @@ export const UpdateQuestions = () => {
     try {
       const token = localStorage.getItem("admin_token");
 
-      // *** MODIFIED: Automatically format edited data for KaTeX before saving ***
-      const payloadToSave = {
-        ...editedData,
-        question_text: formatForKatex(editedData.question_text),
-        options: editedData.options.map((opt) => formatForKatex(opt)),
-      };
-
-      await axios.put(`${baseUrl}/api/questions/${id}`, payloadToSave, {
+      // Save the raw editedData directly, without formatting
+      await axios.put(`${baseUrl}/api/questions/${id}`, editedData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setQuestions((q) =>
-        q.map((item) => (item.id === id ? { ...payloadToSave, id } : item))
+        q.map((item) => (item.id === id ? { ...editedData, id } : item))
       );
       setEditingId(null);
     } catch (err) {
@@ -547,7 +544,7 @@ export const UpdateQuestions = () => {
                 <div>
                   <div className="d-flex justify-content-between align-items-start mb-2">
                     <h5 className="mb-0">
-                      <InlineMath math={q.question_text} />
+                      <KatexRenderer text={q.question_text} />
                     </h5>
                     <Badge bg="secondary" pill>
                       {q.marks} {q.marks > 1 ? "marks" : "mark"}
@@ -574,7 +571,7 @@ export const UpdateQuestions = () => {
                         }
                       >
                         {String.fromCharCode(65 + index)}.{" "}
-                        <InlineMath math={opt} />
+                        <KatexRenderer text={opt} />
                       </ListGroup.Item>
                     ))}
                   </ListGroup>
