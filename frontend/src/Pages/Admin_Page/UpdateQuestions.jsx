@@ -17,6 +17,8 @@ import {
 } from "react-bootstrap";
 import "./UpdateQuestions.css";
 
+import "katex/dist/katex.min.css"; // Don't forget this stylesheet!
+import { InlineMath } from "react-katex";
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
 // --- Sub-component: QuestionImageUploader ---
@@ -519,7 +521,9 @@ export const UpdateQuestions = () => {
                 <div>
                   {/* MODIFIED: Display question marks using a Badge */}
                   <div className="d-flex justify-content-between align-items-start mb-2">
-                    <h5 className="mb-0">{q.question_text}</h5>
+                    <h5 className="mb-0">
+                      <InlineMath math={q.question_text} />
+                    </h5>
                     <Badge bg="secondary" pill>
                       {q.marks} {q.marks > 1 ? "marks" : "mark"}
                     </Badge>
@@ -544,7 +548,8 @@ export const UpdateQuestions = () => {
                             : ""
                         }
                       >
-                        {String.fromCharCode(65 + index)}. {opt}
+                        {String.fromCharCode(65 + index)}.{" "}
+                        <InlineMath math={opt} />
                       </ListGroup.Item>
                     ))}
                   </ListGroup>
