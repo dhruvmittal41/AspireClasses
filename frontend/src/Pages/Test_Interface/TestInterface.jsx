@@ -17,26 +17,44 @@ import {
   Modal,
 } from "react-bootstrap";
 import "katex/dist/katex.min.css";
-import { InlineMath } from "react-katex";
+// Import BlockMath for display-style equations
+import { InlineMath, BlockMath } from "react-katex";
 import "./TestInterface.css";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const getOptionKey = (index) => String.fromCharCode(97 + index);
 
-// --- Sub-component: KatexRenderer (from your UpdateQuestions.js) ---
+// --- Sub-component: Upgraded KatexRenderer ---
+// This version handles both inline ($...$) and display ($$...$$) math.
 const KatexRenderer = ({ text }) => {
   if (typeof text !== "string" || !text) {
     return null;
   }
-  const parts = text.split("$");
+  // First, split by display math delimiters
+  const displayParts = text.split("$$");
+
   return (
     <>
-      {parts.map((part, index) => {
-        if (index % 2 === 1) {
-          return <InlineMath key={index} math={part} />;
+      {displayParts.map((displayPart, displayIndex) => {
+        // If the index is odd, this part was inside $$...$$, so render as display math
+        if (displayIndex % 2 === 1) {
+          return <BlockMath key={displayIndex} math={displayPart} />;
         } else {
-          return <span key={index}>{part}</span>;
+          // Otherwise, this part might contain inline math. Split by $...$
+          const inlineParts = displayPart.split("$");
+          return (
+            <span key={displayIndex}>
+              {inlineParts.map((inlinePart, inlineIndex) => {
+                // If the index is odd, this was inside $...$, so render as inline math
+                if (inlineIndex % 2 === 1) {
+                  return <InlineMath key={inlineIndex} math={inlinePart} />;
+                } else {
+                  return <span key={inlineIndex}>{inlinePart}</span>;
+                }
+              })}
+            </span>
+          );
         }
       })}
     </>
@@ -44,7 +62,7 @@ const KatexRenderer = ({ text }) => {
 };
 
 const TestInterface = ({ id, onBack }) => {
-  // --- STATE ---
+  // --- STATE (No changes here) ---
   const [testData, setTestData] = useState(null);
   const [answers, setAnswers] = useState({});
   const [loading, setLoading] = useState(true);
@@ -56,7 +74,7 @@ const TestInterface = ({ id, onBack }) => {
   const [showLeaveWarning, setShowLeaveWarning] = useState(false);
   const [showNavBlocker, setShowNavBlocker] = useState(false);
 
-  // --- DATA FETCHING ---
+  // --- All logic (fetching, submitting, timer, etc.) remains the same ---
   useEffect(() => {
     const fetchTest = async () => {
       try {
@@ -80,7 +98,6 @@ const TestInterface = ({ id, onBack }) => {
     fetchTest();
   }, [id]);
 
-  // --- SUBMIT HANDLER ---
   const handleSubmit = useCallback(
     async (isAutoSubmit = false) => {
       try {
@@ -109,7 +126,6 @@ const TestInterface = ({ id, onBack }) => {
     [id, answers, onBack]
   );
 
-  // --- TIMER ---
   useEffect(() => {
     if (timeLeft === null) return;
     if (timeLeft === 0) {
@@ -120,7 +136,6 @@ const TestInterface = ({ id, onBack }) => {
     return () => clearInterval(timerId);
   }, [timeLeft, handleSubmit]);
 
-  // --- NAVIGATION BLOCKER ---
   const blocker = useBlocker(!!testData && !loading);
 
   useEffect(() => {
@@ -139,7 +154,6 @@ const TestInterface = ({ id, onBack }) => {
     if (blocker) blocker.reset();
   };
 
-  // --- VISIBILITY / EXIT WARNINGS ---
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
@@ -160,7 +174,6 @@ const TestInterface = ({ id, onBack }) => {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, []);
 
-  // --- HANDLERS ---
   const handleAnswerChange = (questionId, optionKey) =>
     setAnswers((prev) => ({ ...prev, [questionId]: optionKey }));
 
@@ -184,7 +197,7 @@ const TestInterface = ({ id, onBack }) => {
     if (window.innerWidth < 992) setIsPaletteOpen(false);
   };
 
-  // --- RENDER ---
+  // --- RENDER (with updated KatexRenderer usage) ---
   if (loading) {
     return (
       <Container className="d-flex flex-column justify-content-center align-items-center vh-100">
@@ -237,15 +250,13 @@ const TestInterface = ({ id, onBack }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
-        {/* Mobile Overlay */}
+        {/* ... Mobile overlay and toggle button ... */}
         {isPaletteOpen && (
           <div
             className="palette-overlay d-lg-none"
             onClick={() => setIsPaletteOpen(false)}
           />
         )}
-
-        {/* Mobile Toggle Button */}
         <Button
           variant="primary"
           className="d-lg-none palette-toggle-btn"
@@ -257,7 +268,7 @@ const TestInterface = ({ id, onBack }) => {
         </Button>
 
         <Row className="g-3 main-row">
-          {/* Left: Palette */}
+          {/* Left: Palette (No changes here) */}
           <Col
             lg={3}
             md={4}
@@ -326,12 +337,11 @@ const TestInterface = ({ id, onBack }) => {
                   Question {currentQuestionIndex + 1} of {questions.length}
                 </Card.Title>
               </Card.Header>
-              {/* FIXED SCROLL: Added flex-grow-1 to make this area expand and enable scrolling */}
               <Card.Body className="scrollable-content flex-grow-1">
-                <p className="lead">
-                  {/* UPDATED: Using KatexRenderer for math */}
+                <div className="lead">
+                  {/* Using the upgraded KatexRenderer */}
                   <KatexRenderer text={currentQuestion.question_text} />
-                </p>
+                </div>
                 {currentQuestion.image_url && (
                   <div className="text-center my-3">
                     <Image
@@ -352,7 +362,6 @@ const TestInterface = ({ id, onBack }) => {
                           type="radio"
                           id={`q${currentQuestion.id}-opt${optionKey}`}
                           name={`question-${currentQuestion.id}`}
-                          // UPDATED: Using KatexRenderer for math
                           label={<KatexRenderer text={optionText.trim()} />}
                           value={optionKey}
                           checked={answers[currentQuestion.id] === optionKey}
@@ -378,7 +387,7 @@ const TestInterface = ({ id, onBack }) => {
             </Card>
           </Col>
 
-          {/* Right: Timer & Submit */}
+          {/* Right: Timer & Submit (No changes here) */}
           <Col lg={3} className="d-none d-lg-block">
             <Card className="h-100 d-flex flex-column text-center shadow-sm">
               <Card.Header as="h5">Time Left</Card.Header>
@@ -404,7 +413,7 @@ const TestInterface = ({ id, onBack }) => {
         </Row>
       </Container>
 
-      {/* Leave Warning Modal */}
+      {/* Modals (No changes here) */}
       <Modal
         show={showLeaveWarning}
         onHide={() => setShowLeaveWarning(false)}
@@ -430,8 +439,6 @@ const TestInterface = ({ id, onBack }) => {
           </Button>
         </Modal.Footer>
       </Modal>
-
-      {/* Navigation Blocker Modal */}
       <Modal
         show={showNavBlocker}
         onHide={handleCancelNavigation}

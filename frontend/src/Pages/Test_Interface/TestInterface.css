@@ -25,8 +25,8 @@
 
 /* Add this new class for the specific scrolling area */
 .scrollable-content {
-  overflow-y: auto; /* Allow vertical scrolling */
-  flex: 1; /* Ensure it fills available space */
+  overflow-y: auto; /* Allows vertical scrolling */
+  flex: 1;          /* CRITICAL: Makes the element expand to fill space */
 }
 
 /* --- LEGEND & STATUS COLORS --- */
