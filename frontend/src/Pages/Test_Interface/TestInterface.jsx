@@ -16,11 +16,28 @@ import {
   Image,
   Modal,
 } from "react-bootstrap";
+import "katex/dist/katex.min.css"; // Added KaTeX CSS
+import { InlineMath } from "react-katex"; // Added KaTeX Component
 import "./TestInterface.css";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const getOptionKey = (index) => String.fromCharCode(97 + index);
+
+// Helper function to render text with inline math
+const renderWithMath = (text) => {
+  if (!text) return null;
+  // Split the text by the math delimiter ($...$)
+  const parts = text.split(/\$(.*?)\$/g);
+  return parts.map((part, index) => {
+    // Every odd-indexed part is a math expression
+    if (index % 2 === 1) {
+      return <InlineMath key={index} math={part} />;
+    }
+    // Every even-indexed part is plain text
+    return <span key={index}>{part}</span>;
+  });
+};
 
 const TestInterface = ({ id, onBack }) => {
   // --- STATE ---
@@ -211,6 +228,7 @@ const TestInterface = ({ id, onBack }) => {
         as={motion.div}
         fluid
         className={`p-3 test-interface-container ${
+          // Removed 'scrollable-content' from here
           isPaletteOpen ? "sidebar-open" : ""
         }`}
         initial={{ opacity: 0 }}
@@ -305,8 +323,12 @@ const TestInterface = ({ id, onBack }) => {
                   Question {currentQuestionIndex + 1} of {questions.length}
                 </Card.Title>
               </Card.Header>
-              <Card.Body className="overflow-auto">
-                <p className="lead">{currentQuestion.question_text}</p>
+              {/* Added 'scrollable-content' class here for correct scrolling */}
+              <Card.Body className="scrollable-content">
+                <p className="lead">
+                  {/* Used renderWithMath for question text */}
+                  {renderWithMath(currentQuestion.question_text)}
+                </p>
                 {currentQuestion.image_url && (
                   <div className="text-center my-3">
                     <Image
@@ -327,7 +349,8 @@ const TestInterface = ({ id, onBack }) => {
                           type="radio"
                           id={`q${currentQuestion.id}-opt${optionKey}`}
                           name={`question-${currentQuestion.id}`}
-                          label={optionText.trim()}
+                          // Used renderWithMath for option labels
+                          label={renderWithMath(optionText.trim())}
                           value={optionKey}
                           checked={answers[currentQuestion.id] === optionKey}
                           onChange={() =>

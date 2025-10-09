@@ -1,24 +1,32 @@
+
+
 /* --- GENERAL FIXES --- */
 .test-interface-container {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  height: 100vh;
-  overflow: hidden; /* Prevent body lock */
-  display: flex;
-  flex-direction: column;
+ -webkit-user-select: none;
+ -moz-user-select: none;
+ -ms-user-select: none;
+ user-select: none;
+ height: 100vh;
+ /* overflow: hidden;  <-- REMOVE THIS LINE */
+ display: flex;
+ flex-direction: column;
 }
 
 /* Allow row children to scroll independently */
 .main-row {
-  flex: 1;
-  min-height: 0;
+ flex: 1;
+ min-height: 0;
 }
 .main-row > div {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
+ display: flex;
+ flex-direction: column;
+ min-height: 0;
+}
+
+/* Add this new class for the specific scrolling area */
+.scrollable-content {
+  overflow-y: auto; /* Allow vertical scrolling */
+  flex: 1; /* Ensure it fills available space */
 }
 
 /* --- LEGEND & STATUS COLORS --- */
