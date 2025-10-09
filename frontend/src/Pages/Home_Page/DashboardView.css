@@ -1,24 +1,33 @@
-.test-card-custom {
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-  color: #495057;
+/* --- CSS Variables for Easy Theming --- */
+:root {
+  --primary-color: #007bff;
+  --secondary-color: #6610f2;
+  --success-color: #20c997;
+  --light-gray: #f8f9fa;
+  --medium-gray: #e9ecef;
+  --dark-gray: #495057;
+  --border-color: #dee2e6;
+  --text-primary: #1e3a8a;
+  --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 
-.test-card-custom:hover {
-  background-color: #e9ecef;
-  border-color: #adb5bd;
+/* --- Main Dashboard Container --- */
+.dashboard-container {
+  position: relative;
+  z-index: 1;
+  overflow-x: hidden; /* Prevent horizontal scroll from shapes */
 }
 
-.test-card-custom h3 {
-  font-weight: 500;
-  color: #1e3a8a;
+/* --- Header & Quote --- */
+.dashboard-header {
+  background: var(--gradient-primary);
+  padding: 2rem 1.5rem;
 }
 
-/* Quote Section */
 .quote-section {
-  background: linear-gradient(135deg, #007bff, #6610f2);
+  background: var(--gradient-primary);
   position: relative;
   overflow: hidden;
 }
@@ -28,51 +37,104 @@
   opacity: 0.8;
 }
 
-/* Background floating shapes */
+/* --- Component-specific Icons --- */
+.icon-primary {
+  color: var(--primary-color);
+}
+.icon-success {
+  color: var(--success-color);
+}
+
+/* --- Demo Test Cards --- */
+.test-card-custom {
+  background-color: var(--light-gray);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background-color 0.2s ease-out;
+  color: var(--dark-gray);
+  text-align: left; /* Reset button default text align */
+}
+
+.test-card-custom:hover,
+.test-card-custom:focus-visible {
+  background-color: var(--medium-gray);
+  border-color: #adb5bd;
+  box-shadow: var(--shadow);
+  transform: translateY(-4px); /* Combined transform for hover effect */
+}
+
+.test-card-custom h3 {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* --- Floating Background Shapes --- */
 .floating-shape {
   position: absolute;
   border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.25;
+  filter: blur(120px);
+  opacity: 0.2;
   z-index: -1;
+  will-change: transform; /* Performance hint for animation */
 }
 
 .shape1 {
-  width: 200px;
-  height: 200px;
-  background: #007bff;
-  top: -50px;
-  left: -50px;
-  animation: float 6s ease-in-out infinite;
+  width: 250px;
+  height: 250px;
+  background: var(--primary-color);
+  top: -80px;
+  left: -80px;
+  animation: float 8s ease-in-out infinite alternate;
 }
 
 .shape2 {
-  width: 150px;
-  height: 150px;
-  background: #6610f2;
-  bottom: 50px;
-  right: 100px;
-  animation: float 7s ease-in-out infinite reverse;
+  width: 200px;
+  height: 200px;
+  background: var(--secondary-color);
+  bottom: 20px;
+  right: 50px;
+  animation: float 10s ease-in-out infinite alternate-reverse;
 }
 
 .shape3 {
-  width: 120px;
-  height: 120px;
-  background: #20c997;
-  bottom: -40px;
-  left: 80px;
-  animation: float 8s ease-in-out infinite;
+  width: 180px;
+  height: 180px;
+  background: var(--success-color);
+  bottom: -60px;
+  left: 120px;
+  animation: float 12s ease-in-out infinite alternate;
 }
 
 @keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
+  from {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
   }
-  50% {
-    transform: translateY(-15px);
+  to {
+    transform: translateY(-20px) translateX(15px) rotate(20deg);
   }
 }
 
-body, #root {
-  overflow-y: hidden;
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+  .dashboard-header {
+    padding: 1.5rem 1rem;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  .floating-shape {
+    opacity: 0.15;
+    filter: blur(80px);
+  }
+
+  .shape1 {
+    width: 150px;
+    height: 150px;
+  }
+  .shape2, .shape3 {
+    width: 120px;
+    height: 120px;
+  }
 }
