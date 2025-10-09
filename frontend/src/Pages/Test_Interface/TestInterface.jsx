@@ -55,7 +55,7 @@ const KatexRenderer = ({ text }) => {
 };
 
 const TestInterface = ({ id, onBack }) => {
-  // --- STATE (No changes) ---
+  // --- STATE ---
   const [testData, setTestData] = useState(null);
   const [answers, setAnswers] = useState({});
   const [loading, setLoading] = useState(true);
@@ -66,8 +66,9 @@ const TestInterface = ({ id, onBack }) => {
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [showLeaveWarning, setShowLeaveWarning] = useState(false);
   const [showNavBlocker, setShowNavBlocker] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // <-- ADDED STATE
 
-  // --- LOGIC (Fetching, Submitting, Timers are mostly the same) ---
+  // --- LOGIC (Fetching, Timers are mostly the same) ---
   useEffect(() => {
     const fetchTest = async () => {
       try {
@@ -93,6 +94,8 @@ const TestInterface = ({ id, onBack }) => {
 
   const handleSubmit = useCallback(
     async (isAutoSubmit = false) => {
+      // Set submitting state to true to disable the blocker
+      setIsSubmitting(true);
       try {
         const token = localStorage.getItem("token");
         const formattedAnswers = Object.entries(answers).map(
@@ -109,11 +112,14 @@ const TestInterface = ({ id, onBack }) => {
         if (!isAutoSubmit) {
           alert("✅ Test submitted successfully!");
         }
+        // Navigate away. The blocker is now inactive.
         onBack();
       } catch (error) {
         if (!isAutoSubmit) {
           alert("⚠️ There was an error submitting your test.");
         }
+        // If an error occurs, re-enable the blocker.
+        setIsSubmitting(false);
       }
     },
     [id, answers, onBack]
@@ -129,21 +135,26 @@ const TestInterface = ({ id, onBack }) => {
     return () => clearInterval(timerId);
   }, [timeLeft, handleSubmit]);
 
-  // --- Blocker and Warning Modals Logic (No changes) ---
-  const blocker = useBlocker(!!testData && !loading);
+  // --- Blocker and Warning Modals Logic ---
+  // MODIFIED: Blocker is now disabled when `isSubmitting` is true
+  const blocker = useBlocker(!isSubmitting && !!testData && !loading);
+
   useEffect(() => {
     if (blocker && blocker.state === "blocked") {
       setShowNavBlocker(true);
     }
   }, [blocker]);
+
   const handleProceedNavigation = async () => {
     await handleSubmit(true);
     if (blocker) blocker.proceed();
   };
+
   const handleCancelNavigation = () => {
     setShowNavBlocker(false);
     if (blocker) blocker.reset();
   };
+
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
@@ -154,6 +165,7 @@ const TestInterface = ({ id, onBack }) => {
     return () =>
       document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, []);
+
   useEffect(() => {
     const handleBeforeUnload = (e) => {
       e.preventDefault();
@@ -163,7 +175,7 @@ const TestInterface = ({ id, onBack }) => {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, []);
 
-  // --- NEW & UPDATED HANDLERS ---
+  // --- HANDLERS (No changes) ---
   const handleAnswerChange = (questionId, optionKey) =>
     setAnswers((prev) => ({ ...prev, [questionId]: optionKey }));
 
@@ -183,8 +195,6 @@ const TestInterface = ({ id, onBack }) => {
       newMarked.delete(questionId);
       setMarkedForReview(newMarked);
     }
-    // Note: The answer is already saved in the 'answers' state via handleAnswerChange.
-    // This button primarily serves to unmark the question for review.
   };
 
   const handleNext = () => {
@@ -204,7 +214,7 @@ const TestInterface = ({ id, onBack }) => {
     if (window.innerWidth < 992) setIsPaletteOpen(false);
   };
 
-  // --- RENDER SECTION (Updated Layout) ---
+  // --- RENDER SECTION (No changes) ---
   if (loading) {
     return (
       <Container className="d-flex flex-column justify-content-center align-items-center vh-100">
@@ -274,7 +284,7 @@ const TestInterface = ({ id, onBack }) => {
           <FaArrowRight />
         </Button>
 
-        {/* --- NEW: HEADER WITH TITLE AND TIMER --- */}
+        {/* --- HEADER WITH TITLE AND TIMER --- */}
         <Row className="mb-3 align-items-center test-header-row bg-light p-2 rounded shadow-sm">
           <Col>
             <h4 className="test-title mb-0">{testData?.title}</h4>
@@ -293,7 +303,7 @@ const TestInterface = ({ id, onBack }) => {
         </Row>
 
         <Row className="g-3 main-row">
-          {/* --- LEFT: PALETTE (Submit button moved here) --- */}
+          {/* --- LEFT: PALETTE --- */}
           <Col
             lg={3}
             md={4}
@@ -359,7 +369,7 @@ const TestInterface = ({ id, onBack }) => {
             </Card>
           </Col>
 
-          {/* --- CENTER: QUESTION (Button layout updated) --- */}
+          {/* --- CENTER: QUESTION --- */}
           <Col lg={9} md={8}>
             <Card className="h-100 d-flex flex-column shadow-sm">
               <Card.Header>
@@ -475,15 +485,11 @@ const TestInterface = ({ id, onBack }) => {
           <Modal.Title>✋ Confirm Navigation</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Are you sure you want to leave? Your progress will be submitted
-          automatically.
+          Are you sure you want to leave? Your progress will not be saved.
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCancelNavigation}>
             Stay on Page
-          </Button>
-          <Button variant="danger" onClick={handleProceedNavigation}>
-            Leave & Submit
           </Button>
         </Modal.Footer>
       </Modal>
