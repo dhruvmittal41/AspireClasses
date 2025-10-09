@@ -2,6 +2,10 @@
 
 /* --- GENERAL FIXES --- */
 .test-interface-container {
+ -webkit-user-select: none;
+ -moz-user-select: none;
+ -ms-user-select: none;
+ user-select: none;
  height: 100vh;
  display: flex;
  flex-direction: column;
