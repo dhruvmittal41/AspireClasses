@@ -1,46 +1,73 @@
-/* === GLOBAL LAYOUT (HYBRID NAVBAR + SIDEBAR VERSION) === */
+/* === GLOBAL LAYOUT === */
 .home-page-layout {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #f4f7f6;
+  background-color: #f5f7fa;
 }
 
-/* === MAIN CONTENT === */
-.main-content {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  padding-top: 0.5rem;
+/* === NAVBAR STYLING === */
+.glass-nav {
+  background: rgba(30, 30, 30, 0.85) !important;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease-in-out;
 }
 
-/* === NAVBAR === */
-.main-header {
-  position: sticky;
-  top: 0;
-  z-index: 1020;
-  height: 58px;
+.brand-logo {
+  font-weight: 700;
+  color: #00c6ff !important;
+  letter-spacing: 0.5px;
+  font-size: 1.25rem;
 }
 
-.main-header .container-fluid {
-  height: 100%;
+.main-header .nav-links .nav-item-link {
+  color: #dfe6e9 !important;
+  position: relative;
+  padding: 0.75rem 1rem;
+  transition: color 0.25s, transform 0.25s;
+}
+
+.nav-item-link:hover {
+  color: #1abc9c !important;
+  transform: translateY(-2px);
+}
+
+.nav-item-link.active {
+  color: #1abc9c !important;
+  font-weight: 600;
+}
+
+.active-underline {
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  width: 80%;
+  height: 2px;
+  background: #1abc9c;
+  border-radius: 10px;
+}
+
+/* === PROFILE DROPDOWN === */
+.profile-dropdown .dropdown-toggle {
   display: flex;
   align-items: center;
-  flex-wrap: nowrap;
 }
 
-.main-header .navbar-brand,
-.main-header .nav-link.dropdown-toggle {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.profile-avatar {
+  border: 2px solid #1abc9c;
 }
 
-/* === MOBILE SIDEBAR (OFFCANVAS) === */
-.sidebar-mobile {
-  background-color: #2c3e50;
+.profile-name {
+  font-weight: 500;
   color: #ecf0f1;
+}
+
+/* === MOBILE SIDEBAR === */
+.sidebar-mobile {
+  background: #1f2a38;
+  color: #ecf0f1;
+  transition: transform 0.3s ease-in-out;
 }
 
 .sidebar-mobile .offcanvas-header {
@@ -52,18 +79,75 @@
 }
 
 .sidebar-btn {
-  padding: 0.8rem 1rem !important;
+  padding: 0.9rem 1rem !important;
   color: #bdc3c7 !important;
-  border-radius: 0.5rem;
+  border-radius: 0.6rem;
   font-weight: 500;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .sidebar-btn.active {
   background-color: #1abc9c !important;
   color: #fff !important;
+  box-shadow: 0 0 10px rgba(26, 188, 156, 0.4);
 }
 
 .sidebar-btn:not(.active):hover {
   background-color: #34495e !important;
   color: #fff !important;
+}
+
+.logout-btn {
+  font-weight: 600;
+  box-shadow: 0 0 10px rgba(231, 76, 60, 0.3);
+}
+
+/* === MAIN CONTENT === */
+.main-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: linear-gradient(to bottom right, #ffffff, #f3f6fa);
+}
+
+.content-wrapper {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  margin: 1.5rem auto;
+  width: 95%;
+  max-width: 1200px;
+  transition: all 0.3s ease;
+}
+
+/* === SCROLLBAR STYLING === */
+.main-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.main-content::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .content-wrapper {
+    width: 96%;
+    margin-top: 1rem;
+    border-radius: 10px;
+  }
+
+  .brand-logo {
+    font-size: 1.1rem;
+  }
+
+  .menu-toggle {
+    font-size: 1.2rem;
+  }
 }

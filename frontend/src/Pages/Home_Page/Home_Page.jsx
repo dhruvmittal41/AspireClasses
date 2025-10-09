@@ -1,4 +1,3 @@
-// src/HomePage.jsx
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -32,7 +31,6 @@ import {
 
 import "./Home_Page.css";
 
-// --- Menu Items ---
 const navMenuItems = [
   { name: "Dashboard", icon: <DashboardIcon />, view: <DashboardView /> },
   { name: "My Tests", icon: <MyTestsIcon />, view: <MyTestsView /> },
@@ -45,14 +43,13 @@ const HomePage = () => {
   const [username, setUserName] = useState("User");
   const [activeItem, setActiveItem] = useState("Dashboard");
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-
   const navigate = useNavigate();
 
   useEffect(() => {
     const userDataString = localStorage.getItem("user");
     if (userDataString) {
       const userData = JSON.parse(userDataString);
-      setUserName(userData.full_name);
+      setUserName(userData.full_name || "User");
     }
   }, []);
 
@@ -64,10 +61,9 @@ const HomePage = () => {
 
   const handleMenuClick = (name) => {
     setActiveItem(name);
-    setSidebarOpen(false); // close offcanvas on mobile
+    setSidebarOpen(false);
   };
 
-  // Render active view
   const renderActiveView = () => {
     switch (activeItem) {
       case "Dashboard":
@@ -91,7 +87,6 @@ const HomePage = () => {
     }
   };
 
-  // Profile dropdown title
   const profileMenuTitle = (
     <>
       <Image
@@ -99,9 +94,9 @@ const HomePage = () => {
         roundedCircle
         width="30"
         height="30"
-        className="me-2"
+        className="me-2 profile-avatar"
       />
-      {username}
+      <span className="profile-name">{username}</span>
     </>
   );
 
@@ -109,34 +104,40 @@ const HomePage = () => {
     <div className="home-page-layout">
       {/* === DESKTOP NAVBAR === */}
       <Navbar
-        bg="dark"
-        variant="dark"
         expand="lg"
         sticky="top"
-        className="main-header d-none d-lg-flex"
+        className="main-header d-none d-lg-flex glass-nav shadow-sm"
       >
         <Container fluid>
-          <Navbar.Brand>AspireClasses</Navbar.Brand>
-          <Nav className="me-auto">
+          <Navbar.Brand className="brand-logo">AspireClasses</Navbar.Brand>
+          <Nav className="me-auto nav-links">
             {navMenuItems.map((item) => (
               <Nav.Link
                 key={item.name}
                 active={activeItem === item.name}
                 onClick={() => handleMenuClick(item.name)}
-                className="d-flex align-items-center"
+                className={`d-flex align-items-center nav-item-link ${
+                  activeItem === item.name ? "active" : ""
+                }`}
               >
                 {item.icon}
                 <span className="ms-2">{item.name}</span>
+                {activeItem === item.name && (
+                  <motion.div
+                    layoutId="activeUnderline"
+                    className="active-underline"
+                  />
+                )}
               </Nav.Link>
             ))}
           </Nav>
 
-          {/* Profile Dropdown */}
           <Nav>
             <NavDropdown
               title={profileMenuTitle}
               id="profile-dropdown"
               align="end"
+              className="profile-dropdown"
             >
               <NavDropdown.Item onClick={() => handleMenuClick("Profile")}>
                 My Profile
@@ -150,18 +151,21 @@ const HomePage = () => {
         </Container>
       </Navbar>
 
-      {/* === MOBILE/TABLET NAVBAR + SIDEBAR === */}
+      {/* === MOBILE NAVBAR === */}
       <Navbar
-        bg="dark"
-        variant="dark"
+        expand="lg"
         sticky="top"
-        className="main-header d-lg-none"
+        className="main-header d-lg-none glass-nav"
       >
-        <Container fluid>
-          <Button variant="outline-light" onClick={() => setSidebarOpen(true)}>
+        <Container fluid className="justify-content-between">
+          <Button
+            variant="outline-light"
+            className="menu-toggle"
+            onClick={() => setSidebarOpen(true)}
+          >
             ☰
           </Button>
-          <Navbar.Brand className="mx-auto">AspireClasses</Navbar.Brand>
+          <Navbar.Brand className="brand-logo">AspireClasses</Navbar.Brand>
           <Nav>
             <NavDropdown
               title={profileMenuTitle}
@@ -180,7 +184,7 @@ const HomePage = () => {
         </Container>
       </Navbar>
 
-      {/* Mobile Sidebar Offcanvas */}
+      {/* === MOBILE SIDEBAR === */}
       <Offcanvas
         show={isSidebarOpen}
         onHide={() => setSidebarOpen(false)}
@@ -196,7 +200,9 @@ const HomePage = () => {
                 key={item.name}
                 active={activeItem === item.name}
                 onClick={() => handleMenuClick(item.name)}
-                className="d-flex align-items-center sidebar-btn"
+                className={`d-flex align-items-center sidebar-btn ${
+                  activeItem === item.name ? "active" : ""
+                }`}
               >
                 {item.icon}
                 <span className="ms-3">{item.name}</span>
@@ -206,7 +212,7 @@ const HomePage = () => {
           <div className="p-2">
             <Button
               variant="danger"
-              className="w-100 d-flex align-items-center justify-content-center sidebar-btn"
+              className="w-100 d-flex align-items-center justify-content-center sidebar-btn logout-btn"
               onClick={handleLogout}
             >
               <LogoutIcon />
@@ -216,7 +222,7 @@ const HomePage = () => {
         </Offcanvas.Body>
       </Offcanvas>
 
-      {/* Page Content */}
+      {/* === MAIN CONTENT === */}
       <main className="main-content">
         <div className="content-wrapper p-3 p-md-4">
           <AnimatePresence mode="wait">
