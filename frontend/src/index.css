@@ -1,0 +1,12 @@
+html, body {
+  overflow: auto !important;
+  height: auto !important;
+}
+
+body {
+  position: static !important;
+}
+#root, .app {
+  overflow: auto !important;
+  height: auto !important;
+}
