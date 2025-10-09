@@ -1,5 +1,9 @@
 /* --- FULL PAGE FLEX LAYOUT --- */
 .test-interface-container {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -138,7 +142,7 @@
     position: relative;
     transform: none;
     height: 100%;
-    
+
     box-shadow: none;
     z-index: 1;
   }

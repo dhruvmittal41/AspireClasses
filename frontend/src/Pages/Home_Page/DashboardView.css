@@ -1,17 +1,15 @@
 /* src/DashboardView.css */
 
 .test-card-custom {
-  background-color: #f8f9fa; /* A light grey background */
-  border: 1px solid #dee2e6;  /* A subtle border */
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
   cursor: pointer;
-  transition:
-    background-color 0.2s ease-in-out,
-    border-color 0.2s ease-in-out;
-  color: #495057; /* Darker text for readability */
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  color: #495057;
 }
 
 .test-card-custom:hover {
-  background-color: #e9ecef; /* A slightly darker grey on hover */
+  background-color: #e9ecef;
   border-color: #adb5bd;
 }
 .test-card-custom h3 {
@@ -19,6 +17,80 @@
   color: #1e3a8a;
 }
 
-body, #root {
+/* Greeting Header */
+.dashboard-header {
+  background: linear-gradient(135deg, #6f42c1, #9b59b6);
+  padding: 2rem;
+}
+
+/* Stat Cards */
+.stat-card {
+  color: white;
+  border: none;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+.stat-card h5 {
+  margin-bottom: 0.5rem;
+}
+.stat-card h3 {
+  font-weight: 700;
+}
+
+/* Floating Background Animation */
+.dashboard-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.floating-shape {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.08;
+  z-index: 0;
+  animation: float 8s ease-in-out infinite;
+}
+
+.shape1 {
+  width: 180px;
+  height: 180px;
+  background: #6f42c1;
+  top: 10%;
+  left: 15%;
+}
+
+.shape2 {
+  width: 220px;
+  height: 220px;
+  background: #20c997;
+  bottom: 15%;
+  right: 10%;
+  animation-delay: 2s;
+}
+
+.shape3 {
+  width: 120px;
+  height: 120px;
+  background: #ffc107;
+  bottom: 5%;
+  left: 30%;
+  animation-delay: 4s;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+body,
+#root {
   overflow-y: hidden;
 }
