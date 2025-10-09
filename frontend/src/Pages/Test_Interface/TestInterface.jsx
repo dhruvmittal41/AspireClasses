@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { FaArrowRight } from "react-icons/fa";
+import { FaArrowRight, FaBars, FaTimes } from "react-icons/fa"; // Added FaBars, FaTimes
 import { useBlocker } from "react-router-dom";
 import {
   Container,
@@ -24,7 +24,6 @@ const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const getOptionKey = (index) => String.fromCharCode(97 + index);
 
-// --- Sub-component: KatexRenderer (No changes) ---
 const KatexRenderer = ({ text }) => {
   if (typeof text !== "string" || !text) {
     return null;
@@ -66,9 +65,10 @@ const TestInterface = ({ id, onBack }) => {
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [showLeaveWarning, setShowLeaveWarning] = useState(false);
   const [showNavBlocker, setShowNavBlocker] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false); // <-- ADDED STATE
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false); // <-- NEW: For desktop sidebar toggle
 
-  // --- LOGIC (Fetching, Timers are mostly the same) ---
+  // --- LOGIC ---
   useEffect(() => {
     const fetchTest = async () => {
       try {
@@ -94,7 +94,6 @@ const TestInterface = ({ id, onBack }) => {
 
   const handleSubmit = useCallback(
     async (isAutoSubmit = false) => {
-      // Set submitting state to true to disable the blocker
       setIsSubmitting(true);
       try {
         const token = localStorage.getItem("token");
@@ -112,13 +111,11 @@ const TestInterface = ({ id, onBack }) => {
         if (!isAutoSubmit) {
           alert("✅ Test submitted successfully!");
         }
-        // Navigate away. The blocker is now inactive.
         onBack();
       } catch (error) {
         if (!isAutoSubmit) {
           alert("⚠️ There was an error submitting your test.");
         }
-        // If an error occurs, re-enable the blocker.
         setIsSubmitting(false);
       }
     },
@@ -135,8 +132,6 @@ const TestInterface = ({ id, onBack }) => {
     return () => clearInterval(timerId);
   }, [timeLeft, handleSubmit]);
 
-  // --- Blocker and Warning Modals Logic ---
-  // MODIFIED: Blocker is now disabled when `isSubmitting` is true
   const blocker = useBlocker(!isSubmitting && !!testData && !loading);
 
   useEffect(() => {
@@ -145,10 +140,12 @@ const TestInterface = ({ id, onBack }) => {
     }
   }, [blocker]);
 
-  const handleProceedNavigation = async () => {
-    await handleSubmit(true);
-    if (blocker) blocker.proceed();
-  };
+  const handleProceedNavigation = useCallback(async () => {
+    if (blocker && blocker.state === "blocked") {
+      await handleSubmit(true); // Auto-submit the test
+      blocker.proceed(); // Then proceed with navigation
+    }
+  }, [blocker, handleSubmit]);
 
   const handleCancelNavigation = () => {
     setShowNavBlocker(false);
@@ -175,7 +172,6 @@ const TestInterface = ({ id, onBack }) => {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, []);
 
-  // --- HANDLERS (No changes) ---
   const handleAnswerChange = (questionId, optionKey) =>
     setAnswers((prev) => ({ ...prev, [questionId]: optionKey }));
 
@@ -214,7 +210,7 @@ const TestInterface = ({ id, onBack }) => {
     if (window.innerWidth < 992) setIsPaletteOpen(false);
   };
 
-  // --- RENDER SECTION (No changes) ---
+  // --- RENDER SECTION ---
   if (loading) {
     return (
       <Container className="d-flex flex-column justify-content-center align-items-center vh-100">
@@ -267,7 +263,6 @@ const TestInterface = ({ id, onBack }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
-        {/* --- MOBILE OVERLAY & TOGGLE --- */}
         {isPaletteOpen && (
           <div
             className="palette-overlay d-lg-none"
@@ -284,10 +279,22 @@ const TestInterface = ({ id, onBack }) => {
           <FaArrowRight />
         </Button>
 
-        {/* --- HEADER WITH TITLE AND TIMER --- */}
+        {/* --- HEADER --- */}
         <Row className="mb-3 align-items-center test-header-row bg-light p-2 rounded shadow-sm">
+          <Col xs="auto" className="d-none d-lg-block">
+            {/* -- NEW: Desktop Sidebar Toggle Button -- */}
+            <Button
+              variant="outline-secondary"
+              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+              title="Toggle Question Palette"
+            >
+              {isSidebarCollapsed ? <FaBars /> : <FaTimes />}
+            </Button>
+          </Col>
           <Col>
-            <h4 className="test-title mb-0">{testData?.title}</h4>
+            <h4 className="test-title mb-0 text-center text-md-start">
+              {testData?.title}
+            </h4>
           </Col>
           <Col xs="auto">
             <div className="d-flex align-items-center">
@@ -302,13 +309,16 @@ const TestInterface = ({ id, onBack }) => {
           </Col>
         </Row>
 
+        {/* --- MAIN CONTENT --- */}
         <Row className="g-3 main-row">
           {/* --- LEFT: PALETTE --- */}
           <Col
             lg={3}
             md={4}
             id="question-palette"
-            className={`palette-sidebar ${isPaletteOpen ? "open" : ""}`}
+            className={`palette-sidebar ${isPaletteOpen ? "open" : ""} ${
+              isSidebarCollapsed ? "d-none" : "" // <-- Hide on collapse
+            }`}
           >
             <Card className="h-100 d-flex flex-column shadow-sm">
               <Card.Header
@@ -322,7 +332,7 @@ const TestInterface = ({ id, onBack }) => {
                   onClick={() => setIsPaletteOpen(false)}
                 />
               </Card.Header>
-              <Card.Body className="flex-grow-1 overflow-auto">
+              <Card.Body className="overflow-auto">
                 <Row xs={4} sm={5} md={4} lg={5} className="g-2 text-center">
                   {questions.map((q, index) => (
                     <Col key={q.id}>
@@ -344,8 +354,7 @@ const TestInterface = ({ id, onBack }) => {
                     <span className="legend-box bg-success"></span> Answered
                   </div>
                   <div>
-                    <span className="legend-box bg-warning"></span> Marked for
-                    Review
+                    <span className="legend-box bg-warning"></span> Marked
                   </div>
                   <div>
                     <span className="legend-box answered-review-legend"></span>{" "}
@@ -370,49 +379,56 @@ const TestInterface = ({ id, onBack }) => {
           </Col>
 
           {/* --- CENTER: QUESTION --- */}
-          <Col lg={9} md={8}>
+          <Col
+            md={isSidebarCollapsed ? 12 : 8} // <-- Dynamic sizing
+            lg={isSidebarCollapsed ? 12 : 9} // <-- Dynamic sizing
+          >
             <Card className="h-100 d-flex flex-column shadow-sm">
               <Card.Header>
                 <Card.Title as="h5">
                   Question {currentQuestionIndex + 1} of {questions.length}
                 </Card.Title>
               </Card.Header>
-              <Card.Body className="scrollable-content flex-grow-1">
-                <div className="lead">
-                  <KatexRenderer text={currentQuestion.question_text} />
-                </div>
-                {currentQuestion.image_url && (
-                  <div className="text-center my-3">
-                    <Image
-                      src={currentQuestion.image_url}
-                      fluid
-                      rounded
-                      style={{ maxHeight: "300px", objectFit: "contain" }}
-                    />
+              <Card.Body className="d-flex flex-column scrollable-content">
+                <div className="overflow-auto p-2">
+                  {" "}
+                  {/* Inner scrollable div */}
+                  <div className="lead">
+                    <KatexRenderer text={currentQuestion.question_text} />
                   </div>
-                )}
-                <Form>
-                  <Stack gap={3}>
-                    {currentQuestion.options.map((optionText, index) => {
-                      const optionKey = getOptionKey(index);
-                      return (
-                        <Form.Check
-                          key={optionKey}
-                          type="radio"
-                          id={`q${currentQuestion.id}-opt${optionKey}`}
-                          name={`question-${currentQuestion.id}`}
-                          label={<KatexRenderer text={optionText.trim()} />}
-                          value={optionKey}
-                          checked={answers[currentQuestion.id] === optionKey}
-                          onChange={() =>
-                            handleAnswerChange(currentQuestion.id, optionKey)
-                          }
-                          className="option-label"
-                        />
-                      );
-                    })}
-                  </Stack>
-                </Form>
+                  {currentQuestion.image_url && (
+                    <div className="text-center my-3">
+                      <Image
+                        src={currentQuestion.image_url}
+                        fluid
+                        rounded
+                        style={{ maxHeight: "25vh", objectFit: "contain" }} // Adjusted max-height
+                      />
+                    </div>
+                  )}
+                  <Form>
+                    <Stack gap={3} className="mt-3">
+                      {currentQuestion.options.map((optionText, index) => {
+                        const optionKey = getOptionKey(index);
+                        return (
+                          <Form.Check
+                            key={optionKey}
+                            type="radio"
+                            id={`q${currentQuestion.id}-opt${optionKey}`}
+                            name={`question-${currentQuestion.id}`}
+                            label={<KatexRenderer text={optionText.trim()} />}
+                            value={optionKey}
+                            checked={answers[currentQuestion.id] === optionKey}
+                            onChange={() =>
+                              handleAnswerChange(currentQuestion.id, optionKey)
+                            }
+                            className="option-label"
+                          />
+                        );
+                      })}
+                    </Stack>
+                  </Form>
+                </div>
               </Card.Body>
               <Card.Footer className="bg-light p-3">
                 <Stack
@@ -449,7 +465,7 @@ const TestInterface = ({ id, onBack }) => {
         </Row>
       </Container>
 
-      {/* --- MODALS (No changes) --- */}
+      {/* --- MODALS --- */}
       <Modal
         show={showLeaveWarning}
         onHide={() => setShowLeaveWarning(false)}
@@ -485,11 +501,15 @@ const TestInterface = ({ id, onBack }) => {
           <Modal.Title>✋ Confirm Navigation</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Are you sure you want to leave? Your progress will not be saved.
+          Are you sure you want to leave? Your test will be submitted
+          automatically.
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCancelNavigation}>
             Stay on Page
+          </Button>
+          <Button variant="danger" onClick={handleProceedNavigation}>
+            Leave & Submit
           </Button>
         </Modal.Footer>
       </Modal>
