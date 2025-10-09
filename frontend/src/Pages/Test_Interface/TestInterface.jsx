@@ -338,7 +338,7 @@ const TestInterface = ({ id, onBack }) => {
                     <Col key={q.id}>
                       <Button
                         variant={getStatusVariant(q, index)}
-                        className="w-100 rounded-circle"
+                        className="w-150 rounded-circle"
                         active={currentQuestionIndex === index}
                         onClick={() => goToQuestion(index)}
                       >
