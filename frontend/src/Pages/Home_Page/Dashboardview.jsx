@@ -1,5 +1,3 @@
-// src/DashboardView.jsx
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
@@ -12,13 +10,7 @@ import {
   Spinner,
   Alert,
 } from "react-bootstrap";
-import {
-  FaTrophy,
-  FaChartLine,
-  FaBookOpen,
-  FaClock,
-  FaStar,
-} from "react-icons/fa";
+import { FaChartLine, FaBookOpen, FaQuoteLeft } from "react-icons/fa";
 import "./DashboardView.css";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
@@ -116,19 +108,33 @@ const FreeDemoTests = () => {
   );
 };
 
-// --- Stat Card Component ---
-const StatCard = ({ icon: Icon, label, value, color }) => (
-  <motion.div
-    className="stat-card text-center text-white rounded shadow-sm p-3"
-    style={{ background: color }}
-    whileHover={{ scale: 1.05 }}
-    whileTap={{ scale: 0.95 }}
-  >
-    <Icon size={32} className="mb-2" />
-    <h5>{label}</h5>
-    <h3 className="fw-bold">{value}</h3>
-  </motion.div>
-);
+// --- Daily Quote Section ---
+const DailyQuote = () => {
+  const quotes = [
+    "Success is the sum of small efforts repeated day in and day out.",
+    "Don’t watch the clock; do what it does. Keep going.",
+    "Dream big. Work hard. Stay humble.",
+    "Push yourself, because no one else is going to do it for you.",
+    "Discipline beats motivation every single time.",
+    "Every expert was once a beginner.",
+    "Great things never come from comfort zones.",
+  ];
+
+  const today = new Date().getDate();
+  const quoteOfTheDay = quotes[today % quotes.length];
+
+  return (
+    <motion.div
+      className="quote-section text-center text-white mb-4 rounded shadow-sm p-4"
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+    >
+      <FaQuoteLeft className="quote-icon mb-2" />
+      <h5 className="fw-normal fst-italic">"{quoteOfTheDay}"</h5>
+    </motion.div>
+  );
+};
 
 // --- Main Dashboard View ---
 const DashboardView = () => {
@@ -154,27 +160,6 @@ const DashboardView = () => {
     fetchResults();
   }, []);
 
-  // Dummy data for stat cards
-  const stats = [
-    {
-      label: "Total Tests",
-      value: results.length || 12,
-      icon: FaClock,
-      color: "linear-gradient(135deg, #6f42c1, #9b59b6)",
-    },
-    {
-      label: "Avg Score",
-      value: results.length
-        ? `${Math.round(
-            results.reduce((a, r) => a + (r.score / 85) * 100, 0) /
-              results.length
-          )}%`
-        : "84%",
-      icon: FaStar,
-      color: "linear-gradient(135deg, #28a745, #20c997)",
-    },
-  ];
-
   return (
     <Container
       as={motion.div}
@@ -184,14 +169,14 @@ const DashboardView = () => {
       animate="visible"
       exit="exit"
     >
-      {/* --- Floating Background Animation --- */}
+      {/* Floating Background Animation */}
       <div className="floating-shape shape1" />
       <div className="floating-shape shape2" />
       <div className="floating-shape shape3" />
 
-      {/* Greeting Section */}
+      {/* Header + Daily Quote */}
       <motion.div
-        className="dashboard-header text-center text-white mb-4 rounded shadow-sm"
+        className="dashboard-header text-center text-white mb-3 rounded shadow-sm"
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -200,14 +185,7 @@ const DashboardView = () => {
         <p className="lead mb-0">Here’s your learning progress today.</p>
       </motion.div>
 
-      {/* Stat Cards */}
-      <Row className="g-3 mb-4">
-        {stats.map((stat, index) => (
-          <Col xs={6} md={3} key={index}>
-            <StatCard {...stat} />
-          </Col>
-        ))}
-      </Row>
+      <DailyQuote />
 
       {/* Main Dashboard Content */}
       <Row className="g-4">

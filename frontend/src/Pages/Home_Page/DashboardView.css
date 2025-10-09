@@ -1,5 +1,3 @@
-/* src/DashboardView.css */
-
 .test-card-custom {
   background-color: #f8f9fa;
   border: 1px solid #dee2e6;
@@ -12,85 +10,69 @@
   background-color: #e9ecef;
   border-color: #adb5bd;
 }
+
 .test-card-custom h3 {
   font-weight: 500;
   color: #1e3a8a;
 }
 
-/* Greeting Header */
-.dashboard-header {
-  background: linear-gradient(135deg, #6f42c1, #9b59b6);
-  padding: 2rem;
-}
-
-/* Stat Cards */
-.stat-card {
-  color: white;
-  border: none;
-  border-radius: 16px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-.stat-card h5 {
-  margin-bottom: 0.5rem;
-}
-.stat-card h3 {
-  font-weight: 700;
-}
-
-/* Floating Background Animation */
-.dashboard-container {
+/* Quote Section */
+.quote-section {
+  background: linear-gradient(135deg, #007bff, #6610f2);
   position: relative;
   overflow: hidden;
 }
 
+.quote-icon {
+  font-size: 1.5rem;
+  opacity: 0.8;
+}
+
+/* Background floating shapes */
 .floating-shape {
   position: absolute;
   border-radius: 50%;
-  opacity: 0.08;
-  z-index: 0;
-  animation: float 8s ease-in-out infinite;
+  filter: blur(100px);
+  opacity: 0.25;
+  z-index: -1;
 }
 
 .shape1 {
-  width: 180px;
-  height: 180px;
-  background: #6f42c1;
-  top: 10%;
-  left: 15%;
+  width: 200px;
+  height: 200px;
+  background: #007bff;
+  top: -50px;
+  left: -50px;
+  animation: float 6s ease-in-out infinite;
 }
 
 .shape2 {
-  width: 220px;
-  height: 220px;
-  background: #20c997;
-  bottom: 15%;
-  right: 10%;
-  animation-delay: 2s;
+  width: 150px;
+  height: 150px;
+  background: #6610f2;
+  bottom: 50px;
+  right: 100px;
+  animation: float 7s ease-in-out infinite reverse;
 }
 
 .shape3 {
   width: 120px;
   height: 120px;
-  background: #ffc107;
-  bottom: 5%;
-  left: 30%;
-  animation-delay: 4s;
+  background: #20c997;
+  bottom: -40px;
+  left: 80px;
+  animation: float 8s ease-in-out infinite;
 }
 
 @keyframes float {
-  0% {
+  0%, 100% {
     transform: translateY(0px);
   }
   50% {
-    transform: translateY(-20px);
-  }
-  100% {
-    transform: translateY(0px);
+    transform: translateY(-15px);
   }
 }
 
-body,
-#root {
+body, #root {
   overflow-y: hidden;
 }
