@@ -1,12 +1,18 @@
-// src/MyTestsView.jsx
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import axios from "axios";
-import { Container, Row, Col, Card, Button, Spinner } from "react-bootstrap";
-import { BookIcon, ArrowRightIcon } from "./Icons"; // Assuming these are valid local components
-import "./MyTestView.css"; // We will use a much smaller CSS file
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Spinner,
+  Badge,
+} from "react-bootstrap";
+import { BookIcon, ArrowRightIcon } from "./Icons";
+import "./MyTestView.css";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -71,12 +77,10 @@ const MyTestsView = () => {
     fetchBoughtTests();
   }, []);
 
-  if (loading) {
-    return <LoadingState />;
-  }
+  if (loading) return <LoadingState />;
 
   return (
-    <Container as={motion.div} fluid>
+    <Container as={motion.div} fluid className="my-tests-container">
       <h1 className="display-5 mb-4">My Tests</h1>
       {boughtTests.length > 0 ? (
         <Row className="g-4">
@@ -84,23 +88,35 @@ const MyTestsView = () => {
             <Col key={test.id} md={6} lg={4}>
               <Card
                 as={motion.div}
-                className="h-100 shadow-sm bg-dark text-white"
+                className="h-100 test-card shadow-sm"
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 300 }}
               >
-                <Card.Body className="d-flex flex-column">
-                  <div className="d-flex align-items-center text-white mb-2">
-                    <BookIcon />
-                    <span className="ms-2 small">{test.subject_topic}</span>
+                <div className="test-card-header d-flex align-items-center justify-content-between p-3">
+                  <div className="d-flex align-items-center">
+                    <BookIcon className="me-2" />
+                    <span className="subject-text">{test.subject_topic}</span>
                   </div>
-                  <Card.Title as="h3" className="h5">
+                  <Badge bg="info" className="level-badge">
+                    {test.difficulty || "Medium"}
+                  </Badge>
+                </div>
+                <Card.Body className="d-flex flex-column p-3">
+                  <Card.Title className="h5 fw-bold mb-2">
                     {test.test_name}
                   </Card.Title>
-                  <Card.Text className="text-white small">
+                  <Card.Text className="text-muted mb-3">
                     {test.num_questions} Questions
                   </Card.Text>
+                  <div className="syllabus-text mb-3">
+                    {test.syllabus
+                      ? test.syllabus.slice(0, 100) + "..."
+                      : "No syllabus info"}
+                  </div>
                   <Button
                     as={motion.button}
                     variant="primary"
-                    className="mt-auto d-flex align-items-center justify-content-center"
+                    className="mt-auto d-flex align-items-center justify-content-center start-btn"
                     onClick={() => navigate(`/tests/${test.id}`)}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}

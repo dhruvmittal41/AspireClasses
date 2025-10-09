@@ -1,10 +1,53 @@
-/* src/MyTestView.css */
+.my-tests-container {
+  padding-bottom: 2rem;
+}
 
-/*
-  Bootstrap's grid, cards, buttons, and utilities handle almost everything.
-  We just need to add a custom class for the dashed border style on the empty state.
-*/
+.test-card {
+  border-radius: 16px;
+  overflow: hidden;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
 
-.border-dashed {
-  border: 2px dashed #d1d5db;
+.test-card-header {
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
+  color: #fff;
+  font-weight: 500;
+  border-radius: 16px 16px 0 0;
+}
+
+.subject-text {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.level-badge {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  padding: 0.4em 0.6em;
+}
+
+.syllabus-text {
+  font-size: 0.85rem;
+  color: #555;
+  line-height: 1.4;
+}
+
+.start-btn {
+  font-weight: 600;
+}
+
+.test-card:hover {
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 768px) {
+  .test-card-header {
+    padding: 0.75rem 1rem;
+  }
+  .syllabus-text {
+    font-size: 0.8rem;
+  }
 }
