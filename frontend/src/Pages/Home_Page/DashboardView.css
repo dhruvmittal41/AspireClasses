@@ -14,11 +14,24 @@
 }
 
 /* --- Main Dashboard Container --- */
+/* This rule is no longer needed for positioning or overflow */
 .dashboard-container {
   position: relative;
   z-index: 1;
-  overflow-x: hidden; /* Prevent horizontal scroll from shapes */
 }
+
+/* --- Background Animation Wrapper --- */
+/* This new rule contains the shapes safely in the background */
+.background-animation-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
+}
+
 
 /* --- Header & Quote --- */
 .dashboard-header {
@@ -69,13 +82,13 @@
 }
 
 /* --- Floating Background Shapes --- */
+/* These shapes are now contained by the wrapper, not the container */
 .floating-shape {
   position: absolute;
   border-radius: 50%;
   filter: blur(120px);
   opacity: 0.2;
-  z-index: -1;
-  will-change: transform; /* Performance hint for animation */
+  will-change: transform;
 }
 
 .shape1 {

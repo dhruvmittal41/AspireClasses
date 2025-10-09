@@ -62,7 +62,6 @@ const RecentResults = React.memo(({ results, loading, error }) => (
                   <tr key={result.id}>
                     <td>{result.test_name}</td>
                     <td>
-                      {/* FIX: Calculate percentage dynamically based on max_score */}
                       {result.max_score > 0
                         ? `${Math.round(
                             (result.score / result.max_score) * 100
@@ -107,7 +106,7 @@ const FreeDemoTests = React.memo(() => {
   ];
 
   return (
-    <Card as={motion.div} variants={itemVariants} className="h-100 shadow-sm">
+    <Card as={motion.div} variants={itemVariants} className="shadow-sm">
       <Card.Header as="h5" className="d-flex align-items-center">
         <FaBookOpen className="me-2 icon-success" />
         Try a Free Demo Test
@@ -116,7 +115,6 @@ const FreeDemoTests = React.memo(() => {
         <Row className="g-3">
           {demoTests.map((test) => (
             <Col key={test.id} xs={12} sm={6}>
-              {/* ENHANCEMENT: Use a button for accessibility */}
               <motion.button
                 className="test-card-custom w-100 p-3 rounded"
                 whileHover={{ scale: 1.05, y: -4 }}
@@ -180,17 +178,13 @@ const DashboardView = ({ userName = "Learner" }) => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        // FIX: Check if response.data is an array before trying to map over it.
         if (Array.isArray(response.data)) {
-          // Process the array directly from response.data
           const processedResults = response.data.map((result) => ({
             ...result,
-            // Ensure max_score exists, default to 100 if not provided by the API
             max_score: result.max_score || 100,
           }));
           setResults(processedResults.slice(0, 5));
         } else {
-          // Handle cases where the response is not an array
           console.error("API did not return an array:", response.data);
           setResults([]);
         }
@@ -203,42 +197,45 @@ const DashboardView = ({ userName = "Learner" }) => {
     };
     fetchResults();
   }, []);
+
   return (
-    <Container
-      as={motion.div}
-      className="py-4 dashboard-container"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      exit="exit"
-    >
-      {/* Floating Background Animation */}
-      <div className="floating-shape shape1" />
-      <div className="floating-shape shape2" />
-      <div className="floating-shape shape3" />
+    <>
+      {/* This new wrapper contains the shapes and sits behind everything */}
+      <div className="background-animation-wrapper">
+        <div className="floating-shape shape1" />
+        <div className="floating-shape shape2" />
+        <div className="floating-shape shape3" />
+      </div>
 
-      {/* Header + Daily Quote */}
-      <motion.div
-        className="dashboard-header text-center text-white mb-3 rounded shadow"
-        variants={itemVariants}
+      {/* The main container no longer holds the shapes */}
+      <Container
+        as={motion.div}
+        className="py-4 dashboard-container"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
       >
-        {/* ENHANCEMENT: Dynamic user name */}
-        <h1 className="fw-bold">Hey {userName} 👋</h1>
-        <p className="lead mb-0">Here’s your learning progress today.</p>
-      </motion.div>
+        <motion.div
+          className="dashboard-header text-center text-white mb-3 rounded shadow"
+          variants={itemVariants}
+        >
+          <h1 className="fw-bold">Hey {userName} 👋</h1>
+          <p className="lead mb-0">Here’s your learning progress today.</p>
+        </motion.div>
 
-      <DailyQuote />
+        <DailyQuote />
 
-      {/* Main Dashboard Content */}
-      <Row className="g-4">
-        <Col lg={8}>
-          <RecentResults results={results} loading={loading} error={error} />
-        </Col>
-        <Col lg={4}>
-          <FreeDemoTests />
-        </Col>
-      </Row>
-    </Container>
+        <Row className="g-4">
+          <Col lg={8}>
+            <RecentResults results={results} loading={loading} error={error} />
+          </Col>
+          <Col lg={4}>
+            <FreeDemoTests />
+          </Col>
+        </Row>
+      </Container>
+    </>
   );
 };
 
