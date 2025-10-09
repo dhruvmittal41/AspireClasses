@@ -173,18 +173,6 @@ const DashboardView = () => {
       icon: FaStar,
       color: "linear-gradient(135deg, #28a745, #20c997)",
     },
-    {
-      label: "Top Subject",
-      value: "Physics",
-      icon: FaTrophy,
-      color: "linear-gradient(135deg, #fd7e14, #ffc107)",
-    },
-    {
-      label: "Streak",
-      value: "5 Days 🔥",
-      icon: FaChartLine,
-      color: "linear-gradient(135deg, #0d6efd, #17a2b8)",
-    },
   ];
 
   return (
