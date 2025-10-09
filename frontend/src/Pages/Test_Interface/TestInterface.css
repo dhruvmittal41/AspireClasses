@@ -7,7 +7,6 @@
  -ms-user-select: none;
  user-select: none;
  height: 100vh;
- /* overflow: hidden;  <-- REMOVE THIS LINE */
  display: flex;
  flex-direction: column;
 }
@@ -98,4 +97,31 @@
     border-radius: 0;
     border: none;
   }
+}
+
+
+/* Add these styles to your TestInterface.css file */
+
+.test-header-row {
+  position: sticky;
+  top: 10px; /* Adjust as needed */
+  z-index: 1025; /* Higher than other elements */
+  backdrop-filter: blur(5px);
+  background-color: rgba(248, 249, 250, 0.85) !important;
+}
+
+.test-title {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Improve option label clicking */
+.option-label .form-check-label {
+  width: 100%;
+  cursor: pointer;
+}
+
+/* Ensure legend colors are consistent */
+.answered-review-legend {
+    background: linear-gradient(45deg, #198754 50%, #ffc107 50%);
 }

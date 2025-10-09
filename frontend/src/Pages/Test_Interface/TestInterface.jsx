@@ -17,7 +17,6 @@ import {
   Modal,
 } from "react-bootstrap";
 import "katex/dist/katex.min.css";
-// Import BlockMath for display-style equations
 import { InlineMath, BlockMath } from "react-katex";
 import "./TestInterface.css";
 
@@ -25,28 +24,22 @@ const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const getOptionKey = (index) => String.fromCharCode(97 + index);
 
-// --- Sub-component: Upgraded KatexRenderer ---
-// This version handles both inline ($...$) and display ($$...$$) math.
+// --- Sub-component: KatexRenderer (No changes) ---
 const KatexRenderer = ({ text }) => {
   if (typeof text !== "string" || !text) {
     return null;
   }
-  // First, split by display math delimiters
   const displayParts = text.split("$$");
-
   return (
     <>
       {displayParts.map((displayPart, displayIndex) => {
-        // If the index is odd, this part was inside $$...$$, so render as display math
         if (displayIndex % 2 === 1) {
           return <BlockMath key={displayIndex} math={displayPart} />;
         } else {
-          // Otherwise, this part might contain inline math. Split by $...$
           const inlineParts = displayPart.split("$");
           return (
             <span key={displayIndex}>
               {inlineParts.map((inlinePart, inlineIndex) => {
-                // If the index is odd, this was inside $...$, so render as inline math
                 if (inlineIndex % 2 === 1) {
                   return <InlineMath key={inlineIndex} math={inlinePart} />;
                 } else {
@@ -62,7 +55,7 @@ const KatexRenderer = ({ text }) => {
 };
 
 const TestInterface = ({ id, onBack }) => {
-  // --- STATE (No changes here) ---
+  // --- STATE (No changes) ---
   const [testData, setTestData] = useState(null);
   const [answers, setAnswers] = useState({});
   const [loading, setLoading] = useState(true);
@@ -74,7 +67,7 @@ const TestInterface = ({ id, onBack }) => {
   const [showLeaveWarning, setShowLeaveWarning] = useState(false);
   const [showNavBlocker, setShowNavBlocker] = useState(false);
 
-  // --- All logic (fetching, submitting, timer, etc.) remains the same ---
+  // --- LOGIC (Fetching, Submitting, Timers are mostly the same) ---
   useEffect(() => {
     const fetchTest = async () => {
       try {
@@ -136,24 +129,21 @@ const TestInterface = ({ id, onBack }) => {
     return () => clearInterval(timerId);
   }, [timeLeft, handleSubmit]);
 
+  // --- Blocker and Warning Modals Logic (No changes) ---
   const blocker = useBlocker(!!testData && !loading);
-
   useEffect(() => {
     if (blocker && blocker.state === "blocked") {
       setShowNavBlocker(true);
     }
   }, [blocker]);
-
   const handleProceedNavigation = async () => {
     await handleSubmit(true);
     if (blocker) blocker.proceed();
   };
-
   const handleCancelNavigation = () => {
     setShowNavBlocker(false);
     if (blocker) blocker.reset();
   };
-
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
@@ -164,7 +154,6 @@ const TestInterface = ({ id, onBack }) => {
     return () =>
       document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, []);
-
   useEffect(() => {
     const handleBeforeUnload = (e) => {
       e.preventDefault();
@@ -174,6 +163,7 @@ const TestInterface = ({ id, onBack }) => {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, []);
 
+  // --- NEW & UPDATED HANDLERS ---
   const handleAnswerChange = (questionId, optionKey) =>
     setAnswers((prev) => ({ ...prev, [questionId]: optionKey }));
 
@@ -186,9 +176,26 @@ const TestInterface = ({ id, onBack }) => {
     setMarkedForReview(newMarked);
   };
 
-  const handleSaveAndNext = () => {
+  const handleSaveAnswer = () => {
+    const questionId = testData.questions[currentQuestionIndex].id;
+    if (markedForReview.has(questionId)) {
+      const newMarked = new Set(markedForReview);
+      newMarked.delete(questionId);
+      setMarkedForReview(newMarked);
+    }
+    // Note: The answer is already saved in the 'answers' state via handleAnswerChange.
+    // This button primarily serves to unmark the question for review.
+  };
+
+  const handleNext = () => {
     if (currentQuestionIndex < testData.questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
   };
 
@@ -197,7 +204,7 @@ const TestInterface = ({ id, onBack }) => {
     if (window.innerWidth < 992) setIsPaletteOpen(false);
   };
 
-  // --- RENDER (with updated KatexRenderer usage) ---
+  // --- RENDER SECTION (Updated Layout) ---
   if (loading) {
     return (
       <Container className="d-flex flex-column justify-content-center align-items-center vh-100">
@@ -250,7 +257,7 @@ const TestInterface = ({ id, onBack }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
-        {/* ... Mobile overlay and toggle button ... */}
+        {/* --- MOBILE OVERLAY & TOGGLE --- */}
         {isPaletteOpen && (
           <div
             className="palette-overlay d-lg-none"
@@ -267,8 +274,26 @@ const TestInterface = ({ id, onBack }) => {
           <FaArrowRight />
         </Button>
 
+        {/* --- NEW: HEADER WITH TITLE AND TIMER --- */}
+        <Row className="mb-3 align-items-center test-header-row bg-light p-2 rounded shadow-sm">
+          <Col>
+            <h4 className="test-title mb-0">{testData?.title}</h4>
+          </Col>
+          <Col xs="auto">
+            <div className="d-flex align-items-center">
+              <span className="fw-bold me-2 d-none d-sm-inline">
+                Time Left:
+              </span>
+              <span className="h4 fw-bold text-primary mb-0">
+                {String(minutes).padStart(2, "0")}:
+                {String(seconds).padStart(2, "0")}
+              </span>
+            </div>
+          </Col>
+        </Row>
+
         <Row className="g-3 main-row">
-          {/* Left: Palette (No changes here) */}
+          {/* --- LEFT: PALETTE (Submit button moved here) --- */}
           <Col
             lg={3}
             md={4}
@@ -293,11 +318,7 @@ const TestInterface = ({ id, onBack }) => {
                     <Col key={q.id}>
                       <Button
                         variant={getStatusVariant(q, index)}
-                        className={`w-100 rounded-circle ${
-                          getStatusVariant(q, index) === "answered-review"
-                            ? "answered-review"
-                            : ""
-                        }`}
+                        className="w-100 rounded-circle"
                         active={currentQuestionIndex === index}
                         onClick={() => goToQuestion(index)}
                       >
@@ -307,8 +328,8 @@ const TestInterface = ({ id, onBack }) => {
                   ))}
                 </Row>
               </Card.Body>
-              <Card.Footer className="bg-light small">
-                <Stack gap={2}>
+              <Card.Footer className="bg-light p-3">
+                <Stack gap={2} className="small mb-3">
                   <div>
                     <span className="legend-box bg-success"></span> Answered
                   </div>
@@ -325,12 +346,21 @@ const TestInterface = ({ id, onBack }) => {
                     Not Visited
                   </div>
                 </Stack>
+                <div className="d-grid">
+                  <Button
+                    variant="danger"
+                    size="lg"
+                    onClick={() => handleSubmit(false)}
+                  >
+                    Submit Test
+                  </Button>
+                </div>
               </Card.Footer>
             </Card>
           </Col>
 
-          {/* Center: Question */}
-          <Col lg={6} md={8}>
+          {/* --- CENTER: QUESTION (Button layout updated) --- */}
+          <Col lg={9} md={8}>
             <Card className="h-100 d-flex flex-column shadow-sm">
               <Card.Header>
                 <Card.Title as="h5">
@@ -339,7 +369,6 @@ const TestInterface = ({ id, onBack }) => {
               </Card.Header>
               <Card.Body className="scrollable-content flex-grow-1">
                 <div className="lead">
-                  {/* Using the upgraded KatexRenderer */}
                   <KatexRenderer text={currentQuestion.question_text} />
                 </div>
                 {currentQuestion.image_url && (
@@ -368,52 +397,49 @@ const TestInterface = ({ id, onBack }) => {
                           onChange={() =>
                             handleAnswerChange(currentQuestion.id, optionKey)
                           }
+                          className="option-label"
                         />
                       );
                     })}
                   </Stack>
                 </Form>
               </Card.Body>
-              <Card.Footer className="d-flex justify-content-between bg-light">
-                <Button variant="warning" onClick={handleMarkReview}>
-                  {markedForReview.has(currentQuestion.id)
-                    ? "Unmark Review"
-                    : "Mark for Review"}
-                </Button>
-                <Button variant="success" onClick={handleSaveAndNext}>
-                  Save & Next
-                </Button>
-              </Card.Footer>
-            </Card>
-          </Col>
-
-          {/* Right: Timer & Submit (No changes here) */}
-          <Col lg={3} className="d-none d-lg-block">
-            <Card className="h-100 d-flex flex-column text-center shadow-sm">
-              <Card.Header as="h5">Time Left</Card.Header>
-              <Card.Body className="d-flex flex-column justify-content-center">
-                <div className="display-4 fw-bold text-primary">
-                  {String(minutes).padStart(2, "0")}:
-                  {String(seconds).padStart(2, "0")}
-                </div>
-              </Card.Body>
-              <Card.Footer className="bg-light">
-                <div className="d-grid">
+              <Card.Footer className="bg-light p-3">
+                <Stack
+                  direction="horizontal"
+                  gap={2}
+                  className="flex-wrap justify-content-between"
+                >
                   <Button
-                    variant="danger"
-                    size="lg"
-                    onClick={() => handleSubmit(false)}
+                    variant="secondary"
+                    onClick={handlePrevious}
+                    disabled={currentQuestionIndex === 0}
                   >
-                    Submit Test
+                    Previous
                   </Button>
-                </div>
+                  <Button variant="warning" onClick={handleMarkReview}>
+                    {markedForReview.has(currentQuestion.id)
+                      ? "Unmark Review"
+                      : "Mark for Review"}
+                  </Button>
+                  <Button variant="info" onClick={handleSaveAnswer}>
+                    Save Answer
+                  </Button>
+                  <Button
+                    variant="success"
+                    onClick={handleNext}
+                    disabled={currentQuestionIndex === questions.length - 1}
+                  >
+                    Next
+                  </Button>
+                </Stack>
               </Card.Footer>
             </Card>
           </Col>
         </Row>
       </Container>
 
-      {/* Modals (No changes here) */}
+      {/* --- MODALS (No changes) --- */}
       <Modal
         show={showLeaveWarning}
         onHide={() => setShowLeaveWarning(false)}
