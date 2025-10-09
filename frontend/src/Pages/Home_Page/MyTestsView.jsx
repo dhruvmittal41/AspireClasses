@@ -108,11 +108,6 @@ const MyTestsView = () => {
                   <Card.Text className="text-muted mb-3">
                     {test.num_questions} Questions
                   </Card.Text>
-                  <div className="syllabus-text mb-3">
-                    {test.syllabus
-                      ? test.syllabus.slice(0, 100) + "..."
-                      : "No syllabus info"}
-                  </div>
                   <Button
                     as={motion.button}
                     variant="primary"
