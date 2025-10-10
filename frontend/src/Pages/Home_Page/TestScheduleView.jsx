@@ -412,7 +412,7 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
                 <Button variant="secondary" onClick={handleCloseBundleModal}>
                   Close
                 </Button>
-                <Button variant="success" size="lg" onClick={handleBuyBundle}>
+                <Button variant="success" size="lg" onClick={handleJoinTest}>
                   Buy Bundle
                 </Button>
               </Modal.Footer>
