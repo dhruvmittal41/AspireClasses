@@ -12,6 +12,8 @@ import {
   FaFacebook,
 } from "react-icons/fa";
 import { TfiAgenda } from "react-icons/tfi";
+import upwards from "./Upwards.svg";
+import certificate from "./certificate.svg";
 
 // React-Bootstrap Components
 import {
@@ -29,7 +31,6 @@ import {
 import logo from "./logo.png";
 
 import "./Landing_Page.css";
-import ParallaxBackground from "./ParallaxBackground";
 
 // Reusable animation variants (unchanged)
 const sectionFadeIn = {
@@ -110,61 +111,79 @@ const AppNavbar = () => {
 };
 
 // HERO COMPONENT: ParallaxBackground is now INSIDE the hero section
+
 const Hero = () => (
-  <motion.div
-    id="home"
-    className="hero-section d-flex align-items-center text-center"
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ duration: 1 }}
-  >
-    <ParallaxBackground />
-    <Container style={{ position: "relative", zIndex: 2 }}>
-      <motion.h1
-        className="display-3 fw-bold"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2, duration: 0.8 }}
-      >
-        Unlock Your Potential
-        <br />
-        Conquer Your Entrance Exam
-      </motion.h1>
-      <motion.p
-        className="lead my-4"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.4, duration: 0.8 }}
-      >
-        High-quality, affordable test series crafted by successful students to
-        empower your journey to top schools.
-      </motion.p>
-      <motion.div
-        className="d-grid gap-2 d-sm-flex justify-content-sm-center"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.6, duration: 0.8 }}
-      >
-        <Button
-          as={Link}
-          to="/register"
-          variant="primary"
-          size="lg"
-          className="px-4 gap-3"
+  <section id="home" className="hero-section py-5">
+    <Container>
+      <Row className="align-items-center">
+        {/* === LEFT TEXT COLUMN === */}
+        <Col xs={12} md={7}>
+          <motion.h1
+            className="display-3 fw-bold text-md-start text-center"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+          >
+            Unlock Your Potential
+            <br />
+            Conquer Your Entrance Exam
+          </motion.h1>
+
+          <motion.p
+            className="lead my-4 text-md-start text-center"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+          >
+            High-quality, affordable test series crafted by successful students
+            to empower your journey to top schools.
+          </motion.p>
+
+          <motion.div
+            className="d-grid gap-2 d-sm-flex justify-content-sm-start justify-content-center"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
+          >
+            <Button
+              as={Link}
+              to="/register"
+              variant="primary"
+              size="lg"
+              className="px-4 gap-3"
+            >
+              Start Your Test Series
+            </Button>
+            <Button
+              href="#test-series"
+              variant="success"
+              size="lg"
+              className="px-4"
+            >
+              Explore Series
+            </Button>
+          </motion.div>
+        </Col>
+
+        {/* === RIGHT IMAGE COLUMN === */}
+        <Col
+          xs={12}
+          md={5}
+          className="d-flex justify-content-center justify-content-md-end mt-4 mt-md-0"
         >
-          Start Your Test Series
-        </Button>
-        <Button
-          href="#test-series"
-          variant="primary btn-success"
-          size="lg"
-          className="px-4 bg-color-green"
-        >
-          Explore Series
-        </Button>
-      </motion.div>
+          <motion.img
+            src={certificate}
+            alt="Upwards"
+            className="img-fluid"
+            style={{ maxWidth: "250px", height: "auto" }}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
+          />
+        </Col>
+      </Row>
     </Container>
-  </motion.div>
+  </section>
 );
 
 const WhyChooseUs = () => (

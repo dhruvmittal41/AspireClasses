@@ -42,7 +42,7 @@ html {
 .hero-section {
   min-height: 100vh;
   padding-top: 80px; /* Offset for navbar height */
-  position: relative;  /* Crucial for positioning the floating elements inside it */
+  position: relative;  
   overflow: hidden;    /* Prevents elements from spilling out */
   background-color: #f8f9fa; /* A soft fallback background color */
 }
