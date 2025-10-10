@@ -13,7 +13,7 @@ import {
 } from "react-icons/fa";
 import { TfiAgenda } from "react-icons/tfi";
 import upwards from "./Upwards.svg";
-import certificate from "./certificate.svg";
+import certificate from "./Certificate.svg";
 
 // React-Bootstrap Components
 import {
