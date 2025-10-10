@@ -1,3 +1,5 @@
+// src/TestScheduleView.jsx
+
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
@@ -9,12 +11,13 @@ import {
   Alert,
   Stack,
   Modal,
+  Badge,
 } from "react-bootstrap";
-import { ClockIcon, CalendarIcon } from "./Icons"; // Assuming these are valid local components
+import { ClockIcon, CalendarIcon } from "./Icons";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
-// Animation Variants
+// --- Animation Variants ---
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
@@ -25,7 +28,7 @@ const itemVariants = {
   visible: { y: 0, opacity: 1, transition: { type: "spring" } },
 };
 
-// --- Main TestScheduleView Component ---
+// --- Main Component ---
 const TestScheduleView = ({ onNavigateToProfile }) => {
   const [upcomingTests, setUpcomingTests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -40,7 +43,7 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
         });
         setUpcomingTests(response.data);
       } catch (err) {
-        setError("Failed to fetch the test schedule. Please try again later.");
+        setError("Failed to fetch test schedule. Please try again later.");
         console.error("Error fetching data:", err);
       } finally {
         setIsLoading(false);
@@ -49,13 +52,12 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
     fetchUpcomingTests();
   }, []);
 
-  // This handler now calls the prop function passed down from HomePage
   const handleGoToProfile = () => {
-    setShowProfileModal(false); // Close the modal
-    onNavigateToProfile(); // Call the function to switch the view
+    setShowProfileModal(false);
+    onNavigateToProfile();
   };
 
-  // --- Render Logic ---
+  // --- Render States ---
   if (isLoading) {
     return (
       <div
@@ -63,7 +65,7 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
         style={{ minHeight: "50vh" }}
       >
         <Spinner animation="border" variant="primary" />
-        <p className="mt-3">Loading Schedule...</p>
+        <p className="mt-3 text-muted">Loading Schedule...</p>
       </div>
     );
   }
@@ -81,8 +83,11 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
+        className="px-md-5"
       >
-        <h1 className="display-5 mb-4">Upcoming Test Schedule</h1>
+        <h1 className="display-5 fw-bold mb-4 text-white">
+          Upcoming Test Schedule
+        </h1>
 
         <AnimatePresence>
           {upcomingTests.length > 0 ? (
@@ -93,23 +98,28 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
                   key={test.id}
                   variants={itemVariants}
                   layout
-                  className="shadow-sm bg-dark text-white"
+                  className="shadow-lg border-0 rounded-4 overflow-hidden bg-dark text-light"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <Card.Header>
-                    <Card.Title as="h5" className="mb-2">
+                  {/* Header Section */}
+                  <div
+                    className="px-4 py-3"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #007bff 0%, #6610f2 100%)",
+                    }}
+                  >
+                    <h4 className="fw-semibold mb-1 text-white">
                       {test.test_name}
-                    </Card.Title>
-                    <div className="d-flex flex-wrap gap-3 text-success small">
+                    </h4>
+                    <div className="d-flex flex-wrap gap-3 text-white-50 small">
                       <span className="d-flex align-items-center">
                         <CalendarIcon />
                         <span className="ms-2">
                           {new Date(test.date_scheduled).toLocaleDateString(
                             "en-GB",
-                            {
-                              day: "numeric",
-                              month: "long",
-                              year: "numeric",
-                            }
+                            { day: "numeric", month: "long", year: "numeric" }
                           )}
                         </span>
                       </span>
@@ -120,17 +130,44 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
                         </span>
                       </span>
                     </div>
-                  </Card.Header>
-                  <Card.Body>
-                    <h6 className="text-success">Syllabus:</h6>
-                    <p>{test.subject_topic}</p>
+                  </div>
+
+                  {/* Body Section */}
+                  <Card.Body className="p-4">
+                    <h6 className="text-success text-uppercase mb-3">
+                      Syllabus
+                    </h6>
+                    {test.subject_topic ? (
+                      <div className="d-flex flex-wrap gap-2">
+                        {test.subject_topic.split(/[,.-]/).map((topic, idx) => (
+                          <Badge
+                            key={idx}
+                            bg="secondary"
+                            className="px-3 py-2 text-light"
+                          >
+                            {topic.trim()}
+                          </Badge>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-muted small">
+                        No syllabus information available.
+                      </p>
+                    )}
                   </Card.Body>
-                  <Card.Footer className="text-end">
+
+                  {/* Footer Section */}
+                  <Card.Footer className="bg-transparent border-0 text-end pb-4 pe-4">
                     <Button
                       as={motion.button}
-                      variant="primary"
+                      variant="outline-success"
+                      size="lg"
                       onClick={() => setShowProfileModal(true)}
-                      whileHover={{ scale: 1.05 }}
+                      whileHover={{
+                        scale: 1.05,
+                        backgroundColor: "#28a745",
+                        color: "#fff",
+                      }}
                       whileTap={{ scale: 0.95 }}
                     >
                       Join Test
@@ -140,8 +177,12 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
               ))}
             </Stack>
           ) : (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <Alert variant="info" className="text-center">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center mt-5"
+            >
+              <Alert variant="info" className="p-4 fs-5">
                 No upcoming tests have been scheduled. Check back soon!
               </Alert>
             </motion.div>
@@ -159,7 +200,7 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
           <Modal.Title>Complete Your Profile</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>
+          <p className="mb-0">
             To ensure the best experience and proper test assignment, please
             complete your profile before joining the test.
           </p>
