@@ -65,6 +65,7 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedTest, setSelectedTest] = useState(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showBundleModal, setShowBundleModal] = useState(false); // State for the new bundle modal
 
   useEffect(() => {
     const fetchUpcomingTests = async () => {
@@ -100,8 +101,17 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
   };
 
   const handleViewBundle = () => {
-    // This could navigate to a bundle purchase page or show another modal
-    alert("Navigating to the AMU 9th Entrance Test bundle page!");
+    setShowBundleModal(true); // Open the new bundle modal
+  };
+
+  const handleCloseBundleModal = () => {
+    setShowBundleModal(false); // Close the new bundle modal
+  };
+
+  const handleBuyBundle = () => {
+    // In a real application, this would redirect to a payment gateway
+    alert("Redirecting to the purchase page for the bundle!");
+    setShowBundleModal(false);
   };
 
   const handleGoToProfile = () => {
@@ -136,21 +146,16 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="px-md-4"
+        className="px-md-4 py-5"
       >
         <h1 className="display-5 fw-bold mb-3">Test Dashboard</h1>
         <p className="lead text-muted mb-5">
           Find all your tests and special offers in one place.
         </p>
 
-        {/* --- Featured Bundle Section --- */}
-        <h2 className="fw-bold mb-4">Featured Bundles</h2>
-        <Row className="mb-5">
+        <Row xs={1} sm={2} md={3} lg={4} className="g-4">
+          {/* --- Featured Bundle Card --- */}
           <Col
-            xs={12}
-            sm={6}
-            md={4}
-            lg={3}
             as={motion.div}
             variants={itemVariants}
             whileHover={{ scale: 1.03, y: -5 }}
@@ -188,14 +193,11 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
               </Card.Body>
             </Card>
           </Col>
-        </Row>
 
-        {/* --- Upcoming Tests Section --- */}
-        <h2 className="fw-bold mb-4">Upcoming Tests</h2>
-        <AnimatePresence>
-          {upcomingTests.length > 0 ? (
-            <Row xs={1} sm={2} md={3} lg={4} className="g-4">
-              {upcomingTests.map((test) => (
+          {/* --- Upcoming Tests List --- */}
+          <AnimatePresence>
+            {upcomingTests.length > 0 ? (
+              upcomingTests.map((test) => (
                 <Col
                   key={test.id}
                   as={motion.div}
@@ -204,15 +206,22 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
                   transition={{ type: "spring", stiffness: 300 }}
                 >
                   <Card
-                    className="h-100 shadow-sm border-light rounded-4 overflow-hidden"
+                    className="h-100 shadow border-0 rounded-4 overflow-hidden text-white"
                     role="button"
                     onClick={() => handleViewDetails(test)}
+                    style={{
+                      background: "linear-gradient(45deg, #007bff, #6610f2)",
+                    }}
                   >
                     <Card.Body className="d-flex flex-column p-4">
                       <Card.Title className="fw-bold h5 mb-3">
                         {test.test_name}
                       </Card.Title>
-                      <Stack gap={2} className="text-muted small mb-4">
+                      <Stack
+                        gap={2}
+                        className="small mb-4"
+                        style={{ opacity: 0.9 }}
+                      >
                         <div className="d-flex align-items-center">
                           <CalendarIcon />{" "}
                           <span className="ms-2">
@@ -227,28 +236,30 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
                         </div>
                       </Stack>
                       <Button
-                        variant="outline-primary"
-                        className="mt-auto align-self-start"
+                        variant="light"
+                        className="mt-auto align-self-start fw-bold"
                       >
                         View Details
                       </Button>
                     </Card.Body>
                   </Card>
                 </Col>
-              ))}
-            </Row>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center mt-5"
-            >
-              <Alert variant="info" className="p-4 fs-5">
-                No upcoming tests have been scheduled. Check back soon!
-              </Alert>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              ))
+            ) : (
+              <Col xs={12}>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center mt-5"
+                >
+                  <Alert variant="info" className="p-4 fs-5">
+                    No upcoming tests have been scheduled. Check back soon!
+                  </Alert>
+                </motion.div>
+              </Col>
+            )}
+          </AnimatePresence>
+        </Row>
       </Container>
 
       {/* Details Modal */}
@@ -293,7 +304,6 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
               </Modal.Header>
               <Modal.Body className="p-4">
                 <Stack gap={4}>
-                  {/* Key Details Section */}
                   <div className="d-flex flex-wrap justify-content-around text-center border rounded p-3 bg-light">
                     <div className="p-2">
                       <CalendarIcon />
@@ -310,8 +320,6 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
                       </p>
                     </div>
                   </div>
-
-                  {/* Syllabus Section */}
                   <div>
                     <h5 className="fw-semibold d-flex align-items-center mb-3">
                       <BookIcon /> <span className="ms-2">Syllabus</span>
@@ -354,7 +362,66 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
         )}
       </AnimatePresence>
 
-      {/* Profile Completion Modal (Unchanged) */}
+      {/* Bundle Purchase Modal */}
+      <AnimatePresence>
+        {showBundleModal && (
+          <motion.div
+            key="bundle-modal-backdrop"
+            variants={modalBackdropVariants}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0,0,0,0.5)",
+              zIndex: 1051,
+            }}
+          >
+            <Modal
+              show={showBundleModal}
+              onHide={handleCloseBundleModal}
+              centered
+              as={motion.div}
+              key="bundle-modal-content"
+              variants={modalContentVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              style={{ backgroundColor: "transparent", border: "none" }}
+            >
+              <Modal.Header
+                closeButton
+                className="bg-primary text-white border-0"
+              >
+                <Modal.Title className="fw-bold">
+                  AMU 9th Entrance Test Series
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body className="bg-white rounded-bottom">
+                <p>
+                  This bundle contains a series of 10 selectively and
+                  exclusively made tests for the AMU 9th entrance examination.
+                </p>
+                <h4 className="text-end fw-bold mt-4">Price: ₹799</h4>
+              </Modal.Body>
+              <Modal.Footer className="bg-white rounded-bottom border-0">
+                <Button variant="secondary" onClick={handleCloseBundleModal}>
+                  Close
+                </Button>
+                <Button variant="success" size="lg" onClick={handleBuyBundle}>
+                  Buy Bundle
+                </Button>
+              </Modal.Footer>
+            </Modal>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Profile Completion Modal */}
       <Modal
         show={showProfileModal}
         onHide={() => setShowProfileModal(false)}
