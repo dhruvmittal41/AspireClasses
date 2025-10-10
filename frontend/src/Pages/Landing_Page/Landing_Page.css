@@ -28,7 +28,7 @@
 /* Hero Section Height */
 .hero-section {
   min-height: 100vh;
-  padding-top: 60px; /* Offset for navbar height */
+  padding-top: 80px; /* Offset for navbar height */
 }
 
 
@@ -159,7 +159,7 @@ html {
 
 /* --- First Batch --- */
 .floating-element:nth-child(1) {
- width: 60px; height: 60px;
+ width: 80px; height: 80px;
  top: 15%; left: 10%;
  animation-duration: 18s;
  animation-delay: 0s;
@@ -236,7 +236,7 @@ html {
  animation-delay: 0.5s;
 }
 .floating-element:nth-child(13) {
- width: 60px; height: 60px;
+ width: 80px; height: 80px;
  top: 75%; left: 78%;
  animation-duration: 24s;
  animation-delay: 9s;
