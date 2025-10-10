@@ -114,7 +114,10 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
         animate="visible"
         className="px-md-4"
       >
-        <h1 className="display-5 fw-bold mb-4 text-white">Upcoming Tests</h1>
+        <h1 className="display-5 fw-bold mb-4 text-white">
+          Get All Your Tests in One place!!!
+        </h1>
+        <h2 className="display-5 fw-bold mb-4 text-white">Upcoming Tests</h2>
 
         <AnimatePresence>
           {upcomingTests.length > 0 ? (
