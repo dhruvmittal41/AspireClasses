@@ -10,7 +10,7 @@
 
 /* Custom Navbar Style for glass effect */
 .navbar-custom {
-  background-color: rgba(237, 232, 208, 0.7) !important;
+  background-color: rgba(214, 208, 177, 0.7) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);  
 }
