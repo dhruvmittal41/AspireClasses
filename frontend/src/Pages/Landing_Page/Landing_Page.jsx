@@ -1,5 +1,3 @@
-// src/landing_page.jsx
-
 import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
@@ -25,23 +23,13 @@ import {
   Card,
   Button,
   Carousel,
-  Accordion, // 1. Import Carousel
+  Accordion,
 } from "react-bootstrap";
 
 import logo from "./logo.png";
-import e1 from "./open_book.png";
-import e2 from "./microscope.png";
-import e3 from "./graduation_Cap.png";
-import e4 from "./Globe.png";
-import e5 from "./Compass.png";
-import e6 from "./bulb.png";
-import e7 from "./World_Map.png";
-import e8 from "./Rocket.png";
-import e9 from "./Magnet.png";
-import e10 from "./Test_Tube.png";
-import e11 from "./DNA.png";
-import e12 from "./Coin.png";
-import "./Landing_Page.css"; // We'll use a much smaller CSS file
+
+import "./Landing_Page.css";
+import ParallaxBackground from "./ParallaxBackground";
 
 // Reusable animation variants (unchanged)
 const sectionFadeIn = {
@@ -73,7 +61,7 @@ const AnimatedSection = ({ children, id }) => {
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
       variants={sectionFadeIn}
-      className="py-5" // Bootstrap padding utility
+      className="py-5"
     >
       {children}
     </motion.section>
@@ -84,23 +72,17 @@ const AnimatedSection = ({ children, id }) => {
 
 const AppNavbar = () => {
   return (
-    <Navbar
-      variant="dark"
-      expand="lg"
-      sticky="top"
-      className="navbar-custom" // Custom class for backdrop filter
-    >
+    <Navbar variant="dark" expand="lg" sticky="top" className="navbar-custom">
       <Container>
         <Navbar.Brand href="/#home">
           <img src={logo} alt="PrepSphere Logo" className="nav-logo-img" />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="ms-auto align-items-center">
+          <Nav className="ms-auto align-items-center text">
             <Nav.Link href="/#home">Home</Nav.Link>
             <Nav.Link href="/#why-us">Why Us</Nav.Link>
             <Nav.Link href="/#features">Features</Nav.Link>
-            {/* Changed href to point to the new carousel section */}
             <Nav.Link href="/#test-series">Test Series</Nav.Link>
             <Nav.Link href="/#pricing">Pricing</Nav.Link>
             <Nav.Link href="/#contact">Contact</Nav.Link>
@@ -127,6 +109,7 @@ const AppNavbar = () => {
   );
 };
 
+// HERO COMPONENT: ParallaxBackground is now INSIDE the hero section
 const Hero = () => (
   <motion.div
     id="home"
@@ -135,29 +118,8 @@ const Hero = () => (
     animate={{ opacity: 1 }}
     transition={{ duration: 1 }}
   >
-    {/* --- ✨ START: ADDED FLOATING ELEMENTS CONTAINER --- */}
-    <div className="floating-elements-container">
-      {/* TODO: Replace these divs with your actual image or SVG components.
-        For example: <img src={atomIcon} className="floating-element" />
-        The CSS will target them using :nth-child().
-      */}
-      <img src={e1} className="floating-element" />
-      <img src={e2} className="floating-element" />
-      <img src={e3} className="floating-element" />
-      <img src={e4} className="floating-element" />
-      <img src={e5} className="floating-element" />
-      <img src={e6} className="floating-element" />
-      <img src={e7} className="floating-element" />
-      <img src={e8} className="floating-element" />
-      <img src={e9} className="floating-element" />
-      <img src={e10} className="floating-element" />
-      <img src={e11} className="floating-element" />
-      <img src={e12} className="floating-element" />
-    </div>
-
-    <Container style={{ position: "relative", zIndex: 1 }}>
-      {" "}
-      {/* Ensure content is on top */}
+    <ParallaxBackground />
+    <Container style={{ position: "relative", zIndex: 2 }}>
       <motion.h1
         className="display-3 fw-bold"
         initial={{ y: 20, opacity: 0 }}
@@ -196,7 +158,7 @@ const Hero = () => (
           href="#test-series"
           variant="primary btn-success"
           size="lg"
-          className="px-4 bg-color-green    "
+          className="px-4 bg-color-green"
         >
           Explore Series
         </Button>
@@ -245,60 +207,9 @@ const WhyChooseUs = () => (
           </Col>
         ))}
       </Row>
-      {/* <CredibilitySection /> */}
     </Container>
   </AnimatedSection>
 );
-
-const CredibilitySection = () => (
-  <div className="mt-5">
-    <h3 className="text-center fs-2 mb-4">From Those Who've Walked the Path</h3>
-    <Row className="g-4 justify-content-center">
-      <Col md={5}>
-        <Card className="glass-card">
-          <Card.Body className="text-center">
-            <img
-              src="https://i.pravatar.cc/100?img=12"
-              alt="Student avatar 1"
-              className="avatar mb-3"
-            />
-            <blockquote className="blockquote mb-2">
-              <p>
-                "The mock tests were almost identical to the real exam. It made
-                all the difference."
-              </p>
-            </blockquote>
-            <footer className="blockquote-footer">
-              Aisha K., <cite title="Source Title">AMU Class IX</cite>
-            </footer>
-          </Card.Body>
-        </Card>
-      </Col>
-      <Col md={5}>
-        <Card className="glass-card">
-          <Card.Body className="text-center">
-            <img
-              src="https://i.pravatar.cc/100?img=5"
-              alt="Student avatar 2"
-              className="avatar mb-3"
-            />
-            <blockquote className="blockquote mb-2">
-              <p>
-                "The analytics helped me pinpoint my weak areas. Invaluable for
-                my JMI prep!"
-              </p>
-            </blockquote>
-            <footer className="blockquote-footer">
-              Rohan S., <cite title="Source Title">JMI Aspirant</cite>
-            </footer>
-          </Card.Body>
-        </Card>
-      </Col>
-    </Row>
-  </div>
-);
-
-// Add this new component to your landing_page.jsx file
 
 const faqData = [
   {
@@ -391,7 +302,6 @@ const Features = () => (
   </AnimatedSection>
 );
 
-// 2. --- NEW CAROUSEL COMPONENT ---
 const testSeriesData = [
   {
     title: "AMU 9th Entrance Test Series",
@@ -464,9 +374,6 @@ const TestSeriesCarousel = () => (
     </Container>
   </AnimatedSection>
 );
-
-// --- This component is now replaced by the Carousel ---
-// const ExamsOffered = () => ( ... );
 
 const Pricing = () => (
   <AnimatedSection id="pricing">
@@ -579,7 +486,6 @@ const LandingPage = () => {
         <Hero />
         <WhyChooseUs />
         <Features />
-        {/* 3. Replaced the old section with the new carousel */}
         <TestSeriesCarousel />
         <Pricing />
         <FAQ />

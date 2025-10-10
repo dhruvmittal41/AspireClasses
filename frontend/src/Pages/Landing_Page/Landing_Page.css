@@ -2,35 +2,50 @@
 
 /* --- 1. Global & Custom Variables --- */
 :root {
-  --bs-primary-rgb: 59, 130, 246;   /* Overrides Bootstrap's default blue */
-  --bs-secondary-rgb: 16, 185, 129; /* Overrides Bootstrap's default gray */
+  --bs-primary-rgb: 59, 130, 246; /* Overrides Bootstrap's default blue */
+  --bs-secondary-rgb: 0, 0, 0;     /* Overrides Bootstrap's default gray */
+}
+
+/* Enable Smooth Scrolling for the entire page */
+html {
+  scroll-behavior: smooth;
 }
 
 /* --- 2. Custom Component Styles --- */
 
-/* Custom Navbar Style for glass effect */
+/* Navbar: Glassmorphism effect */
 .navbar-custom {
-  background-color: rgba(214, 208, 177, 0.7) !important;
+  background-color: rgba(187, 172, 121, 0.7) !important; /* Lighter glass effect */
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);  
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.navbar-nav .nav-link {
+  color: rgb(0, 0, 0) !important;
+  font-weight: 500;
+  /* A more subtle shadow for better readability */
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .nav-logo-img {
-  height: 100px; /* Responsive height with clamp is also an option */
+  height: 90px; /* Slightly adjusted for better alignment */
   width: auto;
   transition: transform 0.3s ease;
 }
+
 .nav-logo-img:hover {
   transform: scale(1.08);
 }
 
-
-/* Hero Section Height */
+/* Hero Section: Main container */
 .hero-section {
   min-height: 100vh;
   padding-top: 80px; /* Offset for navbar height */
+  position: relative;  /* Crucial for positioning the floating elements inside it */
+  overflow: hidden;    /* Prevents elements from spilling out */
+  background-color: #f8f9fa; /* A soft fallback background color */
 }
-
 
 /* Reusable Glassmorphism Card Style */
 .glass-card {
@@ -38,6 +53,7 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.75rem; /* Softer corners */
 }
 
 .card-icon {
@@ -45,7 +61,6 @@
   margin-bottom: 1rem;
   color: var(--bs-primary);
 }
-
 
 /* Testimonial Avatar */
 .avatar {
@@ -56,25 +71,14 @@
   object-fit: cover;
 }
 
-
-
-/* Add this to your existing Landing_Page.css file */
-
-/* 1. Enable Smooth Scrolling for anchor links */
-html {
-  scroll-behavior: smooth;
-}
-
-/* 2. Styling for the new Test Series Carousel */
+/* Test Series Carousel */
 .carousel-item-custom {
-  /* Provides spacing and a minimum height for each slide */
   padding: 5rem 2rem;
   min-height: 450px;
-  background-color: #f8f9fa; /* A light background for slides */
-  color: #333; /* Darker text for readability */
+  background-color: #f8f9fa;
+  color: #333;
 }
 
-/* Make carousel content responsive and well-spaced */
 .carousel-content {
   display: flex;
   flex-direction: column;
@@ -86,170 +90,19 @@ html {
 .carousel-content h3 {
   font-size: 2.2rem;
   font-weight: bold;
-  color: var(--bs-primary); /* Use your primary theme color */
+  color: var(--bs-primary);
   margin-bottom: 1rem;
 }
 
 .carousel-content .lead {
-  max-width: 800px; /* Constrain description width for better reading */
+  max-width: 800px;
   margin-bottom: 1.5rem;
 }
 
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-  /* Make default controls dark so they are visible on the light background */
+  /* Make default controls dark for visibility on light backgrounds */
   filter: invert(1) grayscale(100);
 }
 
 
-
-
-
-/* --- Floating Elements Animation --- */
-
-/* 1. Make the hero section a positioning container */
-.hero-section {
- position: relative; /* Crucial for positioning the elements inside it */
- overflow: hidden;  /* Prevents elements from spilling out */
-}
-
-/* 2. The container for all floating elements */
-.floating-elements-container {
- position: absolute;
- top: 0;
- left: 0;
- width: 100%;
- height: 100%;
- z-index: 0; /* Sits behind the hero content but above the background */
-  pointer-events: none; /* Allows clicks to pass through to elements behind it */
-}
-
-/* 3. Base style for a single floating element */
-.floating-element {
- position: absolute;
- background: rgba(255, 255, 255, 0.15); /* Placeholder style */
- border-radius: 15%;
- display: block;
- 
- /* A more dynamic and fluid animation */
- animation: float 20s ease-in-out infinite;
-}
-
-/* 4. The improved floating animation keyframes */
-/* This version adds horizontal drift for a more natural effect */
-@keyframes float {
- 0% {
-  transform: translate(0px, 0px) rotate(0deg);
- }
-  25% {
-    transform: translate(-15px, 20px) rotate(-5deg);
-  }
- 50% {
-  transform: translate(10px, -30px) rotate(10deg);
- }
-  75% {
-    transform: translate(20px, 15px) rotate(5deg);
-  }
- 100% {
-  transform: translate(0px, 0px) rotate(0deg);
- }
-}
-
-/* 5. Create unique variations for each element to scatter them naturally */
-
-/* --- First Batch --- */
-.floating-element:nth-child(1) {
- width: 80px; height: 80px;
- top: 15%; left: 10%;
- animation-duration: 18s;
- animation-delay: 0s;
-}
-.floating-element:nth-child(2) {
- width: 80px; height: 80px;
- top: 20%; left: 85%;
- animation-duration: 22s;
- animation-delay: 3s;
-}
-.floating-element:nth-child(3) {
- width: 40px; height: 40px;
- top: 70%; left: 5%;
- animation-duration: 25s;
- animation-delay: 2s;
-}
-.floating-element:nth-child(4) {
- width: 90px; height: 90px;
- top: 80%; left: 90%;
- animation-duration: 15s; /* Faster */
- animation-delay: 5s;
-}
-.floating-element:nth-child(5) {
- width: 50px; height: 50px;
- top: 50%; left: 50%;
-  opacity: 0.8;
- animation-duration: 20s;
- animation-delay: 1.5s;
-}
-.floating-element:nth-child(6) {
- width: 75px; height: 75px;
- top: 85%; left: 30%;
- animation-duration: 23s;
- animation-delay: 6s;
-}
-
-/* --- Second Batch (Corrected Duplicates) --- */
-.floating-element:nth-child(7) {
- width: 45px; height: 45px;
- top: 10%; left: 40%;
-  opacity: 0.9;
- animation-duration: 28s; /* Slower */
- animation-delay: 4s;
-}
-.floating-element:nth-child(8) {
- width: 65px; height: 65px;
- top: 40%; left: 75%;
- animation-duration: 19s;
- animation-delay: 7s;
-}
-.floating-element:nth-child(9) {
- width: 85px; height: 85px;
- top: 65%; left: 60%;
- animation-duration: 26s;
- animation-delay: 2.5s;
-}
-.floating-element:nth-child(10) {
- width: 35px; height: 35px;
- top: 88%; left: 8%;
- animation-duration: 30s; /* Very slow */
- animation-delay: 8s;
-}
-.floating-element:nth-child(11) {
- width: 55px; height: 55px;
- top: 5%; left: 70%;
- animation-duration: 16s;
- animation-delay: 5.5s;
-}
-.floating-element:nth-child(12) {
- width: 100px; height: 100px;
- top: 45%; left: 15%;
-  opacity: 0.7;
- animation-duration: 21s;
- animation-delay: 0.5s;
-}
-.floating-element:nth-child(13) {
- width: 80px; height: 80px;
- top: 75%; left: 78%;
- animation-duration: 24s;
- animation-delay: 9s;
-}
-.floating-element:nth-child(14) {
- width: 50px; height: 50px;
- top: 25%; left: 25%;
- animation-duration: 17s;
- animation-delay: 3.5s;
-}
-.floating-element:nth-child(15) {
- width: 70px; height: 70px;
- top: 60%; left: 95%;
- animation-duration: 20s;
- animation-delay: 6.5s;
-}
