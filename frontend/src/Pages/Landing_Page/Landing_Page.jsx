@@ -15,7 +15,7 @@ import { TfiAgenda } from "react-icons/tfi";
 import upwards from "./Upwards.svg";
 import certificate from "./Certificate.svg";
 import Learning from "./Learning.svg";
-
+import onlinetest from "./online_test.svg";
 // React-Bootstrap Components
 import {
   Navbar,
@@ -402,16 +402,58 @@ const testSeriesData = [
 const TestSeriesCarousel = () => (
   <AnimatedSection id="test-series">
     <Container>
+      {/* === Section Title === */}
       <h2 className="text-center display-5 mb-5">Explore Our Test Series</h2>
+      {/* === SVG + Text Section Below Carousel === */}
+      <Row className="align-items-center mt-5">
+        {/* Left SVG */}
+        <Col
+          xs={12}
+          md={6}
+          className="d-flex justify-content-center justify-content-md-start mb-4 mb-md-0"
+        >
+          <motion.img
+            src={onlinetest}
+            alt="Exclusive Test Series Illustration"
+            className="img-fluid"
+            style={{ maxWidth: "350px", height: "auto" }}
+            initial={{ x: -40, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          />
+        </Col>
+
+        {/* Right Text */}
+        <Col xs={12} md={6} className="text-center text-md-start">
+          <motion.h2
+            className="display-6 fw-bold"
+            initial={{ x: 40, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            Exclusive Online Test Series
+          </motion.h2>
+          <p className="lead text-muted mt-3">
+            Designed for your best preparation — our test series replicate real
+            exam patterns, sharpen your timing, and provide insights to improve
+            every attempt.
+          </p>
+        </Col>
+      </Row>
+      {/* === Carousel === */}
       <Row className="justify-content-center">
         <Col lg={10} md={12}>
-          <Card className="shadow-lg">
+          <Card className="shadow-lg border-0">
             <Carousel fade interval={5000} indicators={false}>
               {testSeriesData.map((series, index) => (
                 <Carousel.Item key={index} className="carousel-item-custom">
-                  <div className="carousel-content text-center">
-                    <h3>{series.title}</h3>
-                    <p className="lead px-md-5">{series.description}</p>
+                  <div className="carousel-content text-center p-4 p-md-5">
+                    <h3 className="fw-bold">{series.title}</h3>
+                    <p className="lead px-md-5 text-muted">
+                      {series.description}
+                    </p>
                     <ul className="list-unstyled my-4">
                       {series.features.map((feature, fIndex) => (
                         <li key={fIndex}>✓ {feature}</li>
