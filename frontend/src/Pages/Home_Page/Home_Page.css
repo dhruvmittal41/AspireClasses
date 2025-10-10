@@ -8,7 +8,7 @@
 
 /* === NAVBAR STYLING === */
 .glass-nav {
-  background: rgba(30, 30, 30, 0.85) !important;
+  background: rgba(187, 172, 121, 0.7) !important;
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease-in-out;
@@ -22,11 +22,12 @@
 }
 
 .main-header .nav-links .nav-item-link {
-  color: #dfe6e9 !important;
+  color: #050505 !important;
   position: relative;
   padding: 0.75rem 1rem;
   transition: color 0.25s, transform 0.25s;
 }
+
 
 .nav-item-link:hover {
   color: #1abc9c !important;
@@ -60,7 +61,7 @@
 
 .profile-name {
   font-weight: 500;
-  color: #ecf0f1;
+  color: #000000;
 }
 
 /* === MOBILE SIDEBAR === */

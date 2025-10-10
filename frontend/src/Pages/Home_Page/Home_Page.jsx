@@ -18,6 +18,7 @@ import TestScheduleView from "./TestScheduleView";
 import ResultsView from "./ResultsView";
 import AskADoubtView from "./AskdoubtView";
 import ProfileView from "./Profile.jsx";
+import logo from "./logo.png";
 
 // Import Icons
 import {
@@ -109,7 +110,9 @@ const HomePage = () => {
         className="main-header d-none d-lg-flex glass-nav shadow-sm"
       >
         <Container fluid>
-          <Navbar.Brand className="brand-logo">AspireClasses</Navbar.Brand>
+          <Navbar.Brand className="brand-logo">
+            <img src={logo} alt="PrepSphere Logo" className="nav-logo-img" />
+          </Navbar.Brand>
           <Nav className="me-auto nav-links">
             {navMenuItems.map((item) => (
               <Nav.Link
