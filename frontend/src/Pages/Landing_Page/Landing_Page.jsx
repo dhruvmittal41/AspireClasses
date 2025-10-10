@@ -14,6 +14,7 @@ import {
 import { TfiAgenda } from "react-icons/tfi";
 import upwards from "./Upwards.svg";
 import certificate from "./Certificate.svg";
+import Learning from "./Learning.svg";
 
 // React-Bootstrap Components
 import {
@@ -189,10 +190,13 @@ const Hero = () => (
 const WhyChooseUs = () => (
   <AnimatedSection id="why-us">
     <Container>
+      {/* === Section Heading === */}
       <h2 className="text-center display-5 mb-3">Why Choose AspireClasses?</h2>
       <p className="text-center text-muted fs-5 mb-5">
         We focus on what truly matters for your success.
       </p>
+
+      {/* === Feature Cards === */}
       <Row className="g-4">
         {[
           {
@@ -226,10 +230,48 @@ const WhyChooseUs = () => (
           </Col>
         ))}
       </Row>
+
+      {/* === SVG + Heading Section === */}
+      <Row className="align-items-center mt-5">
+        {/* Left SVG */}
+
+        {/* Right Text */}
+        <Col xs={12} md={6} className="text-center text-md-center">
+          <motion.h2
+            className="display-6 fw-bold"
+            initial={{ x: 40, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            Focused on Your Learning
+          </motion.h2>
+          <p className="lead text-muted mt-3">
+            We continuously evolve our methods to keep you ahead — combining
+            smart analytics and personalized insights to maximize your
+            performance.
+          </p>
+        </Col>
+        <Col
+          xs={12}
+          md={6}
+          className="d-flex justify-content-center justify-content-md-center mb-4 mb-md-0"
+        >
+          <motion.img
+            src={Learning}
+            alt="Learning Illustration"
+            className="img-fluid"
+            style={{ maxWidth: "190px", height: "auto" }}
+            initial={{ x: -40, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          />
+        </Col>
+      </Row>
     </Container>
   </AnimatedSection>
 );
-
 const faqData = [
   {
     question: "Who creates the test series content?",
