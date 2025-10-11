@@ -29,7 +29,6 @@ import {
 import { Bar, Line, Doughnut } from "react-chartjs-2";
 
 // --- ChartJS Registration ---
-// Register all necessary components for Bar, Line, and Doughnut charts
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -80,6 +79,14 @@ const getPerformanceFeedback = (score) => {
   };
 };
 
+// --- NEW: Helper Function to Format Score ---
+const formatScoreOutOf85 = (percentage) => {
+  if (percentage === null || percentage === undefined) return "N/A";
+  // Convert the percentage to a score out of 85
+  const score = Math.round((parseFloat(percentage) / 100) * 85);
+  return `${score} / 85`;
+};
+
 // --- Main ResultsView Component ---
 const ResultsView = () => {
   const [results, setResults] = useState([]);
@@ -95,8 +102,6 @@ const ResultsView = () => {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        // For demonstration, let's add an average_score to each result.
-        // Ideally, this would come from your API.
         const enhancedData = response.data.map((r) => ({
           ...r,
           average_score: Math.floor(Math.random() * 15) + 65, // Random average between 65-80
@@ -130,7 +135,7 @@ const ResultsView = () => {
     };
   }, [results]);
 
-  // --- Chart Data Configurations ---
+  // Chart data configurations remain unchanged as they work best with percentages
   const overallChartData = {
     labels: results.map((r) => r.test_name),
     datasets: [
@@ -212,8 +217,9 @@ const ResultsView = () => {
           <Card className="text-center shadow-sm h-100">
             <Card.Body>
               <Card.Title>Average Score</Card.Title>
+              {/* MODIFIED */}
               <Card.Text className="display-4 fw-bold text-primary">
-                {summaryStats.average}%
+                {formatScoreOutOf85(summaryStats.average)}
               </Card.Text>
             </Card.Body>
           </Card>
@@ -222,8 +228,11 @@ const ResultsView = () => {
           <Card className="text-center shadow-sm h-100">
             <Card.Body>
               <Card.Title>Best Performance</Card.Title>
+              {/* MODIFIED */}
               <Card.Text className="display-4 fw-bold text-success">
-                {summaryStats.best ? `${summaryStats.best.score}%` : "N/A"}
+                {summaryStats.best
+                  ? formatScoreOutOf85(summaryStats.best.score)
+                  : "N/A"}
               </Card.Text>
               <Card.Subtitle className="text-muted">
                 {summaryStats.best?.test_name}
@@ -275,14 +284,22 @@ const ResultsView = () => {
               <Card.Body>
                 <Card.Title>{result.test_name}</Card.Title>
                 <div className="d-flex justify-content-between align-items-center my-3">
-                  <span className="fw-bold fs-4">{result.score}%</span>
+                  {/* MODIFIED */}
+                  <span className="fw-bold fs-4">
+                    {formatScoreOutOf85(result.score)}
+                  </span>
                   <Badge bg={getPerformanceFeedback(result.score).variant}>
                     {getPerformanceFeedback(result.score).text.split("!")[0]}
                   </Badge>
                 </div>
-                <ProgressBar now={result.score} label={`${result.score}%`} />
+                {/* MODIFIED: ProgressBar label updated, but `now` prop still uses percentage */}
+                <ProgressBar
+                  now={result.score}
+                  label={formatScoreOutOf85(result.score)}
+                />
                 <Card.Text className="text-muted mt-2 text-end">
-                  Highest: {result.highest_score}%
+                  {/* MODIFIED */}
+                  Highest: {formatScoreOutOf85(result.highest_score)}
                 </Card.Text>
               </Card.Body>
             </Card>
@@ -290,7 +307,7 @@ const ResultsView = () => {
         ))}
       </Row>
 
-      {/* --- Enhanced Analysis Modal --- */}
+      {/* --- Enhanced Analysis Modal (No changes here as charts and insights use percentages) --- */}
       <Modal
         show={!!selectedResult}
         onHide={() => setSelectedResult(null)}
@@ -309,7 +326,7 @@ const ResultsView = () => {
                   options={{
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: { y: { max: 100 } },
+                    scales: { y: { beginAtZero: true, max: 100 } },
                   }}
                   data={modalChartData.bar}
                 />
