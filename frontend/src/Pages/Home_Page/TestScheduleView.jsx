@@ -27,8 +27,8 @@ const containerVariants = {
 };
 
 const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { type: "spring" } },
+  hidden: { y: 30, opacity: 0 },
+  visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 200 } },
 };
 
 const modalBackdropVariants = {
@@ -37,16 +37,15 @@ const modalBackdropVariants = {
 };
 
 const modalContentVariants = {
-  hidden: { scale: 0.95, opacity: 0 },
+  hidden: { scale: 0.9, opacity: 0 },
   visible: {
     scale: 1,
     opacity: 1,
-    transition: { type: "spring", stiffness: 300, damping: 30 },
+    transition: { type: "spring", stiffness: 250, damping: 25 },
   },
-  exit: { scale: 0.95, opacity: 0 },
+  exit: { scale: 0.9, opacity: 0 },
 };
 
-// --- Helper to format date ---
 const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString("en-GB", {
     day: "numeric",
@@ -55,7 +54,6 @@ const formatDate = (dateString) => {
   });
 };
 
-// --- Main Component ---
 const TestScheduleView = ({ onNavigateToProfile }) => {
   const [upcomingTests, setUpcomingTests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -82,7 +80,6 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
     fetchUpcomingTests();
   }, []);
 
-  // --- Handlers ---
   const handleViewDetails = (test) => {
     setSelectedTest(test);
     setShowDetailsModal(true);
@@ -107,9 +104,9 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
   };
 
   const handleBuyBundle = () => {
-    // In a real application, this would redirect to a payment gateway
-    alert("Redirecting to the purchase page for the bundle!");
+    // Instead of redirecting, trigger the profile completion modal
     setShowBundleModal(false);
+    setShowProfileModal(true);
   };
 
   const handleGoToProfile = () => {
@@ -117,7 +114,6 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
     onNavigateToProfile();
   };
 
-  // --- Render States ---
   if (isLoading) {
     return (
       <div
@@ -130,11 +126,8 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
     );
   }
 
-  if (error) {
-    return <Alert variant="danger">{error}</Alert>;
-  }
+  if (error) return <Alert variant="danger">{error}</Alert>;
 
-  // --- Main Render ---
   return (
     <>
       <Container
@@ -146,47 +139,55 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
         animate="visible"
         className="px-md-4 py-5"
       >
-        <h1 className="display-5 fw-bold mb-3">Test Dashboard</h1>
-        <p className="lead text-muted mb-5">
-          Find all your tests and special offers in one place.
-        </p>
+        <div className="text-center mb-5">
+          <h1 className="display-5 fw-bold mb-2">Test Dashboard</h1>
+          <p className="lead text-muted">
+            Explore your scheduled tests and special offers below.
+          </p>
+        </div>
 
-        <Row xs={1} sm={2} md={3} lg={4} className="g-4">
+        <Row xs={1} sm={2} md={3} lg={4} className="g-4 justify-content-center">
           {/* --- Featured Bundle Card --- */}
           <Col
             as={motion.div}
             variants={itemVariants}
-            whileHover={{ y: -5 }}
+            whileHover={{ y: -8, scale: 1.02 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
             <Card
-              className="h-100 shadow-sm border-0 rounded-4 overflow-hidden"
+              className="h-100 shadow-lg border-0 rounded-4 overflow-hidden text-center"
               style={{
-                background: "linear-gradient(45deg, #c7b992, #bbac79)",
+                background: "linear-gradient(135deg, #cbb47a 0%, #bfa362 100%)",
                 color: "#4A3F28",
               }}
             >
-              <Card.Body className="d-flex flex-column p-4">
-                <Badge
-                  pill
-                  bg="light"
-                  text="dark"
-                  className="align-self-start mb-3"
-                  style={{ backgroundColor: "rgba(255,255,255,0.7)" }}
-                >
-                  Special Offer
-                </Badge>
-                <Card.Title className="fw-bold h4">
-                  AMU 9th Entrance Test Series
-                </Card.Title>
-                <Card.Text>
-                  10 Full-Length Mock Tests to ace your exam.
-                </Card.Text>
-                <div className="mt-auto">
+              <Card.Body className="d-flex flex-column justify-content-between p-4">
+                <div>
+                  <Badge
+                    pill
+                    bg="light"
+                    text="dark"
+                    className="mb-3"
+                    style={{
+                      backgroundColor: "rgba(255,255,255,0.8)",
+                      fontWeight: "600",
+                    }}
+                  >
+                    Special Offer
+                  </Badge>
+                  <Card.Title className="fw-bold h4 mb-3">
+                    AMU 9th Entrance Test Series
+                  </Card.Title>
+                  <Card.Text className="fs-6">
+                    10 Full-Length Mock Tests to boost your preparation.
+                  </Card.Text>
+                </div>
+                <div className="mt-3">
                   <h3 className="fw-bolder mb-3">₹799</h3>
                   <Button
                     variant="dark"
-                    className="fw-bold"
+                    size="lg"
+                    className="fw-bold px-4 py-2"
                     onClick={handleViewBundle}
                     style={{
                       backgroundColor: "#4A3F28",
@@ -201,7 +202,7 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
             </Card>
           </Col>
 
-          {/* --- Upcoming Tests List --- */}
+          {/* --- Upcoming Tests --- */}
           <AnimatePresence>
             {upcomingTests.length > 0 ? (
               upcomingTests.map((test) => (
@@ -209,7 +210,7 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
                   key={test.id}
                   as={motion.div}
                   variants={itemVariants}
-                  whileHover={{ y: -5 }}
+                  whileHover={{ y: -5, scale: 1.02 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
                   <Card
@@ -217,19 +218,16 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
                     role="button"
                     onClick={() => handleViewDetails(test)}
                     style={{
-                      background: "#FCFBF7", // Soft off-white background
-                      color: "#4A3F28", // Dark text color
+                      background: "#FBFAF5",
+                      color: "#4A3F28",
+                      cursor: "pointer",
                     }}
                   >
                     <Card.Body className="d-flex flex-column p-4">
                       <Card.Title className="fw-bold h5 mb-3">
                         {test.test_name}
                       </Card.Title>
-                      <Stack
-                        gap={2}
-                        className="small mb-4"
-                        style={{ color: "#6D5F3B" }}
-                      >
+                      <Stack gap={2} className="small mb-4 text-muted">
                         <div className="d-flex align-items-center">
                           <CalendarIcon />{" "}
                           <span className="ms-2">
@@ -245,7 +243,7 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
                       </Stack>
                       <Button
                         variant="dark"
-                        className="mt-auto align-self-start fw-bold"
+                        className="mt-auto fw-bold"
                         style={{
                           backgroundColor: "#4A3F28",
                           color: "#FFFFFF",
@@ -275,7 +273,7 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
         </Row>
       </Container>
 
-      {/* Details Modal */}
+      {/* --- Details Modal --- */}
       <AnimatePresence>
         {selectedTest && (
           <motion.div
@@ -290,7 +288,8 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundColor: "rgba(0,0,0,0.5)",
+              backgroundColor: "rgba(0,0,0,0.6)",
+              backdropFilter: "blur(3px)",
               zIndex: 1050,
             }}
           >
@@ -305,7 +304,6 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
               initial="hidden"
               animate="visible"
               exit="exit"
-              style={{ backgroundColor: "transparent", border: "none" }}
             >
               <Modal.Header
                 closeButton
@@ -316,12 +314,9 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
                   {selectedTest.test_name}
                 </Modal.Title>
               </Modal.Header>
-              <Modal.Body className="p-4">
+              <Modal.Body className="p-4 bg-light">
                 <Stack gap={4}>
-                  <div
-                    className="d-flex flex-wrap justify-content-around text-center border rounded p-3"
-                    style={{ background: "#FCFBF7" }}
-                  >
+                  <div className="d-flex flex-wrap justify-content-around text-center border rounded p-3 bg-white shadow-sm">
                     <div className="p-2">
                       <CalendarIcon />
                       <h6 className="mb-0 mt-2">Date</h6>
@@ -368,7 +363,7 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
                   </div>
                 </Stack>
               </Modal.Body>
-              <Modal.Footer className="border-0">
+              <Modal.Footer className="border-0 bg-light">
                 <Button variant="secondary" onClick={handleCloseDetails}>
                   Close
                 </Button>
@@ -389,7 +384,7 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
         )}
       </AnimatePresence>
 
-      {/* Bundle Purchase Modal */}
+      {/* --- Bundle Modal --- */}
       <AnimatePresence>
         {showBundleModal && (
           <motion.div
@@ -404,7 +399,8 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundColor: "rgba(0,0,0,0.5)",
+              backgroundColor: "rgba(0,0,0,0.6)",
+              backdropFilter: "blur(3px)",
               zIndex: 1051,
             }}
           >
@@ -418,7 +414,6 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
               initial="hidden"
               animate="visible"
               exit="exit"
-              style={{ backgroundColor: "transparent", border: "none" }}
             >
               <Modal.Header
                 closeButton
@@ -429,14 +424,15 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
                   AMU 9th Entrance Test Series
                 </Modal.Title>
               </Modal.Header>
-              <Modal.Body className="bg-white rounded-bottom">
+              <Modal.Body className="bg-light rounded-bottom">
                 <p>
-                  This bundle contains a series of 10 selectively and
-                  exclusively made tests for the AMU 9th entrance examination.
+                  This bundle offers 10 carefully curated full-length tests for
+                  the AMU 9th entrance exam — designed to strengthen every
+                  concept and track your progress.
                 </p>
                 <h4 className="text-end fw-bold mt-4">Price: ₹799</h4>
               </Modal.Body>
-              <Modal.Footer className="bg-white rounded-bottom border-0">
+              <Modal.Footer className="bg-light rounded-bottom border-0">
                 <Button variant="secondary" onClick={handleCloseBundleModal}>
                   Close
                 </Button>
@@ -457,7 +453,7 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
         )}
       </AnimatePresence>
 
-      {/* Profile Completion Modal */}
+      {/* --- Profile Completion Modal --- */}
       <Modal
         show={showProfileModal}
         onHide={() => setShowProfileModal(false)}
@@ -468,8 +464,9 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
         </Modal.Header>
         <Modal.Body>
           <p>
-            To ensure the best experience and proper test assignment, please
-            complete your profile before joining the test.
+            Please complete your profile before proceeding to the test or
+            purchasing bundles. This helps us personalize your experience and
+            assign tests properly.
           </p>
         </Modal.Body>
         <Modal.Footer>
