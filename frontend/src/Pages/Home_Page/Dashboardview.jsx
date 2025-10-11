@@ -55,7 +55,7 @@ const RecentResults = React.memo(({ results, loading, error }) => (
                 <tr>
                   <th>Test Name</th>
                   {/* Changed header for clarity */}
-                  <th>Score (/85)</th>
+                  <th>Score</th>
                 </tr>
               </thead>
               <tbody>
