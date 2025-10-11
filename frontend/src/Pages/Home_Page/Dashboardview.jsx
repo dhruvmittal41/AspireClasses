@@ -54,7 +54,8 @@ const RecentResults = React.memo(({ results, loading, error }) => (
               <thead>
                 <tr>
                   <th>Test Name</th>
-                  <th>Score</th>
+                  {/* Changed header for clarity */}
+                  <th>Score (/85)</th>
                 </tr>
               </thead>
               <tbody>
@@ -62,10 +63,9 @@ const RecentResults = React.memo(({ results, loading, error }) => (
                   <tr key={result.id}>
                     <td>{result.test_name}</td>
                     <td>
-                      {result.max_score > 0
-                        ? `${Math.round(
-                            (result.score / result.max_score) * 100
-                          )}%`
+                      {/* UPDATED: Display score out of 85 */}
+                      {typeof result.score === "number"
+                        ? `${result.score} / 85`
                         : "N/A"}
                     </td>
                   </tr>
@@ -181,7 +181,7 @@ const DashboardView = ({ userName = "Learner" }) => {
         if (Array.isArray(response.data)) {
           const processedResults = response.data.map((result) => ({
             ...result,
-            max_score: result.max_score || 100,
+            max_score: result.max_score || 100, // Keep default for data consistency
           }));
           setResults(processedResults.slice(0, 5));
         } else {
