@@ -1,27 +1,28 @@
 /* --- CSS Variables for Easy Theming --- */
 :root {
-  --primary-color: #007bff;
-  --secondary-color: #6610f2;
-  --success-color: #20c997;
-  --light-gray: #f8f9fa;
-  --medium-gray: #e9ecef;
-  --dark-gray: #495057;
-  --border-color: #dee2e6;
-  --text-primary: #1e3a8a;
+  /* New Theme Colors */
+  --primary-color: #bbac79; /* A rich, muted gold */
+  --secondary-color: #c7b992; /* A lighter, complementary gold */
+  --success-color: #8a9a5b; /* A warm, earthy green for accents */
+  --light-bg: #FCFBF7; /* Soft, off-white for backgrounds */
+  --medium-bg: #EAE6D9; /* A slightly darker off-white for hover states */
+  --text-primary: #4A3F28; /* A strong, dark brown for headers and key text */
+  --text-secondary: #6D5F3B; /* A softer brown for body text */
+  --border-color: #EAE6D9; /* A subtle border that matches the theme */
+
+  /* Gradients and Shadows using new colors */
   --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-  --shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  --shadow-sm: 0 0.125rem 0.25rem rgba(74, 63, 40, 0.075);
+  --shadow: 0 0.5rem 1rem rgba(74, 63, 40, 0.15);
 }
 
 /* --- Main Dashboard Container --- */
-/* This rule is no longer needed for positioning or overflow */
 .dashboard-container {
   position: relative;
   z-index: 1;
 }
 
 /* --- Background Animation Wrapper --- */
-/* This new rule contains the shapes safely in the background */
 .background-animation-wrapper {
   position: fixed;
   top: 0;
@@ -37,12 +38,14 @@
 .dashboard-header {
   background: var(--gradient-primary);
   padding: 2rem 1.5rem;
+  color: var(--text-primary); /* Dark text for readability on gold background */
 }
 
 .quote-section {
   background: var(--gradient-primary);
   position: relative;
   overflow: hidden;
+  color: var(--text-primary);
 }
 
 .quote-icon {
@@ -60,20 +63,20 @@
 
 /* --- Demo Test Cards --- */
 .test-card-custom {
-  background-color: var(--light-gray);
+  background-color: var(--light-bg);
   border: 1px solid var(--border-color);
   cursor: pointer;
   transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background-color 0.2s ease-out;
-  color: var(--dark-gray);
-  text-align: left; /* Reset button default text align */
+  color: var(--text-secondary);
+  text-align: left;
 }
 
 .test-card-custom:hover,
 .test-card-custom:focus-visible {
-  background-color: var(--medium-gray);
-  border-color: #adb5bd;
+  background-color: var(--medium-bg);
+  border-color: #d3cec0; /* A slightly darker border on hover */
   box-shadow: var(--shadow);
-  transform: translateY(-4px); /* Combined transform for hover effect */
+  transform: translateY(-4px);
 }
 
 .test-card-custom h3 {
@@ -82,7 +85,6 @@
 }
 
 /* --- Floating Background Shapes --- */
-/* These shapes are now contained by the wrapper, not the container */
 .floating-shape {
   position: absolute;
   border-radius: 50%;
@@ -91,6 +93,7 @@
   will-change: transform;
 }
 
+/* Shapes now use the new theme colors automatically */
 .shape1 {
   width: 250px;
   height: 250px;
