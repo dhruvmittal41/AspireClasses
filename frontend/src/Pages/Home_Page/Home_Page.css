@@ -17,14 +17,16 @@
 .brand-logo {
   font-weight: 700;
   color: #00c6ff !important;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
+
   font-size: 1.25rem;
 }
+
 
 .main-header .nav-links .nav-item-link {
   color: #050505 !important;
   position: relative;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 2rem;
   transition: color 0.25s, transform 0.25s;
 }
 

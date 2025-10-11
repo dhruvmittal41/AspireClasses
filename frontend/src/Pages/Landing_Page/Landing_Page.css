@@ -13,23 +13,33 @@ html {
 
 /* --- 2. Custom Component Styles --- */
 
-/* Navbar: Glassmorphism effect */
 .navbar-custom {
-  background-color: rgba(187, 172, 121, 0.7) !important; /* Lighter glass effect */
+  background-color: rgba(187, 172, 121, 0.7) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  /* Add padding for vertical balance */
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  transition: all 0.3s ease-in-out;
 }
 
-.navbar-nav .nav-link {
-  color: rgb(0, 0, 0) !important;
+/* Target links specifically within our custom navbar for better control */
+.navbar-custom .nav-link {
+  color: #000000 !important; /* Use black for readability on the light background */
   font-weight: 500;
-  /* A more subtle shadow for better readability */
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  position: relative; /* For hover effect */
+  transition: color 0.3s ease;
+}
+
+.navbar-custom .nav-link:hover {
+    color: #333333 !important; /* Slightly fade on hover */
 }
 
 .nav-logo-img {
-  height: 90px; /* Slightly adjusted for better alignment */
+  /* This is the key fix: Reduce the height to a more appropriate size */
+  height: 95px;
   width: auto;
   transition: transform 0.3s ease;
 }

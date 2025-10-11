@@ -74,33 +74,50 @@ const AnimatedSection = ({ children, id }) => {
 
 const AppNavbar = () => {
   return (
-    <Navbar variant="dark" expand="lg" sticky="top" className="navbar-custom">
-      <Container>
-        <Navbar.Brand href="/#home">
+    // No changes needed on the Navbar component itself
+    <Navbar expand="lg" sticky="top" className="navbar-custom">
+      {/* CHANGE: Make the container fluid and a flexbox container */}
+      <Container fluid className="px-4">
+        {/* This Navbar.Brand will now be pushed to the far left */}
+        <Navbar.Brand as={Link} to="/">
           <img src={logo} alt="PrepSphere Logo" className="nav-logo-img" />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="ms-auto align-items-center text">
-            <Nav.Link href="/#home">Home</Nav.Link>
-            <Nav.Link href="/#why-us">Why Us</Nav.Link>
-            <Nav.Link href="/#features">Features</Nav.Link>
-            <Nav.Link href="/#test-series">Test Series</Nav.Link>
-            <Nav.Link href="/#pricing">Pricing</Nav.Link>
-            <Nav.Link href="/#contact">Contact</Nav.Link>
+          {/* The 'ms-auto' ensures items are on the right within the collapsed menu */}
+          <Nav className="ms-auto align-items-center">
+            <Nav.Link href="/#home" className="mx-2">
+              Home
+            </Nav.Link>
+            <Nav.Link href="/#why-us" className="mx-2">
+              Why Us
+            </Nav.Link>
+            <Nav.Link href="/#features" className="mx-2">
+              Features
+            </Nav.Link>
+            <Nav.Link href="/#test-series" className="mx-2">
+              Test Series
+            </Nav.Link>
+            <Nav.Link href="/#pricing" className="mx-2">
+              Pricing
+            </Nav.Link>
+            <Nav.Link href="/#contact" className="mx-2">
+              Contact
+            </Nav.Link>
+
             <Button
               as={Link}
               to="/register"
               variant="primary"
-              className="ms-lg-2 mt-2 mt-lg-0"
+              className="ms-lg-3 mt-2 mt-lg-0"
             >
               Register Now
             </Button>
             <Button
               as={Link}
               to="/login"
-              variant="btn btn-outline-dark"
-              className="ms-lg-2 mt-2 mt-lg-0"
+              variant="outline-light"
+              className="ms-2 mt-2 mt-lg-0"
             >
               Log in
             </Button>
@@ -110,7 +127,6 @@ const AppNavbar = () => {
     </Navbar>
   );
 };
-
 // HERO COMPONENT: ParallaxBackground is now INSIDE the hero section
 
 const Hero = () => (

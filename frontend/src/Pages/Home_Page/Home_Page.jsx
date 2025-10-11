@@ -36,7 +36,7 @@ import "./Home_Page.css";
 const navMenuItems = [
   { name: "Dashboard", icon: <DashboardIcon />, view: <DashboardView /> },
   { name: "My Tests", icon: <MyTestsIcon />, view: <MyTestsView /> },
-  { name: "Shop", icon: <ShopIcon />, view: <TestScheduleView /> },
+  { name: "Get Tests", icon: <ShopIcon />, view: <TestScheduleView /> },
   { name: "Results", icon: <ResultsIcon />, view: <ResultsView /> },
   { name: "Ask a Doubt", icon: <DoubtIcon />, view: <AskADoubtView /> },
 ];
@@ -72,7 +72,7 @@ const HomePage = () => {
         return <DashboardView />;
       case "My Tests":
         return <MyTestsView />;
-      case "Shop":
+      case "Get Tests":
         return (
           <TestScheduleView
             onNavigateToProfile={() => handleMenuClick("Profile")}
