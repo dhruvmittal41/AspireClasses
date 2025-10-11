@@ -22,18 +22,17 @@ const LoadingState = () => (
     className="d-flex justify-content-center align-items-center"
     style={{ minHeight: "50vh" }}
   >
-    <Spinner animation="border" variant="primary" role="status">
-      <span className="visually-hidden">Loading...</span>
-    </Spinner>
+    <Spinner animation="border" variant="primary" role="status" />
   </div>
 );
 
 // --- Empty State Component ---
 const EmptyState = ({ onBrowse }) => (
   <motion.div
-    className="text-center p-4 p-md-5 bg-light rounded border-dashed"
+    className="text-center p-4 p-md-5 bg-light rounded border-dashed shadow-sm empty-state"
     initial={{ opacity: 0, scale: 0.95 }}
     animate={{ opacity: 1, scale: 1 }}
+    transition={{ duration: 0.3 }}
   >
     <h2 className="h1 mb-3">No Tests Here!</h2>
     <p className="lead text-muted mb-4 mx-auto" style={{ maxWidth: "500px" }}>
@@ -47,13 +46,13 @@ const EmptyState = ({ onBrowse }) => (
       onClick={onBrowse}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
+      className="browse-btn"
     >
       Browse All Tests
     </Button>
   </motion.div>
 );
 
-// --- Main MyTestsView Component ---
 const MyTestsView = () => {
   const [boughtTests, setBoughtTests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -81,15 +80,15 @@ const MyTestsView = () => {
 
   return (
     <Container as={motion.div} fluid className="my-tests-container">
-      <h1 className="display-5 mb-4">My Tests</h1>
+      <h1 className="display-5 mb-4 text-center">My Tests</h1>
       {boughtTests.length > 0 ? (
         <Row className="g-4">
           {boughtTests.map((test) => (
-            <Col key={test.id} md={6} lg={4}>
+            <Col key={test.id} xs={12} sm={6} md={6} lg={4}>
               <Card
                 as={motion.div}
                 className="h-100 test-card shadow-sm"
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ scale: 1.03 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
                 <div className="test-card-header d-flex align-items-center justify-content-between p-3">

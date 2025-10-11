@@ -1,71 +1,76 @@
 .my-tests-container {
-  padding-bottom: 2rem;
+  padding-bottom: 2.5rem;
 }
 
+/* --- Card --- */
 .test-card {
   border-radius: 16px;
   overflow: hidden;
-  /* Using a soft, off-white for the card body */
   background: #FCFBF7;
   display: flex;
   flex-direction: column;
+  border: 1px solid #EAE6D9;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: 1px solid #EAE6D9; /* A subtle border to define the card */
+}
+
+.test-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 22px rgba(187, 172, 121, 0.25);
 }
 
 .test-card-header {
-  /* A rich, gold-tone gradient inspired by your navbar color */
   background: linear-gradient(90deg, #c7b992, #bbac79);
-  /* Dark text for better readability on the gold background */
   color: #4A3F28;
-  font-weight: 600; /* Slightly bolder for more emphasis */
+  font-weight: 600;
   border-radius: 16px 16px 0 0;
 }
 
 .subject-text {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 500;
 }
 
 .level-badge {
   font-size: 0.75rem;
   text-transform: uppercase;
-  padding: 0.4em 0.6em;
-  background-color: rgba(74, 63, 40, 0.1); /* Badge that complements the theme */
+  padding: 0.35em 0.65em;
+  background-color: rgba(74, 63, 40, 0.15);
   border-radius: 6px;
 }
 
-.syllabus-text {
-  font-size: 0.85rem;
-  /* A darker, warmer text color */
-  color: #6D5F3B;
-  line-height: 1.4;
-}
-
+/* --- Button --- */
 .start-btn {
   font-weight: 600;
-  background-color: #4A3F28; /* A strong, dark accent for the button */
+  background-color: #4A3F28;
   color: #FFFFFF;
-  border-radius: 8px;
-  padding: 0.6rem 1.2rem;
-  transition: background-color 0.2s ease;
+  border-radius: 12px;
+  padding: 0.65rem 1.25rem;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .start-btn:hover {
-    background-color: #6D5F3B; /* A slightly lighter shade on hover */
+  background-color: #6D5F3B;
 }
 
-.test-card:hover {
-  /* Shadow color is now based on the theme for a subtle effect */
-  box-shadow: 0 12px 20px rgba(187, 172, 121, 0.25);
-  transform: translateY(-4px); /* A slight lift effect on hover */
+/* --- Empty State --- */
+.empty-state {
+  max-width: 600px;
+  margin: 4rem auto;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
 
+.browse-btn {
+  border-radius: 50px;
+  padding: 0.7rem 1.5rem;
+  font-weight: 600;
+}
+
+/* --- Responsive tweaks --- */
 @media (max-width: 768px) {
   .test-card-header {
     padding: 0.75rem 1rem;
   }
-  .syllabus-text {
-    font-size: 0.8rem;
+  .subject-text {
+    font-size: 0.85rem;
   }
 }
