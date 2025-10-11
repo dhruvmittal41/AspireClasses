@@ -101,6 +101,10 @@ const HomePage = () => {
       <span className="profile-name">{username}</span>
     </>
   );
+  const handleMobileMenuClick = (itemName) => {
+    handleMenuClick(itemName); // Re-use your existing logic
+    setSidebarOpen(false); // <-- UX IMPROVEMENT: Close the sidebar on click
+  };
 
   return (
     <div className="home-page-layout">
