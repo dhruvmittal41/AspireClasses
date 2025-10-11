@@ -76,7 +76,7 @@ const getPerformanceFeedback = (score) => {
     };
   return {
     variant: "danger",
-    text: "It looks like this topic was challenging. Consider reviewing the material.",
+    text: "It looks like this topic was challenging.",
   };
 };
 
