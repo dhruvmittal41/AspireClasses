@@ -5,16 +5,20 @@
 .test-card {
   border-radius: 16px;
   overflow: hidden;
-  background: #ffffff;
+  /* Using a soft, off-white for the card body */
+  background: #FCFBF7;
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid #EAE6D9; /* A subtle border to define the card */
 }
 
 .test-card-header {
-  background: linear-gradient(90deg, #00c6ff, #0072ff);
-  color: #fff;
-  font-weight: 500;
+  /* A rich, gold-tone gradient inspired by your navbar color */
+  background: linear-gradient(90deg, #c7b992, #bbac79);
+  /* Dark text for better readability on the gold background */
+  color: #4A3F28;
+  font-weight: 600; /* Slightly bolder for more emphasis */
   border-radius: 16px 16px 0 0;
 }
 
@@ -27,20 +31,34 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   padding: 0.4em 0.6em;
+  background-color: rgba(74, 63, 40, 0.1); /* Badge that complements the theme */
+  border-radius: 6px;
 }
 
 .syllabus-text {
   font-size: 0.85rem;
-  color: #555;
+  /* A darker, warmer text color */
+  color: #6D5F3B;
   line-height: 1.4;
 }
 
 .start-btn {
   font-weight: 600;
+  background-color: #4A3F28; /* A strong, dark accent for the button */
+  color: #FFFFFF;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  transition: background-color 0.2s ease;
+}
+
+.start-btn:hover {
+    background-color: #6D5F3B; /* A slightly lighter shade on hover */
 }
 
 .test-card:hover {
-  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+  /* Shadow color is now based on the theme for a subtle effect */
+  box-shadow: 0 12px 20px rgba(187, 172, 121, 0.25);
+  transform: translateY(-4px); /* A slight lift effect on hover */
 }
 
 @media (max-width: 768px) {
