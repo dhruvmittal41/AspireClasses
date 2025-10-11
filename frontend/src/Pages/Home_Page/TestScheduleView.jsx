@@ -1,5 +1,3 @@
-// src/TestScheduleView.jsx
-
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
@@ -65,7 +63,7 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedTest, setSelectedTest] = useState(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
-  const [showBundleModal, setShowBundleModal] = useState(false); // State for the new bundle modal
+  const [showBundleModal, setShowBundleModal] = useState(false);
 
   useEffect(() => {
     const fetchUpcomingTests = async () => {
@@ -101,11 +99,11 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
   };
 
   const handleViewBundle = () => {
-    setShowBundleModal(true); // Open the new bundle modal
+    setShowBundleModal(true);
   };
 
   const handleCloseBundleModal = () => {
-    setShowBundleModal(false); // Close the new bundle modal
+    setShowBundleModal(false);
   };
 
   const handleBuyBundle = () => {
@@ -126,7 +124,7 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
         className="d-flex flex-column justify-content-center align-items-center"
         style={{ minHeight: "50vh" }}
       >
-        <Spinner animation="border" variant="primary" />
+        <Spinner animation="border" style={{ color: "#4A3F28" }} />
         <p className="mt-3 text-muted">Loading Your Schedule...</p>
       </div>
     );
@@ -158,19 +156,23 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
           <Col
             as={motion.div}
             variants={itemVariants}
-            whileHover={{ scale: 1.03, y: -5 }}
+            whileHover={{ y: -5 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
             <Card
-              className="h-100 shadow border-0 rounded-4 overflow-hidden text-white"
-              style={{ background: "linear-gradient(45deg, #007bff, #6610f2)" }}
+              className="h-100 shadow-sm border-0 rounded-4 overflow-hidden"
+              style={{
+                background: "linear-gradient(45deg, #c7b992, #bbac79)",
+                color: "#4A3F28",
+              }}
             >
               <Card.Body className="d-flex flex-column p-4">
                 <Badge
                   pill
-                  bg="warning"
+                  bg="light"
                   text="dark"
                   className="align-self-start mb-3"
+                  style={{ backgroundColor: "rgba(255,255,255,0.7)" }}
                 >
                   Special Offer
                 </Badge>
@@ -183,9 +185,14 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
                 <div className="mt-auto">
                   <h3 className="fw-bolder mb-3">₹799</h3>
                   <Button
-                    variant="light"
+                    variant="dark"
                     className="fw-bold"
                     onClick={handleViewBundle}
+                    style={{
+                      backgroundColor: "#4A3F28",
+                      color: "#FFFFFF",
+                      border: "none",
+                    }}
                   >
                     View Bundle
                   </Button>
@@ -202,15 +209,16 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
                   key={test.id}
                   as={motion.div}
                   variants={itemVariants}
-                  whileHover={{ scale: 1.03, y: -5 }}
+                  whileHover={{ y: -5 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
                   <Card
-                    className="h-100 shadow border-0 rounded-4 overflow-hidden text-white"
+                    className="h-100 shadow-sm border-0 rounded-4 overflow-hidden"
                     role="button"
                     onClick={() => handleViewDetails(test)}
                     style={{
-                      background: "linear-gradient(45deg, #007bff, #6610f2)",
+                      background: "#FCFBF7", // Soft off-white background
+                      color: "#4A3F28", // Dark text color
                     }}
                   >
                     <Card.Body className="d-flex flex-column p-4">
@@ -220,7 +228,7 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
                       <Stack
                         gap={2}
                         className="small mb-4"
-                        style={{ opacity: 0.9 }}
+                        style={{ color: "#6D5F3B" }}
                       >
                         <div className="d-flex align-items-center">
                           <CalendarIcon />{" "}
@@ -236,8 +244,13 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
                         </div>
                       </Stack>
                       <Button
-                        variant="light"
+                        variant="dark"
                         className="mt-auto align-self-start fw-bold"
+                        style={{
+                          backgroundColor: "#4A3F28",
+                          color: "#FFFFFF",
+                          border: "none",
+                        }}
                       >
                         View Details
                       </Button>
@@ -296,7 +309,8 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
             >
               <Modal.Header
                 closeButton
-                className="bg-primary text-white border-0"
+                className="text-white border-0"
+                style={{ background: "#4A3F28" }}
               >
                 <Modal.Title className="fw-bold">
                   {selectedTest.test_name}
@@ -304,7 +318,10 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
               </Modal.Header>
               <Modal.Body className="p-4">
                 <Stack gap={4}>
-                  <div className="d-flex flex-wrap justify-content-around text-center border rounded p-3 bg-light">
+                  <div
+                    className="d-flex flex-wrap justify-content-around text-center border rounded p-3"
+                    style={{ background: "#FCFBF7" }}
+                  >
                     <div className="p-2">
                       <CalendarIcon />
                       <h6 className="mb-0 mt-2">Date</h6>
@@ -332,9 +349,11 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
                               <Badge
                                 key={idx}
                                 pill
-                                bg="secondary"
-                                text="white"
+                                text="dark"
                                 className="px-3 py-2 fs-6 fw-normal"
+                                style={{
+                                  backgroundColor: "rgba(74, 63, 40, 0.1)",
+                                }}
                               >
                                 {topic.trim()}
                               </Badge>
@@ -353,7 +372,15 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
                 <Button variant="secondary" onClick={handleCloseDetails}>
                   Close
                 </Button>
-                <Button variant="success" size="lg" onClick={handleJoinTest}>
+                <Button
+                  size="lg"
+                  onClick={handleJoinTest}
+                  style={{
+                    background: "#4A3F28",
+                    color: "#FFFFFF",
+                    border: "none",
+                  }}
+                >
                   Join Test
                 </Button>
               </Modal.Footer>
@@ -395,7 +422,8 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
             >
               <Modal.Header
                 closeButton
-                className="bg-primary text-white border-0"
+                className="text-white border-0"
+                style={{ background: "#4A3F28" }}
               >
                 <Modal.Title className="fw-bold">
                   AMU 9th Entrance Test Series
@@ -412,7 +440,15 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
                 <Button variant="secondary" onClick={handleCloseBundleModal}>
                   Close
                 </Button>
-                <Button variant="success" size="lg" onClick={handleJoinTest}>
+                <Button
+                  size="lg"
+                  onClick={handleBuyBundle}
+                  style={{
+                    background: "#4A3F28",
+                    color: "#FFFFFF",
+                    border: "none",
+                  }}
+                >
                   Buy Bundle
                 </Button>
               </Modal.Footer>
@@ -443,7 +479,10 @@ const TestScheduleView = ({ onNavigateToProfile }) => {
           >
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleGoToProfile}>
+          <Button
+            onClick={handleGoToProfile}
+            style={{ background: "#4A3F28", color: "#FFFFFF", border: "none" }}
+          >
             Go to Profile
           </Button>
         </Modal.Footer>
