@@ -223,7 +223,7 @@ const WhyChooseUs = () => (
           {
             icon: <FaBookOpen className="card-icon" />,
             title: "Diverse Exam Coverage",
-            text: "Beyond AMU, we offer expertly crafted series for JMI, Sainik School, Navodaya, ensuring comprehensive preparation for all your goals.",
+            text: "Beyond AMU, we offer expertly crafted series for JMI, Navodaya, ensuring comprehensive preparation for all your goals.",
           },
           {
             icon: <FaUsers className="card-icon" />,
@@ -385,33 +385,22 @@ const testSeriesData = [
     description:
       "Our flagship series, meticulously designed to match the latest AMU pattern. Gain the ultimate competitive advantage with tests created by AMU alumni.",
     features: [
-      "15+ Full-length Mock Tests",
+      "10 Mock Tests 5 full-length",
       "Chapter-wise Practice Questions",
       "Based on Latest Syllabus",
-      "Indo-Islamic Culture Coverage",
     ],
   },
   {
     title: "Navodaya (JNVST) Class 9 Series",
     description:
       "Excel in the JNVST with our comprehensive test series covering all sections: Mental Ability, Arithmetic, and Language Test.",
-    features: [
-      "20+ Practice Sets",
-      "Sectional Timed Tests",
-      "Detailed Video Solutions",
-      "All India Ranking",
-    ],
+    features: ["COMING SOON"],
   },
   {
     title: "Jamia (JMI) Series",
     description:
       "Prepare for the rigors of Entrance Examination with our targeted mock tests and performance analysis.",
-    features: [
-      "Syllabus-aligned Mock Papers",
-      "Intelligence & GK Sections",
-      "OMR Sheet Practice",
-      "Coming Soon!",
-    ],
+    features: ["COMING SOON"],
   },
 ];
 

@@ -120,9 +120,9 @@ const HomePage = () => {
                 key={item.name}
                 active={activeItem === item.name}
                 onClick={() => handleMenuClick(item.name)}
-                className={`d-flex align-items-center nav-item-link ${
-                  activeItem === item.name ? "active" : ""
-                }`}
+                // No need for the extra ternary operator for the 'active' class
+                // The `active` prop handles this for you.
+                className="d-flex align-items-center nav-item-link"
               >
                 {item.icon}
                 <span className="ms-2">{item.name}</span>
@@ -166,14 +166,22 @@ const HomePage = () => {
             variant="outline-light"
             className="menu-toggle"
             onClick={() => setSidebarOpen(true)}
+            aria-label="Toggle navigation" // <-- IMPROVEMENT: Added for accessibility
+            aria-controls="mobile-sidebar" // <-- IMPROVEMENT: Points to the sidebar
           >
             ☰
           </Button>
-          <Navbar.Brand className="brand-logo">AspireClasses</Navbar.Brand>
+
+          {/* IMPROVEMENT: Use the image logo for brand consistency */}
+          <Navbar.Brand className="brand-logo">
+            <img src={logo} alt="PrepSphere Logo" className="nav-logo-img" />
+          </Navbar.Brand>
+
+          {/* Profile dropdown remains the same */}
           <Nav>
             <NavDropdown
               title={profileMenuTitle}
-              id="profile-dropdown"
+              id="profile-dropdown-mobile" // Use a unique id
               align="end"
             >
               <NavDropdown.Item onClick={() => handleMenuClick("Profile")}>
@@ -193,6 +201,7 @@ const HomePage = () => {
         show={isSidebarOpen}
         onHide={() => setSidebarOpen(false)}
         className="sidebar-mobile"
+        id="mobile-sidebar" // <-- IMPROVEMENT: Add ID for aria-controls
       >
         <Offcanvas.Header closeButton>
           <Offcanvas.Title>Menu</Offcanvas.Title>
@@ -203,7 +212,8 @@ const HomePage = () => {
               <Nav.Link
                 key={item.name}
                 active={activeItem === item.name}
-                onClick={() => handleMenuClick(item.name)}
+                // Use the new handler here
+                onClick={() => handleMobileMenuClick(item.name)}
                 className={`d-flex align-items-center sidebar-btn ${
                   activeItem === item.name ? "active" : ""
                 }`}
@@ -213,6 +223,7 @@ const HomePage = () => {
               </Nav.Link>
             ))}
           </Nav>
+          {/* This section remains the same */}
           <div className="p-2">
             <Button
               variant="danger"
