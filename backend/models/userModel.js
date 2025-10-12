@@ -54,7 +54,7 @@ const updateUserDetails = async (userId, {
        state = $7, 
        country = $8
      WHERE id = $9
-     RETURNING id, full_name, email, school_name, dob, gender, mobile_number, city, state, country`,
+     RETURNING id, full_name, email_or_phone, school_name, dob, gender, mobile_number, city, state, country`,
         [full_name, school_name, dob, gender, mobileNumber, city, state, country, userId]
     );
     return rows[0];
