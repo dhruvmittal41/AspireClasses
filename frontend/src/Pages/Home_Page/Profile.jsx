@@ -26,7 +26,7 @@ const Profile = () => {
     school_name: "",
     dob: "",
     gender: "",
-    mobileNumber: "",
+    mobile_number: "",
     city: "",
     state: "",
     country: "",
@@ -92,7 +92,7 @@ const Profile = () => {
     if (!profileData.gender) newErrors.gender = "Gender is required.";
     if (
       !profileData.mobileNumber ||
-      !/^\d{10,15}$/.test(profileData.mobileNumber)
+      !/^\d{10,15}$/.test(profileData.mobile_number)
     )
       newErrors.mobileNumber = "A valid mobile number is required.";
     if (!profileData.city) newErrors.city = "City is required.";
@@ -229,9 +229,9 @@ const Profile = () => {
                             <Form.Control
                               type="tel"
                               name="mobileNumber"
-                              value={profileData.mobileNumber}
+                              value={profileData.mobile_number}
                               onChange={handleChange}
-                              isInvalid={!!errors.mobileNumber}
+                              isInvalid={!!errors.mobile_number}
                               placeholder="e.g., 9876543210"
                             />
                             <Form.Control.Feedback type="invalid">
