@@ -114,7 +114,7 @@ const Profile = () => {
     try {
       const token = localStorage.getItem("token");
       // Use a PUT or POST request to update user details
-      await axios.post(`${baseUrl}/api/user`, profileData, {
+      await axios.post(`${baseUrl}/api/user/details`, profileData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setNotification({
