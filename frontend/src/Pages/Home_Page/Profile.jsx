@@ -176,7 +176,7 @@ const Profile = () => {
                       className="mb-3 border p-1"
                     />
                     <h5 className="mb-1">{profileData.full_name}</h5>
-                    <p className="text-muted">{profileData.email}</p>
+                    <p className="text-muted">{profileData.email_or_phone}</p>
                   </Col>
 
                   {/* Personal Information Form */}
