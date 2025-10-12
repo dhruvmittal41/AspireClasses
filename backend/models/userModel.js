@@ -15,7 +15,7 @@ const create = async ({ fullName, email, school }) => {
 };
 
 const findById = async (id) => {
-    const { rows } = await db.query('SELECT id, full_name, email_or_phone, school_name FROM users WHERE id = $1', [id]);
+    const { rows } = await db.query('SELECT id, full_name, email_or_phone, school_name, dob, gender, mobile_number, city, state, country FROM users WHERE id = $1', [id]);
     return rows[0];
 };
 const findAll = async () => {
