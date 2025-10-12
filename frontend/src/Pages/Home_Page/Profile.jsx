@@ -22,7 +22,7 @@ const Profile = () => {
   // Single state for all user profile data
   const [profileData, setProfileData] = useState({
     full_name: "",
-    email: "",
+    email_or_phone: "",
     school_name: "",
     dob: "",
     gender: "",
