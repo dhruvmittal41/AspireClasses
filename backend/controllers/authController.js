@@ -11,6 +11,33 @@ const generateToken = (user) => {
 };
 
 
+
+exports.updateProfileDetails = async (req, res, next) => {
+    try {
+
+        const userId = req.user.id;
+
+
+        const profileData = req.body;
+
+        const updatedUser = await UserModel.updateUserDetails(userId, profileData);
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found or unable to update' });
+        }
+
+
+        res.status(200).json({
+            message: 'Profile updated successfully!',
+            user: updatedUser
+        });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+
 exports.sendOtp = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

@@ -27,4 +27,37 @@ const findAll = async () => {
 
 
 
-module.exports = { findByEmail, create, findById, findAll };
+/**
+  @param {number} userId
+  @param {object} profileData 
+  @returns {Promise<object>} 
+ */
+const updateUserDetails = async (userId, {
+    full_name,
+    school_name,
+    dob,
+    gender,
+    mobileNumber, // This is camelCase from the frontend
+    city,
+    state,
+    country
+}) => {
+    const { rows } = await db.query(
+        `UPDATE users
+     SET 
+       full_name = $1, 
+       school_name = $2, 
+       dob = $3, 
+       gender = $4, 
+       mobile_number = $5, -- This is snake_case in the database
+       city = $6, 
+       state = $7, 
+       country = $8
+     WHERE id = $9
+     RETURNING id, full_name, email, school_name, dob, gender, mobile_number, city, state, country`,
+        [full_name, school_name, dob, gender, mobileNumber, city, state, country, userId]
+    );
+    return rows[0];
+};
+
+module.exports = { findByEmail, create, findById, findAll, updateUserDetails };

@@ -9,6 +9,7 @@ const {
     getAllUsers,
     assignTest,
     getBoughtTests,
+    updateProfileDetails,
 } = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -54,6 +55,7 @@ router.post(
 // @desc  Get user data
 // @access Private
 router.get('/user', protect, getUserProfile);
+router.post('/user/details', protect, updateProfileDetails);
 router.get('/user/all', protect, getAllUsers);
 router.post('/user/assigntest', protect, assignTest);
 router.get('/user/mytests', protect, getBoughtTests);
