@@ -12,23 +12,20 @@
 }
 
 /*
-  The "glassmorphism" card effect. The fixed max-width has been removed
-  so it can responsively fill the Bootstrap column it's in.
+  The "glassmorphism" card effect.
 */
 .register-card-custom {
-  /* Glassmorphism Effect */
-  background: rgba(255, 255, 255, 0.8); /* Made slightly more opaque for better readability */
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border */
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 1.25rem;
 }
 
 /*
-  Styles for the SVG illustration to ensure it's responsive and
-  doesn't overflow its container.
+  Styles for the SVG illustration.
 */
 .illustration-img {
-  max-width: 90%; /* Use a percentage for better scaling */
+  max-width: 90%;
   height: auto;
 }
