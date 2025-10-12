@@ -206,7 +206,7 @@ const Profile = () => {
                             <Form.Control
                               type="email"
                               name="email"
-                              value={profileData.email} // Corrected this value
+                              value={profileData.email_or_phone}
                               readOnly
                               disabled
                             />
