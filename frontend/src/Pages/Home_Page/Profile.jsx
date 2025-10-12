@@ -22,7 +22,7 @@ const Profile = () => {
   // Single state for all user profile data
   const [profileData, setProfileData] = useState({
     full_name: "",
-    email: "", // Renamed for clarity
+    email: "",
     school_name: "",
     dob: "",
     gender: "",
@@ -30,12 +30,6 @@ const Profile = () => {
     city: "",
     state: "",
     country: "",
-  });
-
-  const [passwords, setPasswords] = useState({
-    current: "",
-    new: "",
-    confirm: "",
   });
 
   // State for loading, validation errors, and notifications
@@ -90,11 +84,6 @@ const Profile = () => {
     }
   };
 
-  // Handler for password fields
-  const handlePasswordChange = (e) => {
-    setPasswords({ ...passwords, [e.target.name]: e.target.value });
-  };
-
   // Form validation logic
   const validateProfileForm = () => {
     const newErrors = {};
@@ -143,26 +132,6 @@ const Profile = () => {
     }
   };
 
-  // Handle password change submission
-  const handleChangePassword = (e) => {
-    e.preventDefault();
-    if (passwords.new !== passwords.confirm) {
-      setNotification({
-        show: true,
-        type: "danger",
-        message: "New passwords do not match!",
-      });
-      return;
-    }
-    // API call to change password would go here
-    console.log("Attempting to change password with:", passwords.current);
-    setNotification({
-      show: true,
-      type: "success",
-      message: "Password changed successfully! (Simulated)",
-    });
-  };
-
   if (isLoading) {
     return (
       <div className="vh-100 d-flex justify-content-center align-items-center">
@@ -174,13 +143,16 @@ const Profile = () => {
   return (
     <Container className="py-5">
       <Row className="justify-content-center">
-        <Col lg={10}>
+        <Col lg={10} xl={9}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
           >
             <Card className="shadow-sm">
-              <Card.Header as="h4">My Profile</Card.Header>
+              <Card.Header as="h4" className="p-3">
+                My Profile
+              </Card.Header>
               <Card.Body className="p-4">
                 {notification.show && (
                   <Alert
@@ -193,21 +165,24 @@ const Profile = () => {
                 )}
                 <Row>
                   {/* Profile Picture Section */}
-                  <Col md={4} className="text-center mb-4 mb-md-0">
+                  <Col
+                    md={4}
+                    className="d-flex flex-column align-items-center text-center mb-4 mb-md-0"
+                  >
                     <Image
                       src={`https://api.dicebear.com/8.x/initials/svg?seed=${profileData.full_name}`}
                       roundedCircle
                       style={{ width: "150px", height: "150px" }}
-                      className="mb-3 border"
+                      className="mb-3 border p-1"
                     />
-                    <h5>{profileData.full_name}</h5>
+                    <h5 className="mb-1">{profileData.full_name}</h5>
                     <p className="text-muted">{profileData.email}</p>
-                    {/* The "Upload New Picture" button has been removed */}
                   </Col>
 
                   {/* Personal Information Form */}
                   <Col md={8}>
                     <h5>Personal Information</h5>
+                    <hr />
                     <Form noValidate onSubmit={handleProfileSubmit}>
                       <Row className="g-3">
                         <Col sm={6}>
@@ -231,7 +206,7 @@ const Profile = () => {
                             <Form.Control
                               type="email"
                               name="email"
-                              value={profileData.email_or_phone}
+                              value={profileData.email} // Corrected this value
                               readOnly
                               disabled
                             />
@@ -344,51 +319,12 @@ const Profile = () => {
                           </Form.Group>
                         </Col>
                       </Row>
-                      <Button variant="primary" type="submit" className="mt-4">
+                      <Button
+                        variant="primary"
+                        type="submit"
+                        className="mt-4 float-end"
+                      >
                         Save Changes
-                      </Button>
-                    </Form>
-
-                    <hr className="my-4" />
-
-                    {/* Change Password Form */}
-                    <h5>Change Password</h5>
-                    <Form onSubmit={handleChangePassword}>
-                      <Form.Group className="mb-3">
-                        <Form.Label>Current Password</Form.Label>
-                        <Form.Control
-                          type="password"
-                          name="current"
-                          value={passwords.current}
-                          onChange={handlePasswordChange}
-                        />
-                      </Form.Group>
-                      <Row>
-                        <Col sm={6}>
-                          <Form.Group className="mb-3">
-                            <Form.Label>New Password</Form.Label>
-                            <Form.Control
-                              type="password"
-                              name="new"
-                              value={passwords.new}
-                              onChange={handlePasswordChange}
-                            />
-                          </Form.Group>
-                        </Col>
-                        <Col sm={6}>
-                          <Form.Group className="mb-3">
-                            <Form.Label>Confirm New Password</Form.Label>
-                            <Form.Control
-                              type="password"
-                              name="confirm"
-                              value={passwords.confirm}
-                              onChange={handlePasswordChange}
-                            />
-                          </Form.Group>
-                        </Col>
-                      </Row>
-                      <Button variant="secondary" type="submit">
-                        Update Password
                       </Button>
                     </Form>
                   </Col>
