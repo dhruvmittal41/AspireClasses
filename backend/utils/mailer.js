@@ -3,7 +3,7 @@ const nodemailer = require("nodemailer");
 // Create a transporter object using the default SMTP transport
 // This object is responsible for the actual sending of the email.
 const transporter = nodemailer.createTransport({
-    host: "smtp.your-email-provider.com", // Your web host's SMTP server address
+    host: "smtp.gmail.com", // Your web host's SMTP server address
     port: 587, // Common port for SMTP with STARTTLS. Use 465 for SSL.
     secure: false, // true for port 465, false for other ports like 587
     auth: {
