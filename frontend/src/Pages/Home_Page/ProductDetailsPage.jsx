@@ -16,7 +16,7 @@ import {
   Stack,
 } from "react-bootstrap";
 import { motion } from "framer-motion";
-import { BookIcon, CalendarIcon, ClockIcon } from "../components/Icons";
+import { BookIcon, CalendarIcon, ClockIcon } from "./Icons.jsx";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
