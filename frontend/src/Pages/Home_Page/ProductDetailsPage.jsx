@@ -52,7 +52,7 @@ const ProductDetailsPage = ({ onNavigateToProfile, isProfileComplete }) => {
         } else if (productType === "bundle") {
           // --- NEW LOGIC FOR BUNDLES ---
           // 1. Fetch the entire list of bundles from the single endpoint
-          const endpoint = `/api/test_bundles`; // CHANGED: Fetching the list
+          const endpoint = `/test_bundles`; // CHANGED: Fetching the list
           const response = await axios.get(
             `${baseUrl}${endpoint}`,
             authHeaders
