@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "axios"; // 👈 Import axios
 import {
   Container,
   Row,
@@ -16,9 +16,9 @@ import {
   Stack,
 } from "react-bootstrap";
 import { motion } from "framer-motion";
-import { BookIcon, CalendarIcon, ClockIcon } from "./Icons.jsx";
+import { BookIcon, CalendarIcon, ClockIcon } from "../components/Icons";
 
-const baseUrl = import.meta.env.VITE_BASE_URL;
+const baseUrl = import.meta.env.VITE_BASE_URL; // 👈 Get base URL from environment variables
 
 const ProductDetailsPage = ({ onNavigateToProfile, isProfileComplete }) => {
   const { productType, id } = useParams();
@@ -33,56 +33,31 @@ const ProductDetailsPage = ({ onNavigateToProfile, isProfileComplete }) => {
       setIsLoading(true);
       setError(null);
       try {
-        let productData;
-
-        const authHeaders = {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        };
-
+        let endpoint;
+        // Determine the correct API endpoint based on the product type
         if (productType === "test") {
-          // This logic remains the same for fetching a single test
-          const endpoint = `/api/tests/${id}`;
-          const response = await axios.get(
-            `${baseUrl}${endpoint}`,
-            authHeaders
-          );
-          productData = response.data;
+          endpoint = `/api/tests/${id}`;
         } else if (productType === "bundle") {
-          // --- NEW LOGIC FOR BUNDLES ---
-          // 1. Fetch the entire list of bundles from the single endpoint
-          const endpoint = `/test_bundles`; // CHANGED: Fetching the list
-          const response = await axios.get(
-            `${baseUrl}${endpoint}`,
-            authHeaders
-          );
-          const allBundles = response.data;
-
-          // 2. Find the specific bundle from the list using its slug (the 'id' from the URL)
-          const specificBundle = allBundles.find(
-            (bundle) => bundle.slug === id
-          );
-
-          if (specificBundle) {
-            productData = specificBundle;
-          } else {
-            // If no bundle with that slug is found, throw an error.
-            throw new Error("Bundle not found.");
-          }
+          // Uses the slug (which is 'id' from useParams) to fetch the bundle
+          endpoint = `/api/test_bundles/${id}`;
         } else {
           throw new Error("Invalid product type.");
         }
 
-        // Add a 'type' property for consistent rendering logic
-        setProduct({
-          ...productData,
-          type: productType.charAt(0).toUpperCase() + productType.slice(1),
+        const response = await axios.get(`${baseUrl}${endpoint}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         });
+
+        // Add a 'type' property to the fetched data for consistent rendering logic
+        const productData = {
+          ...response.data,
+          type: productType.charAt(0).toUpperCase() + productType.slice(1),
+        };
+        setProduct(productData);
       } catch (err) {
-        setError(
-          err.message || "Could not load product details. Please try again."
-        );
+        setError("Could not load product details. Please try again.");
         console.error("Error fetching product details:", err);
       } finally {
         setIsLoading(false);
@@ -96,6 +71,7 @@ const ProductDetailsPage = ({ onNavigateToProfile, isProfileComplete }) => {
     if (!isProfileComplete) {
       setShowProfileModal(true);
     } else {
+      // Use the correct name property from the API response
       const productName = product.bundle_name || product.test_name;
       navigate(`/payment/${productType}/${id}`, {
         state: { name: productName, price: product.price },
@@ -133,6 +109,7 @@ const ProductDetailsPage = ({ onNavigateToProfile, isProfileComplete }) => {
               className="p-4 text-white"
               style={{ background: "#4A3F28" }}
             >
+              {/* Use the correct name property from the API response */}
               <h1 className="display-6 fw-bold mb-0">
                 {product.bundle_name || product.test_name}
               </h1>
@@ -169,6 +146,7 @@ const ProductDetailsPage = ({ onNavigateToProfile, isProfileComplete }) => {
                       </div>
                     </div>
                   )}
+                  {/* Updated to use 'features' from the new table */}
                   {product.type === "Bundle" && product.features && (
                     <div className="mt-4">
                       <h5 className="fw-semibold">What's Included:</h5>
@@ -234,6 +212,8 @@ const ProductDetailsPage = ({ onNavigateToProfile, isProfileComplete }) => {
           </Card>
         </motion.div>
       </Container>
+
+      {/* --- Profile Completion Modal --- */}
       <Modal
         show={showProfileModal}
         onHide={() => setShowProfileModal(false)}
