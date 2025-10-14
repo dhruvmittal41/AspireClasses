@@ -96,7 +96,7 @@ const Profile = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`${baseUrl}/api/user/details`, profileData, {
+      await axios.post(`${baseUrl}/api/user/details`, profileData, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
