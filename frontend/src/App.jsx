@@ -108,8 +108,8 @@ import { UpdateQuestions } from "./Pages/Admin_Page/UpdateQuestions.jsx";
 import CreateNewTest from "./Pages/Admin_Page/CreateNewTest.jsx";
 
 // 👇 Import the new page components
-import ProductDetailsPage from "./pages/ProductDetailsPage";
-import PaymentPage from "./pages/PaymentPage";
+import ProductDetailsPage from "./Pages/Home_Page/ProductDetailsPage.jsx";
+import PaymentPage from "./Pages/Home_Page/PaymentPage.jsx";
 
 import "./index.css";
 
