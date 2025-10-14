@@ -72,7 +72,7 @@ const PaymentPage = () => {
             <div className="d-grid mt-4">
               <Button
                 variant="outline-secondary"
-                onClick={() => navigate("/dashboard")}
+                onClick={() => navigate("/home")}
               >
                 Back to Dashboard
               </Button>
