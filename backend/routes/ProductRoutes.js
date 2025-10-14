@@ -11,3 +11,5 @@ const router = express.Router();
 
 
 router.get('/test_bundles', protect, getAllTestBundles);
+
+module.exports = router;
