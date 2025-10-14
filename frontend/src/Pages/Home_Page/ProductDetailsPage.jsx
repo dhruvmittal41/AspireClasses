@@ -52,7 +52,6 @@ const ProductDetailsPage = ({ onNavigateToProfile, isProfileComplete }) => {
     if (!isProfileComplete) {
       setShowProfileModal(true);
     } else {
-      // Navigate to payment page using the bundle's unique slug or id
       navigate(`/payment/bundle/${bundle.slug || bundle.id}`, {
         state: { name: bundle.bundle_name, price: bundle.price },
       });
@@ -91,7 +90,7 @@ const ProductDetailsPage = ({ onNavigateToProfile, isProfileComplete }) => {
 
   return (
     <>
-      <Container className="py-5">
+      <Container fluid className="py-5 px-lg-5">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -102,25 +101,42 @@ const ProductDetailsPage = ({ onNavigateToProfile, isProfileComplete }) => {
           >
             Our Test Bundles
           </h1>
-          <Row xs={1} md={2} lg={3} className="g-4">
+
+          <div className="d-flex flex-column gap-4">
             {bundles.map((bundle) => (
-              <Col key={bundle.id}>
-                <Card className="h-100 border-0 shadow-sm rounded-4 overflow-hidden">
-                  <Card.Header
-                    className="p-4 text-white"
-                    style={{ background: "#4A3F28" }}
-                  >
+              <Card
+                key={bundle.id}
+                className="border-0 shadow-sm rounded-4 overflow-hidden flex-md-row flex-column align-items-stretch w-100"
+                style={{ minHeight: "250px" }}
+              >
+                {/* Header Section (Left) */}
+                <div
+                  className="d-flex flex-column justify-content-between p-4 text-white"
+                  style={{
+                    background: "#4A3F28",
+                    minWidth: "300px",
+                    flexShrink: 0,
+                  }}
+                >
+                  <div>
                     <h4 className="fw-bold mb-0">{bundle.bundle_name}</h4>
                     <Badge bg="light" text="dark" className="mt-2">
                       Bundle
                     </Badge>
-                  </Card.Header>
-                  <Card.Body className="d-flex flex-column p-4">
-                    <Card.Text className="flex-grow-1">
-                      {bundle.description}
-                    </Card.Text>
+                  </div>
+                  <div className="mt-4">
+                    <h3 className="fw-bolder mb-0 text-light">
+                      ₹{bundle.price}
+                    </h3>
+                  </div>
+                </div>
+
+                {/* Content Section (Right) */}
+                <Card.Body className="d-flex flex-column justify-content-between p-4 bg-light">
+                  <div>
+                    <Card.Text className="mb-3">{bundle.description}</Card.Text>
                     {bundle.features && bundle.features.length > 0 && (
-                      <div className="mb-3">
+                      <div>
                         <h6 className="fw-semibold">What's Included:</h6>
                         <ul className="list-unstyled ps-3">
                           {bundle.features.map((item, idx) => (
@@ -129,33 +145,27 @@ const ProductDetailsPage = ({ onNavigateToProfile, isProfileComplete }) => {
                         </ul>
                       </div>
                     )}
-                    <div className="mt-auto">
-                      <h3
-                        className="fw-bolder mb-3"
-                        style={{ color: "#4A3F28" }}
-                      >
-                        ₹{bundle.price}
-                      </h3>
-                      <div className="d-grid">
-                        <Button
-                          size="lg"
-                          className="fw-bold"
-                          onClick={() => handleBuyNow(bundle)}
-                          style={{
-                            background: "#4A3F28",
-                            color: "#FFFFFF",
-                            border: "none",
-                          }}
-                        >
-                          Buy Bundle
-                        </Button>
-                      </div>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
+                  </div>
+
+                  <div className="mt-3 text-end">
+                    <Button
+                      size="lg"
+                      className="fw-bold px-5 py-2"
+                      onClick={() => handleBuyNow(bundle)}
+                      style={{
+                        background: "#4A3F28",
+                        color: "#FFFFFF",
+                        border: "none",
+                        borderRadius: "10px",
+                      }}
+                    >
+                      Buy Bundle
+                    </Button>
+                  </div>
+                </Card.Body>
+              </Card>
             ))}
-          </Row>
+          </div>
         </motion.div>
       </Container>
 
