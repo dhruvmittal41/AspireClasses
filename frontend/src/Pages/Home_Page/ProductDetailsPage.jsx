@@ -1,8 +1,8 @@
 // src/pages/ProductDetailsPage.jsx
 
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios"; // 👈 Import axios
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import {
   Container,
   Row,
@@ -13,68 +13,48 @@ import {
   Alert,
   Badge,
   Modal,
-  Stack,
 } from "react-bootstrap";
 import { motion } from "framer-motion";
-import { BookIcon, CalendarIcon, ClockIcon } from "./Icons.jsx";
 
-const baseUrl = import.meta.env.VITE_BASE_URL; // 👈 Get base URL from environment variables
+const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const ProductDetailsPage = ({ onNavigateToProfile, isProfileComplete }) => {
-  const { productType, id } = useParams();
   const navigate = useNavigate();
-  const [product, setProduct] = useState(null);
+  const [bundles, setBundles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
 
   useEffect(() => {
-    const fetchDetails = async () => {
+    const fetchBundles = async () => {
       setIsLoading(true);
       setError(null);
       try {
-        let endpoint;
-        // Determine the correct API endpoint based on the product type
-        if (productType === "test") {
-          endpoint = `/api/tests/${id}`;
-        } else if (productType === "bundle") {
-          // Uses the slug (which is 'id' from useParams) to fetch the bundle
-          endpoint = `/api/test_bundles/${id}`;
-        } else {
-          throw new Error("Invalid product type.");
-        }
-
+        const endpoint = "/api/test_bundles/";
         const response = await axios.get(`${baseUrl}${endpoint}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-
-        // Add a 'type' property to the fetched data for consistent rendering logic
-        const productData = {
-          ...response.data,
-          type: productType.charAt(0).toUpperCase() + productType.slice(1),
-        };
-        setProduct(productData);
+        setBundles(response.data);
       } catch (err) {
-        setError("Could not load product details. Please try again.");
-        console.error("Error fetching product details:", err);
+        setError("Could not load bundles. Please try again.");
+        console.error("Error fetching bundles:", err);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchDetails();
-  }, [productType, id]);
+    fetchBundles();
+  }, []);
 
-  const handleBuyNow = () => {
+  const handleBuyNow = (bundle) => {
     if (!isProfileComplete) {
       setShowProfileModal(true);
     } else {
-      // Use the correct name property from the API response
-      const productName = product.bundle_name || product.test_name;
-      navigate(`/payment/${productType}/${id}`, {
-        state: { name: productName, price: product.price },
+      // Navigate to payment page using the bundle's unique slug or id
+      navigate(`/payment/bundle/${bundle.slug || bundle.id}`, {
+        state: { name: bundle.bundle_name, price: bundle.price },
       });
     }
   };
@@ -88,14 +68,26 @@ const ProductDetailsPage = ({ onNavigateToProfile, isProfileComplete }) => {
     return (
       <div className="text-center" style={{ marginTop: "20%" }}>
         <Spinner animation="border" style={{ color: "#4A3F28" }} />
-        <p>Loading Details...</p>
+        <p>Loading Bundles...</p>
       </div>
     );
   }
 
-  if (error) return <Alert variant="danger">{error}</Alert>;
+  if (error) {
+    return (
+      <Container className="py-5">
+        <Alert variant="danger">{error}</Alert>
+      </Container>
+    );
+  }
 
-  if (!product) return null;
+  if (!bundles || bundles.length === 0) {
+    return (
+      <Container className="py-5 text-center">
+        <p>No bundles are available at the moment.</p>
+      </Container>
+    );
+  }
 
   return (
     <>
@@ -104,112 +96,66 @@ const ProductDetailsPage = ({ onNavigateToProfile, isProfileComplete }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <Card className="border-0 shadow-lg rounded-4 overflow-hidden">
-            <Card.Header
-              className="p-4 text-white"
-              style={{ background: "#4A3F28" }}
-            >
-              {/* Use the correct name property from the API response */}
-              <h1 className="display-6 fw-bold mb-0">
-                {product.bundle_name || product.test_name}
-              </h1>
-              <Badge bg="light" text="dark" className="mt-2">
-                {product.type}
-              </Badge>
-            </Card.Header>
-            <Card.Body className="p-4 p-md-5">
-              <Row>
-                <Col md={8}>
-                  <p className="lead">{product.description}</p>
-                  {product.type === "Test" && product.subject_topic && (
-                    <div className="mt-4">
-                      <h5 className="fw-semibold d-flex align-items-center mb-3">
-                        <BookIcon /> <span className="ms-2">Syllabus</span>
-                      </h5>
-                      <div className="d-flex flex-wrap gap-2">
-                        {product.subject_topic.split(/[,.-]/).map(
-                          (topic, idx) =>
-                            topic.trim() && (
-                              <Badge
-                                key={idx}
-                                pill
-                                text="dark"
-                                className="px-3 py-2 fs-6 fw-normal"
-                                style={{
-                                  backgroundColor: "rgba(74, 63, 40, 0.1)",
-                                }}
-                              >
-                                {topic.trim()}
-                              </Badge>
-                            )
-                        )}
+          <h1
+            className="display-5 fw-bold mb-5 text-center"
+            style={{ color: "#4A3F28" }}
+          >
+            Our Test Bundles
+          </h1>
+          <Row xs={1} md={2} lg={3} className="g-4">
+            {bundles.map((bundle) => (
+              <Col key={bundle.id}>
+                <Card className="h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                  <Card.Header
+                    className="p-4 text-white"
+                    style={{ background: "#4A3F28" }}
+                  >
+                    <h4 className="fw-bold mb-0">{bundle.bundle_name}</h4>
+                    <Badge bg="light" text="dark" className="mt-2">
+                      Bundle
+                    </Badge>
+                  </Card.Header>
+                  <Card.Body className="d-flex flex-column p-4">
+                    <Card.Text className="flex-grow-1">
+                      {bundle.description}
+                    </Card.Text>
+                    {bundle.features && bundle.features.length > 0 && (
+                      <div className="mb-3">
+                        <h6 className="fw-semibold">What's Included:</h6>
+                        <ul className="list-unstyled ps-3">
+                          {bundle.features.map((item, idx) => (
+                            <li key={idx}>✓ {item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    <div className="mt-auto">
+                      <h3
+                        className="fw-bolder mb-3"
+                        style={{ color: "#4A3F28" }}
+                      >
+                        ₹{bundle.price}
+                      </h3>
+                      <div className="d-grid">
+                        <Button
+                          size="lg"
+                          className="fw-bold"
+                          onClick={() => handleBuyNow(bundle)}
+                          style={{
+                            background: "#4A3F28",
+                            color: "#FFFFFF",
+                            border: "none",
+                          }}
+                        >
+                          Buy Bundle
+                        </Button>
                       </div>
                     </div>
-                  )}
-                  {/* Updated to use 'features' from the new table */}
-                  {product.type === "Bundle" && product.features && (
-                    <div className="mt-4">
-                      <h5 className="fw-semibold">What's Included:</h5>
-                      <ul>
-                        {product.features.map((item, idx) => (
-                          <li key={idx}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </Col>
-                <Col md={4} className="mt-4 mt-md-0">
-                  <div
-                    className="p-4 rounded-3"
-                    style={{ background: "#FBFAF5" }}
-                  >
-                    <h2
-                      className="text-center fw-bolder"
-                      style={{ color: "#4A3F28" }}
-                    >
-                      ₹{product.price}
-                    </h2>
-                    {product.type === "Test" && (
-                      <Stack gap={3} className="my-4 text-center">
-                        <div className="d-flex align-items-center justify-content-center">
-                          <CalendarIcon />
-                          <span className="ms-2">
-                            {new Date(
-                              product.date_scheduled
-                            ).toLocaleDateString("en-GB", {
-                              day: "numeric",
-                              month: "long",
-                              year: "numeric",
-                            })}
-                          </span>
-                        </div>
-                        <div className="d-flex align-items-center justify-content-center">
-                          <ClockIcon />
-                          <span className="ms-2">
-                            {product.duration_minutes} minutes
-                          </span>
-                        </div>
-                      </Stack>
-                    )}
-                    <div className="d-grid mt-4">
-                      <Button
-                        size="lg"
-                        className="fw-bold"
-                        onClick={handleBuyNow}
-                        style={{
-                          background: "#4A3F28",
-                          color: "#FFFFFF",
-                          border: "none",
-                        }}
-                      >
-                        {product.type === "Test" ? "Enroll Now" : "Buy Bundle"}
-                      </Button>
-                    </div>
-                  </div>
-                </Col>
-              </Row>
-            </Card.Body>
-          </Card>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
         </motion.div>
       </Container>
 
