@@ -37,7 +37,7 @@ const updateUserDetails = async (userId, {
     school_name,
     dob,
     gender,
-    mobileNumber, // This is camelCase from the frontend
+    mobile_number, // This is camelCase from the frontend
     city,
     state,
     country
@@ -55,7 +55,7 @@ const updateUserDetails = async (userId, {
        country = $8
      WHERE id = $9
      RETURNING id, full_name, email_or_phone, school_name, dob, gender, mobile_number, city, state, country`,
-        [full_name, school_name, dob, gender, mobileNumber, city, state, country, userId]
+        [full_name, school_name, dob, gender, mobile_number, city, state, country, userId]
     );
     return rows[0];
 };
