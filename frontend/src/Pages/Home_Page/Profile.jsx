@@ -1,5 +1,4 @@
 // src/components/Profile.jsx
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -15,11 +14,9 @@ import {
 } from "react-bootstrap";
 import { motion } from "framer-motion";
 
-// Use environment variable for base URL
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const Profile = () => {
-  // Single state for all user profile data
   const [profileData, setProfileData] = useState({
     full_name: "",
     email_or_phone: "",
@@ -32,7 +29,6 @@ const Profile = () => {
     country: "",
   });
 
-  // State for loading, validation errors, and notifications
   const [isLoading, setIsLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const [notification, setNotification] = useState({
@@ -41,7 +37,6 @@ const Profile = () => {
     message: "",
   });
 
-  // Fetch user data on component mount
   useEffect(() => {
     const fetchUserData = async () => {
       setIsLoading(true);
@@ -51,14 +46,12 @@ const Profile = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        // Format date for the input field (YYYY-MM-DD)
         const userData = response.data;
         if (userData.dob) {
           userData.dob = new Date(userData.dob).toISOString().split("T")[0];
         }
 
-        // Pre-fill form with fetched data
-        setProfileData((prev) => ({ ...prev, ...userData }));
+        setProfileData(userData);
       } catch (error) {
         console.error("Failed to fetch user data:", error);
         setNotification({
@@ -74,27 +67,22 @@ const Profile = () => {
     fetchUserData();
   }, []);
 
-  // Generic change handler for profile form
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfileData((prev) => ({ ...prev, [name]: value }));
-    // Clear validation error on change
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: null }));
-    }
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: null }));
   };
 
-  // Form validation logic
   const validateProfileForm = () => {
     const newErrors = {};
     if (!profileData.full_name) newErrors.full_name = "Full Name is required.";
     if (!profileData.dob) newErrors.dob = "Date of Birth is required.";
     if (!profileData.gender) newErrors.gender = "Gender is required.";
     if (
-      !profileData.mobileNumber ||
+      !profileData.mobile_number ||
       !/^\d{10,15}$/.test(profileData.mobile_number)
     )
-      newErrors.mobileNumber = "A valid mobile number is required.";
+      newErrors.mobile_number = "A valid mobile number is required.";
     if (!profileData.city) newErrors.city = "City is required.";
     if (!profileData.state) newErrors.state = "State is required.";
     if (!profileData.country) newErrors.country = "Country is required.";
@@ -102,21 +90,16 @@ const Profile = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle profile update submission
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
-    setNotification({ show: false, type: "", message: "" }); // Hide previous notifications
-
-    if (!validateProfileForm()) {
-      return;
-    }
+    if (!validateProfileForm()) return;
 
     try {
       const token = localStorage.getItem("token");
-      // Use a PUT or POST request to update user details
-      await axios.post(`${baseUrl}/api/user/details`, profileData, {
+      await axios.put(`${baseUrl}/api/user/details`, profileData, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       setNotification({
         show: true,
         type: "success",
@@ -164,7 +147,6 @@ const Profile = () => {
                   </Alert>
                 )}
                 <Row>
-                  {/* Profile Picture Section */}
                   <Col
                     md={4}
                     className="d-flex flex-column align-items-center text-center mb-4 mb-md-0"
@@ -179,7 +161,6 @@ const Profile = () => {
                     <p className="text-muted">{profileData.email_or_phone}</p>
                   </Col>
 
-                  {/* Personal Information Form */}
                   <Col md={8}>
                     <h5>Personal Information</h5>
                     <hr />
@@ -202,10 +183,10 @@ const Profile = () => {
                         </Col>
                         <Col sm={6}>
                           <Form.Group>
-                            <Form.Label>Email Address</Form.Label>
+                            <Form.Label>Email</Form.Label>
                             <Form.Control
                               type="email"
-                              name="email"
+                              name="email_or_phone"
                               value={profileData.email_or_phone}
                               readOnly
                               disabled
@@ -228,14 +209,13 @@ const Profile = () => {
                             <Form.Label>Mobile Number</Form.Label>
                             <Form.Control
                               type="tel"
-                              name="mobileNumber"
+                              name="mobile_number"
                               value={profileData.mobile_number}
                               onChange={handleChange}
                               isInvalid={!!errors.mobile_number}
-                              placeholder="e.g., 9876543210"
                             />
                             <Form.Control.Feedback type="invalid">
-                              {errors.mobileNumber}
+                              {errors.mobile_number}
                             </Form.Control.Feedback>
                           </Form.Group>
                         </Col>
