@@ -1,13 +1,13 @@
 const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
-const { findBundleBySlug } = require('../models/ProductModel');
+const { findAllBundles } = require('../models/ProductModel');
 
 
 
 exports.getAllTestBundles = async (req, res, next) => {
     try {
         // Find all bundles in the database.
-        const bundles = await findBundleBySlug.findAll({
+        const bundles = await findAllBundles({
             attributes: [
                 'id',
                 'bundle_name',

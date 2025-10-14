@@ -1,7 +1,7 @@
 
 const db = require('../config/db');
 
-const findBundleBySlug = async (slug) => {
+const findAllBundles = async () => {
     const query = `
         SELECT 
             id, 
@@ -13,22 +13,21 @@ const findBundleBySlug = async (slug) => {
             image_url, 
             category 
         FROM 
-            test_bundles 
-        WHERE 
-            slug = $1
+            test_bundles
+        ORDER BY 
+            id ASC
     `;
 
-    // Execute the query with the slug as a parameter
-    const { rows } = await db.query(query, [slug]);
+    const { rows } = await db.query(query);
 
-    // Since slug is unique, return the first result found, or undefined
-    return rows[0];
+
+    return rows;
 };
+
 
 module.exports = {
-    findBundleBySlug
+    findAllBundles
 };
-
 
 
 
