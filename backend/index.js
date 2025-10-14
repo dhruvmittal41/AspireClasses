@@ -5,6 +5,7 @@ const cors = require('cors');
 const authRoutes = require('./routes/authRoutes');
 const testRoutes = require('./routes/testRoutes');
 const resultRoutes = require('./routes/resultRoutes');
+const productroutes = require('./routes/ProductRoutes')
 const errorMiddleware = require('./middleware/errorMiddleware');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -24,6 +25,7 @@ app.use(express.json()); // Parse JSON bodies
 app.use('/api', authRoutes);
 app.use('/api', testRoutes);
 app.use('/api', resultRoutes);
+app.use('/api', productroutes);
 
 
 app.post('/api/admin/login', async (req, res) => {
