@@ -74,6 +74,7 @@ const ProductDetailsPage = ({ onNavigateToProfile, isProfileComplete }) => {
   const handleGoToProfile = () => {
     setShowProfileModal(false);
     onNavigateToProfile();
+    navigate("/Home", { state: { openProfile: true } });
   };
 
   if (isLoading) {

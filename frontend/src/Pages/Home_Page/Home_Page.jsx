@@ -10,6 +10,7 @@ import {
   Button,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 // Import Views
 import DashboardView from "./Dashboardview.jsx";
@@ -46,6 +47,14 @@ const HomePage = () => {
   const [activeItem, setActiveItem] = useState("Dashboard");
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.openProfile) {
+      setActiveItem("Profile");
+    }
+  }, [location.state]);
 
   useEffect(() => {
     const userDataString = localStorage.getItem("user");
