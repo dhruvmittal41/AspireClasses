@@ -43,7 +43,7 @@ ChartJS.register(
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
-// --- NEW: Centralized Total Questions ---
+// --- Centralized Total Questions ---
 const TOTAL_QUESTIONS = 85;
 
 // --- Animation Variants ---
@@ -59,7 +59,7 @@ const itemVariants = {
   visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } },
 };
 
-// --- Helper Function for Feedback ---
+// --- Helper Function for Feedback (still uses 0-100 score for logic) ---
 const getPerformanceFeedback = (score) => {
   if (score >= 90)
     return {
@@ -82,20 +82,20 @@ const getPerformanceFeedback = (score) => {
   };
 };
 
-// --- NEW: Helper to calculate question counts from percentage ---
-const getQuestionCounts = (percentage) => {
-  if (percentage === null || percentage === undefined) {
+// --- Helper to calculate question counts from 0-100 score ---
+const getQuestionCounts = (score) => {
+  if (score === null || score === undefined) {
     return { correct: 0, incorrect: 0, total: TOTAL_QUESTIONS };
   }
-  const correct = Math.round((parseFloat(percentage) / 100) * TOTAL_QUESTIONS);
+  const correct = Math.round((parseFloat(score) / 100) * TOTAL_QUESTIONS);
   const incorrect = TOTAL_QUESTIONS - correct;
   return { correct, incorrect, total: TOTAL_QUESTIONS };
 };
 
-// --- MODIFIED: Helper Function to Format Score (now uses getQuestionCounts) ---
-const formatScoreOutOf85 = (percentage) => {
-  if (percentage === null || percentage === undefined) return "N/A";
-  const { correct, total } = getQuestionCounts(percentage);
+// --- Helper Function to Format Score (converts 0-100 score to "X / 85") ---
+const formatScoreOutOf85 = (score) => {
+  if (score === null || score === undefined) return "N/A";
+  const { correct, total } = getQuestionCounts(score);
   return `${correct} / ${total}`;
 };
 
@@ -143,19 +143,19 @@ const ResultsView = () => {
       results[0]
     );
     return {
-      average: average.toFixed(1), // average is a percentage
+      average: average.toFixed(1), // average is a 0-100 value
       best, // best is a result object
       total: results.length,
     };
   }, [results]);
 
-  // Chart data configurations remain unchanged as they work best with percentages
+  // --- MODIFIED: Chart data now uses correct question counts ---
   const overallChartData = {
     labels: results.map((r) => r.test_name),
     datasets: [
       {
-        label: "Score History",
-        data: results.map((r) => r.score), // Uses 0-100 percentage
+        label: "Correct Questions",
+        data: results.map((r) => getQuestionCounts(r.score).correct), // Uses 0-85 count
         fill: true,
         backgroundColor: "rgba(59, 130, 246, 0.2)",
         borderColor: "rgba(59, 130, 246, 1)",
@@ -164,32 +164,36 @@ const ResultsView = () => {
     ],
   };
 
+  // --- MODIFIED: Modal chart data now uses correct question counts ---
   const modalChartData = {
     bar: {
       labels: [selectedResult?.test_name],
       datasets: [
         {
-          label: "Your Score",
-          data: [selectedResult?.score], // Uses 0-100 percentage
+          label: "Your Correct Answers",
+          data: [getQuestionCounts(selectedResult?.score).correct], // Uses 0-85 count
           backgroundColor: "#3B82F6",
         },
         {
-          label: "Average Score",
-          data: [selectedResult?.average_score], // Uses 0-100 percentage
+          label: "Average Correct Answers",
+          data: [getQuestionCounts(selectedResult?.average_score).correct], // Uses 0-85 count
           backgroundColor: "#F97316",
         },
         {
-          label: "Highest Score",
-          data: [selectedResult?.highest_score], // Uses 0-100 percentage
+          label: "Highest Correct Answers",
+          data: [getQuestionCounts(selectedResult?.highest_score).correct], // Uses 0-85 count
           backgroundColor: "#EF4444",
         },
       ],
     },
     doughnut: {
-      labels: ["Your Score", "Points Missed"],
+      labels: ["Correct", "Incorrect"],
       datasets: [
         {
-          data: [selectedResult?.score, 100 - (selectedResult?.score || 0)], // Uses 0-100 percentage
+          data: [
+            getQuestionCounts(selectedResult?.score).correct,
+            getQuestionCounts(selectedResult?.score).incorrect,
+          ],
           backgroundColor: ["#3B82F6", "#E5E7EB"],
           borderColor: ["#FFFFFF", "#FFFFFF"],
           borderWidth: 2,
@@ -197,6 +201,24 @@ const ResultsView = () => {
       ],
     },
   };
+
+  // --- MODIFIED: New helper text for modal insight ---
+  let modalInsightText = "";
+  if (selectedResult) {
+    const userCorrect = getQuestionCounts(selectedResult.score).correct;
+    const avgCorrect = getQuestionCounts(selectedResult.average_score).correct;
+    const diff = userCorrect - avgCorrect;
+
+    if (diff > 0) {
+      modalInsightText = `You answered ${diff} more questions correctly than the average.`;
+    } else if (diff < 0) {
+      modalInsightText = `You answered ${Math.abs(
+        diff
+      )} fewer questions correctly than the average.`;
+    } else {
+      modalInsightText = "You performed exactly on average with other students.";
+    }
+  }
 
   if (loading) {
     return (
@@ -232,7 +254,7 @@ const ResultsView = () => {
             <Card.Body>
               <Card.Title>Average Score</Card.Title>
               <Card.Text className="display-4 fw-bold text-primary">
-                {/* Uses percentage average to calculate score out of 85 */}
+                {/* Uses 0-100 average to calculate score out of 85 */}
                 {formatScoreOutOf85(summaryStats.average)}
               </Card.Text>
             </Card.Body>
@@ -275,7 +297,13 @@ const ResultsView = () => {
               options={{
                 responsive: true,
                 maintainAspectRatio: false,
-                scales: { y: { beginAtZero: true, max: 100 } }, // Scale is 0-100%
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    max: TOTAL_QUESTIONS, // MODIFIED: Scale is 0-85
+                    title: { display: true, text: "Correct Questions" },
+                  },
+                },
               }}
             />
           </Card.Body>
@@ -306,11 +334,11 @@ const ResultsView = () => {
                   </span>
                   <Badge bg={getPerformanceFeedback(result.score).variant}>
                     {getPerformanceFeedback(result.score).text.split("!")[0]}
-                  </Badge>
+                 </Badge>
                 </div>
                 <ProgressBar
-                  now={result.score} // `now` prop uses 0-100 percentage
-                  label={formatScoreOutOf85(result.score)}
+                  now={result.score} // `now` prop still uses 0-100 score for fill
+                  label={formatScoreOutOf85(result.score)} // label shows "X / 85"
                 />
                 <Card.Text className="text-muted mt-2 text-end">
                   Highest: {formatScoreOutOf85(result.highest_score)}
@@ -340,7 +368,13 @@ const ResultsView = () => {
                   options={{
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true, max: 100 } }, // Scale is 0-100%
+                    scales: {
+                      y: {
+                     beginAtZero: true,
+                          max: TOTAL_QUESTIONS, // MODIFIED: Scale is 0-85
+                          title: { display: true, text: "Correct Questions" },
+                        },
+                    },
                   }}
                   data={modalChartData.bar}
                 />
@@ -353,7 +387,7 @@ const ResultsView = () => {
                   options={{
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
+                    plugins: { legend: { display: true, position: "bottom" } }, // MODIFIED: Legend is useful now
                   }}
                 />
               </div>
@@ -361,36 +395,27 @@ const ResultsView = () => {
                 <i className="bi bi-lightbulb-fill text-warning"></i>{" "}
                 Performance Insights
               </h5>
-              <p>
-                Your score is in the{" "}
-                <strong>
-                  {(
-                    (selectedResult?.score / selectedResult?.highest_score) *
-                    100
-                  ).toFixed(1)}
-                  th percentile
-                </strong>{" "}
-                of the top score.
-              </p>
+              {/* --- MODIFIED: Replaced percentile text --- */}
+              <p>{modalInsightText}</p>
 
-              {/* --- NEW: Question Breakdown Card --- */}
+              {/* --- Question Breakdown Card (Unchanged) --- */}
               {selectedResult && (
                 <Card className="my-3 bg-light shadow-sm">
                   <Card.Body>
                     <Card.Title className="text-center h6 mb-3">
                       Question Breakdown
                     </Card.Title>
-                    <div className="d-flex justify-content-around text-center">
+                 <div className="d-flex justify-content-around text-center">
                       <div>
                         <span className="fs-4 fw-bold text-success">
                           {getQuestionCounts(selectedResult.score).correct}
                         </span>
-                        <br />
-                        <small className="text-muted">Correct</small>
+                       <br />
+                     <small className="text-muted">Correct</small>
                       </div>
                       <div>
                         <span className="fs-4 fw-bold text-danger">
-                       {getQuestionCounts(selectedResult.score).incorrect}
+                          {getQuestionCounts(selectedResult.score).incorrect}
                         </span>
                         <br />
                         <small className="text-muted">Incorrect</small>
@@ -400,23 +425,23 @@ const ResultsView = () => {
                           {getQuestionCounts(selectedResult.score).total}
                         </span>
                         <br />
-                        <small className="text-muted">Total</small>
+                   <small className="text-muted">Total</small>
                       </div>
-                      </div>
-                  </Card.Body>
+                    </div>
+            </Card.Body>
                 </Card>
               )}
-              
+
               <Alert
                 variant={
                   getPerformanceFeedback(selectedResult?.score || 0).variant
-                }
+             }
               >
                 {getPerformanceFeedback(selectedResult?.score || 0).text}
               </Alert>
             </Col>
           </Row>
-       </Modal.Body>
+        </Modal.Body>
       </Modal>
     </Container>
   );
