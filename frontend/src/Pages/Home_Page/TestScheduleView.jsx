@@ -1,23 +1,18 @@
 // src/components/TestScheduleView.jsx
 
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import axios from "axios";
+import React from "react";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
   Container,
   Card,
   Button,
-  Spinner,
-  Alert,
   Row,
   Col,
-  Stack,
   Badge,
 } from "react-bootstrap";
-import { ClockIcon, CalendarIcon } from "./Icons";
-
-const baseUrl = import.meta.env.VITE_BASE_URL;
+// Note: Removed Icons, Stack, Spinner, Alert as they are no longer used.
+// Note: Removed useState, useEffect, axios as the API call is no longer needed.
 
 // --- Animation Variants ---
 const containerVariants = {
@@ -33,59 +28,20 @@ const itemVariants = {
   visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 200 } },
 };
 
-const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-};
+// Note: Removed formatDate function as it's no longer used.
 
 const TestScheduleView = () => {
-  const [upcomingTests, setUpcomingTests] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // Note: Removed all state (upcomingTests, isLoading, error)
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchUpcomingTests = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}/api/upcoming-tests`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        setUpcomingTests(response.data);
-      } catch (err) {
-        setError("Failed to fetch test schedule. Please try again later.");
-        console.error("Error fetching data:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchUpcomingTests();
-  }, []);
+  // Note: Removed useEffect hook that fetched upcoming tests
 
-  // --- Handlers navigate to the details page ---
-  const handleViewDetails = (testId) => {
-    navigate(`/details/test/${testId}`);
-  };
-
+  // Note: Removed handleViewDetails handler
   const handleViewBundle = () => {
     navigate(`/details/bundle/amu-9th-entrance-series`);
   };
 
-  if (isLoading) {
-    return (
-      <div
-        className="d-flex flex-column justify-content-center align-items-center"
-        style={{ minHeight: "50vh" }}
-      >
-        <Spinner animation="border" style={{ color: "#4A3F28" }} />
-        <p className="mt-3 text-muted">Loading Your Schedule...</p>
-      </div>
-    );
-  }
-
-  if (error) return <Alert variant="danger">{error}</Alert>;
+  // Note: Removed isLoading and error conditional returns
 
   return (
     <Container
@@ -160,74 +116,8 @@ const TestScheduleView = () => {
           </Card>
         </Col>
 
-        {/* --- Upcoming Tests --- */}
-        <AnimatePresence>
-          {upcomingTests.length > 0 ? (
-            upcomingTests.map((test) => (
-              <Col
-                key={test.id}
-                as={motion.div}
-                variants={itemVariants}
-                whileHover={{ y: -5, scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <Card
-                  className="h-100 shadow-sm border-0 rounded-4 overflow-hidden"
-                  role="button"
-                  onClick={() => handleViewDetails(test.id)}
-                  style={{
-                    background: "#FBFAF5",
-                    color: "#4A3F28",
-                    cursor: "pointer",
-                  }}
-                >
-                  <Card.Body className="d-flex flex-column p-4">
-                    <Card.Title className="fw-bold h5 mb-3">
-                      {test.test_name}
-                    </Card.Title>
-                    <Stack gap={2} className="small mb-4 text-muted">
-                      <div className="d-flex align-items-center">
-                        <CalendarIcon />{" "}
-                        <span className="ms-2">
-                          {formatDate(test.date_scheduled)}
-                        </span>
-                      </div>
-                      <div className="d-flex align-items-center">
-                        <ClockIcon />{" "}
-                        <span className="ms-2">
-                          {test.duration_minutes} minutes
-                        </span>
-                      </div>
-                    </Stack>
-                    <Button
-                      variant="dark"
-                      className="mt-auto fw-bold"
-                      style={{
-                        backgroundColor: "#4A3F28",
-                        color: "#FFFFFF",
-                        border: "none",
-                      }}
-                    >
-                      View Details
-                    </Button>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))
-          ) : (
-            <Col xs={12}>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-center mt-5"
-              >
-                <Alert variant="info" className="p-4 fs-5">
-                  No upcoming tests have been scheduled. Check back soon!
-                </Alert>
-              </motion.div>
-            </Col>
-          )}
-        </AnimatePresence>
+        {/* --- Upcoming Tests Section Removed --- */}
+        {/* The <AnimatePresence> and upcomingTests.map(...) block has been deleted. */}
       </Row>
     </Container>
   );
