@@ -9,19 +9,23 @@ import LoginPage from "./Pages/Login_Page/Login_Page.jsx";
 import ShoppingPage from "./Pages/Shopping_Page/Shopping_Page.jsx";
 import UserDetailForm from "./Pages/UserDetail_Page/User_Detail.jsx";
 import AdminLogin from "./Pages/Admin_Page/AdminLogin";
-import PrivateRoute from "./Pages/Admin_Page/PrivateRoute";
+import PrivateadminRoute from "./Pages/Admin_Page/PrivateRoute";
 import AdminDashboard from "./Pages/Admin_Page/AdminDashboard";
 import AssignTest from "./Pages/Admin_Page/AssignTest";
 import { UpdateQuestions } from "./Pages/Admin_Page/UpdateQuestions.jsx";
 import CreateNewTest from "./Pages/Admin_Page/CreateNewTest.jsx";
-
-// 👇 Import the new page components
 import ProductDetailsPage from "./Pages/Home_Page/ProductDetailsPage.jsx";
 import PaymentPage from "./Pages/Home_Page/PaymentPage.jsx";
+import { AuthContext } from "./context/AuthContext";
+import { useEffect, useContext } from "react";
 
 import "./index.css";
 
-// 2. DEFINE YOUR ROUTES AS AN ARRAY OF OBJECTS
+const PrivateRoute = ({ children }) => {
+  const { accessToken } = useContext(AuthContext);
+  return accessToken ? children : <Navigate to="/login" />;
+};
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -32,13 +36,12 @@ const router = createBrowserRouter([
     element: <AdminLogin />,
   },
   {
-    // This is your PrivateRoute layout. It protects all its children.
-    element: <PrivateRoute />,
+    element: <PrivateadminRoute />,
     children: [
       {
         path: "/admin",
         element: <AdminDashboard />,
-        // These routes will render inside the AdminDashboard's <Outlet>
+
         children: [
           {
             path: "assign-test",
@@ -80,20 +83,38 @@ const router = createBrowserRouter([
     path: "/UserDetails",
     element: <UserDetailForm />,
   },
-  // 👇 Route for the product details page
+
   {
     path: "/details/bundle/:id",
     element: <ProductDetailsPage />,
   },
-  // 👇 Corrected route for the payment page (matches ProductDetailsPage navigation)
+
   {
     path: "/payment/bundle/:id",
     element: <PaymentPage />,
   },
 ]);
 
-// 3. UPDATE THE APP COMPONENT TO USE THE ROUTER PROVIDER
 function App() {
+  const { setAccessToken, setUser } = useContext(AuthContext);
+
+  useEffect(() => {
+    const refreshLogin = async () => {
+      try {
+        const res = await axios.post(
+          `${baseUrl}/api/refresh`,
+          {},
+          { withCredentials: true }
+        );
+
+        setAccessToken(res.data.accessToken);
+        setUser(res.data.user);
+      } catch {}
+    };
+
+    refreshLogin();
+  }, []);
+
   return <RouterProvider router={router} />;
 }
 

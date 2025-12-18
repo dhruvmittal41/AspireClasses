@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom"; // Added Link for navigation
+import { useContext } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import {
   Container,
   Card,
@@ -8,12 +9,13 @@ import {
   Spinner,
   Alert,
   FloatingLabel,
-  Row, // <-- Import Row
-  Col, // <-- Import Col
+  Row,
+  Col,
 } from "react-bootstrap";
 import axios from "axios";
 import "./Login_Page.css";
-import LoginIllustration from "./undraw_login.svg"; // <-- Import your SVG
+import LoginIllustration from "./undraw_login.svg";
+import { AuthContext } from "../context/AuthContext";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -22,32 +24,30 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
+  const { setAccessToken, setUser } = useContext(AuthContext);
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    if (!email) {
-      setError("Email or Phone Number is required.");
-      setLoading(false);
-      return;
-    }
-
     try {
-      const response = await axios.post(`${baseUrl}/api/login`, { email });
+      const response = await axios.post(
+        `${baseUrl}/api/login`,
+        { email },
+        { withCredentials: true } // ⭐ REQUIRED
+      );
 
-      if (response.data && response.data.token) {
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("user", JSON.stringify(response.data.user));
+      if (response.data?.accessToken) {
+        setAccessToken(response.data.accessToken);
+        setUser(response.data.user);
         navigate("/home");
       } else {
-        setError("Login failed. Please check your credentials.");
+        setError("Login failed.");
       }
     } catch (err) {
-      const errorMessage =
-        err.response?.data?.error || "An unexpected error occurred.";
-      setError(errorMessage);
+      setError(
+        err.response?.data?.error || "Something went wrong. Please try again."
+      );
     } finally {
       setLoading(false);
     }

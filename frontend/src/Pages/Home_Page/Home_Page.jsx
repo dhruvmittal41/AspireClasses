@@ -64,11 +64,15 @@ const HomePage = () => {
     }
   }, []);
 
-  const handleLogout = () => {
+  async function handleLogout() {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
+    await axios.post(`${baseUrl}/api/logout`, {}, { withCredentials: true });
+    setAccessToken(null);
+    setUser(null);
+    navigate("/login");
     navigate("/");
-  };
+  }
 
   const handleMenuClick = (name) => {
     setActiveItem(name);

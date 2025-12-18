@@ -13,31 +13,72 @@ const url = process.env.FRONTEND_URL;
 
 const app = express();
 
-// Middleware
-app.use(cors({
-    origin: url, // allow frontend dev server
-    credentials: true, // if you need cookies/auth headers
-}));
-// Enable Cross-Origin Resource Sharing
-app.use(express.json()); // Parse JSON bodies
+const generateAccessToken = (user) =>
+    jwt.sign(user, process.env.ACCESS_SECRET, { expiresIn: '15m' });
 
-// API Routes
+const generateRefreshToken = (user) =>
+    jwt.sign(user, process.env.REFRESH_SECRET, { expiresIn: '7d' });
+
+
+
+app.use(cors({
+    origin: url,
+    credentials: true,
+}));
+
+app.use(express.json());
+app.use(require('cookie-parser')());
+
+
 app.use('/api', authRoutes);
 app.use('/api', testRoutes);
 app.use('/api', resultRoutes);
 app.use('/api', productroutes);
 
 
+
+
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    const user = { id: 1, email };
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
+    res.json({ accessToken });
+});
+
+
+app.post('/refresh', (req, res) => {
+    const token = req.cookies.refreshToken;
+    if (!token) return res.sendStatus(401);
+
+    jwt.verify(token, process.env.REFRESH_SECRET, (err, user) => {
+        if (err) return res.sendStatus(403);
+
+        const accessToken = generateAccessToken({ id: user.id });
+        res.json({ accessToken });
+    });
+});
+
+
 app.post('/api/admin/login', async (req, res) => {
-    // Get username and password from the request body
+
     const { username, password } = req.body;
 
-    // --- Basic Validation ---
     if (!username || !password) {
         return res.status(400).json({ message: 'Username and password are required.' });
     }
 
-    // --- Retrieve Admin Credentials from Environment Variables ---
+
     const adminUsername = process.env.ADMIN_USERNAME;
     const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
 
@@ -47,34 +88,33 @@ app.post('/api/admin/login', async (req, res) => {
     }
 
     try {
-        // --- Authenticate the User ---
-        // 1. Check if the username matches
+
         const isUsernameMatch = (username === adminUsername);
 
-        // 2. Compare the provided password with the stored hash
+
         const isPasswordMatch = await bcrypt.compare(password, adminPasswordHash);
 
-        // 3. If either does not match, send an error response
+
         if (!isUsernameMatch || !isPasswordMatch) {
             return res.status(401).json({ message: 'Invalid credentials. Please try again.' });
         }
 
-        // --- Create a JWT if Authentication is Successful ---
+
         const payload = {
             user: {
                 username: adminUsername,
-                role: 'admin' // You can add other useful info here
+                role: 'admin'
             }
         };
 
-        // Sign the token
+
         jwt.sign(
             payload,
             process.env.JWT_SECRET,
-            { expiresIn: '8h' }, // Token will be valid for 8 hours
+            { expiresIn: '8h' },
             (err, token) => {
                 if (err) throw err;
-                // Send the token back to the client
+
                 res.json({ token });
             }
         );
@@ -85,7 +125,7 @@ app.post('/api/admin/login', async (req, res) => {
     }
 });
 
-// Global Error Handler
+
 app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 5000;
