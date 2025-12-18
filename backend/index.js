@@ -38,7 +38,7 @@ app.use('/api', productroutes);
 
 
 
-app.post('/login', async (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
 
     const user = { id: 1, email };
@@ -57,7 +57,7 @@ app.post('/login', async (req, res) => {
 });
 
 
-app.post('/refresh', (req, res) => {
+app.post('/api/refresh', (req, res) => {
     const token = req.cookies.refreshToken;
     if (!token) return res.sendStatus(401);
 

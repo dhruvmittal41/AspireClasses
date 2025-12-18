@@ -47,6 +47,8 @@ router.post(
 );
 
 
+
+
 router.get('/user', protect, getUserProfile);
 router.post('/user/details', protect, updateProfileDetails);
 router.get('/user/all', protect, getAllUsers);
