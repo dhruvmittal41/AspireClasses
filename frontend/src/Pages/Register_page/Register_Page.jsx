@@ -14,6 +14,7 @@ import {
 } from "react-bootstrap";
 import "./Register_Page.css";
 import SignUpIllustration from "./undraw_signup.svg";
+import { auth, RecaptchaVerifier, signInWithPhoneNumber } from "../firebase";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -31,6 +32,9 @@ const Register = () => {
   const [error, setError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [usePhone, setUsePhone] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [confirmationResult, setConfirmationResult] = useState(null);
 
   const { fullName, email, school, otp } = formData;
 

@@ -97,7 +97,7 @@ const TestScheduleView = () => {
                 </Card.Text>
               </div>
               <div className="mt-3">
-                <h3 className="fw-bolder mb-3">₹799</h3>
+                <h3 className="fw-bolder mb-3">₹699</h3>
                 <Button
                   variant="dark"
                   size="lg"

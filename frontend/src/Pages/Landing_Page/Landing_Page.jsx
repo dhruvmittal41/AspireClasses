@@ -10,6 +10,7 @@ import {
   FaEnvelope,
   FaInstagram,
   FaFacebook,
+  FaYoutube,
 } from "react-icons/fa";
 import { TfiAgenda } from "react-icons/tfi";
 import upwards from "./Upwards.svg";
@@ -530,7 +531,7 @@ const Contact = () => (
       </p>
       <div className="d-flex flex-column flex-sm-row justify-content-center gap-3 mt-4">
         <Button
-          href="https://wa.me/910000000000" // Replace with your number
+          href="https://wa.me/9198027660"
           target="_blank"
           rel="noopener noreferrer"
           variant="success"
@@ -540,7 +541,7 @@ const Contact = () => (
           <FaWhatsapp className="me-2" /> Chat on WhatsApp
         </Button>
         <Button
-          href="mailto:support@prepsphere.com"
+          href="mailto:aspireclasses51@gmail.com"
           variant="outline-secondary"
           size="lg"
           className="d-inline-flex align-items-center justify-content-center"
@@ -558,21 +559,21 @@ const AppFooter = () => (
       <div className="social-links mb-3">
         <motion.a
           whileHover={{ scale: 1.2, y: -5 }}
-          href="#"
+          href="https://www.instagram.com/aspire__classes/"
           className="fs-4 text-muted mx-2"
         >
           <FaInstagram />
         </motion.a>
         <motion.a
           whileHover={{ scale: 1.2, y: -5 }}
-          href="#"
+          href="https://www.youtube.com/@aspireclasses-k4c"
           className="fs-4 text-muted mx-2"
         >
-          <FaFacebook />
+          <FaYoutube />
         </motion.a>
         <motion.a
           whileHover={{ scale: 1.2, y: -5 }}
-          href="#"
+          href="mailto:aspireclasses51@gmail.com"
           className="fs-4 text-muted mx-2"
         >
           <FaEnvelope />
@@ -585,7 +586,6 @@ const AppFooter = () => (
   </footer>
 );
 
-// --- Main Landing Page Component ---
 const LandingPage = () => {
   return (
     <>
