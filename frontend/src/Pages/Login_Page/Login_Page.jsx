@@ -15,7 +15,7 @@ import {
 import axios from "axios";
 import "./Login_Page.css";
 import LoginIllustration from "./undraw_login.svg";
-import { AuthContext } from "./AuthContext.jsx";
+import { AuthContext } from "../../context/AuthContext";
 const { setAccessToken, setUser } = useContext(AuthContext);
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
