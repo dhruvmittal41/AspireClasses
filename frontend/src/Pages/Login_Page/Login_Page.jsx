@@ -16,7 +16,6 @@ import axios from "axios";
 import "./Login_Page.css";
 import LoginIllustration from "./undraw_login.svg";
 import { AuthContext } from "../../context/AuthContext";
-const { setAccessToken, setUser } = useContext(AuthContext);
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -25,7 +24,7 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
+  const { setAccessToken, setUser } = useContext(AuthContext);
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
