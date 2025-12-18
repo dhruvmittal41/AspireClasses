@@ -34,7 +34,7 @@ const LoginPage = () => {
       const response = await axios.post(
         `${baseUrl}/api/login`,
         { email },
-        { withCredentials: true } // ⭐ REQUIRED
+        { withCredentials: true }
       );
 
       if (response.data?.accessToken) {

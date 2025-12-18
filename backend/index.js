@@ -43,7 +43,11 @@ app.post('/api/login', async (req, res) => {
 
     const user = { id: 1, email };
 
-    const accessToken = generateAccessToken(user);
+    const payload = { id: user.id, email: user.email };
+
+    const accessToken = generateAccessToken(payload);
+
+
     const refreshToken = generateRefreshToken(user);
 
     res.cookie('refreshToken', refreshToken, {
@@ -53,7 +57,11 @@ app.post('/api/login', async (req, res) => {
         maxAge: 7 * 24 * 60 * 60 * 1000
     });
 
-    res.json({ accessToken });
+    res.json({
+        accessToken,
+        user: payload
+    });
+
 });
 
 
