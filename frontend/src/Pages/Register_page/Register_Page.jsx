@@ -14,7 +14,6 @@ import {
 } from "react-bootstrap";
 import "./Register_Page.css";
 import SignUpIllustration from "./undraw_signup.svg";
-import { auth, RecaptchaVerifier, signInWithPhoneNumber } from "../firebase";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
