@@ -11,6 +11,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const url = process.env.FRONTEND_URL;
 const cookieParser = require("cookie-parser");
+const UserModel = require('./models/userModel')
 
 const app = express();
 
