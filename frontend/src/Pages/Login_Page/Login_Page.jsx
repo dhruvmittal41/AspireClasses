@@ -37,6 +37,8 @@ const LoginPage = () => {
         { withCredentials: true }
       );
 
+      console.log(response);
+
       if (response.data?.accessToken) {
         setAccessToken(response.data.accessToken);
         setUser(response.data.user);
