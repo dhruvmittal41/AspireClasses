@@ -30,6 +30,7 @@ const PrivateRoute = ({ children }) => {
   const { accessToken, authLoading } = useContext(AuthContext);
 
   if (authLoading) {
+    console.log("AuthLoading");
     return null;
   }
 
