@@ -39,6 +39,7 @@ const PrivateRoute = ({ children }) => {
 
 function App() {
   const { setAccessToken, setUser, setAuthLoading } = useContext(AuthContext);
+  console.log("AuthContext:", useContext(AuthContext));
 
   useEffect(() => {
     const refreshLogin = async () => {
@@ -58,6 +59,12 @@ function App() {
         setAuthLoading(false);
       }
     };
+
+    if (authLoading) {
+      return (
+        <div style={{ textAlign: "center", marginTop: "40vh" }}>Loading...</div>
+      );
+    }
 
     refreshLogin();
   }, []);

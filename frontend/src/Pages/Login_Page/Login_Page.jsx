@@ -43,7 +43,7 @@ const LoginPage = () => {
         setAccessToken(response.data.accessToken);
         setUser(response.data.user);
         setAuthLoading(false);
-        navigate("/home");
+        navigate("/home", { replace: true });
       } else {
         setError("Login failed.");
       }
