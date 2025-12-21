@@ -76,7 +76,11 @@ exports.sendOtp = async (req, res, next) => {
 
 
 
+
+
 exports.registerUser = async (req, res, next) => {
+
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -116,6 +120,12 @@ exports.registerUser = async (req, res, next) => {
 };
 
 exports.loginUser = async (req, res, next) => {
+
+    const generateAccessToken = (user) =>
+        jwt.sign(user, process.env.ACCESS_SECRET, { expiresIn: '15m' });
+
+    const generateRefreshToken = (user) =>
+        jwt.sign(user, process.env.REFRESH_SECRET, { expiresIn: '7d' });
     const { email } = req.body;
 
     if (!email) {

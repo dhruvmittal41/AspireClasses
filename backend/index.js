@@ -13,11 +13,7 @@ const url = process.env.FRONTEND_URL;
 
 const app = express();
 
-const generateAccessToken = (user) =>
-    jwt.sign(user, process.env.ACCESS_SECRET, { expiresIn: '15m' });
 
-const generateRefreshToken = (user) =>
-    jwt.sign(user, process.env.REFRESH_SECRET, { expiresIn: '7d' });
 
 
 
@@ -36,6 +32,48 @@ app.use('/api', resultRoutes);
 app.use('/api', productroutes);
 
 
+
+
+app.post("/api/login", async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).json({ error: "Email or phone is required" });
+    }
+
+
+    let user = await userModel.findByEmail(email);
+
+
+    if (!user) {
+        return errorMiddleware()
+    }
+
+
+    const payload = {
+        id: user.id,
+        email: user.email_or_phone,
+    };
+
+
+    const accessToken = generateAccessToken(payload);
+    const refreshToken = generateRefreshToken(payload);
+
+
+    res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        path: "/api",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+
+    res.json({
+        accessToken,
+        user: payload,
+    });
+});
 
 
 app.post("/api/refresh", async (req, res) => {
