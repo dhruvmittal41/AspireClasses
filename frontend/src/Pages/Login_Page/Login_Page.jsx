@@ -37,7 +37,7 @@ const LoginPage = () => {
         { withCredentials: true }
       );
 
-      if (response.data?.token) {
+      if (response.data?.accessToken) {
         setAccessToken(response.data.accessToken);
         setUser(response.data.user);
         setAuthLoading(false);
