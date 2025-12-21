@@ -38,44 +38,82 @@ app.use('/api', productroutes);
 
 
 
-app.post('/api/login', async (req, res) => {
-    const { email, password } = req.body;
+app.post("/api/login", async (req, res) => {
+    const { email } = req.body;
 
-    const user = { id: 1, email };
+    if (!email) {
+        return res.status(400).json({ error: "Email or phone is required" });
+    }
 
-    const payload = { id: user.id, email: user.email };
+
+    let user = await userModel.findByEmail(email);
+
+
+    if (!user) {
+        return errorMiddleware()
+    }
+
+
+    const payload = {
+        id: user.id,
+        email: user.email_or_phone,
+    };
+
 
     const accessToken = generateAccessToken(payload);
+    const refreshToken = generateRefreshToken(payload);
 
-
-    const refreshToken = generateRefreshToken(user);
 
     res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: true,
         sameSite: "lax",
         path: "/api",
-        maxAge: 7 * 24 * 60 * 60 * 1000
+        maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+
+
     res.json({
         accessToken,
-        user: payload
-    });
-
-});
-
-
-app.post('/api/refresh', (req, res) => {
-    const token = req.cookies.refreshToken;
-    if (!token) return res.sendStatus(401);
-
-    jwt.verify(token, process.env.REFRESH_SECRET, (err, user) => {
-        if (err) return res.sendStatus(403);
-
-        const accessToken = generateAccessToken({ id: user.id });
-        res.json({ accessToken });
+        user: payload,
     });
 });
+
+
+app.post("/api/refresh", async (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+        return res.sendStatus(401);
+    }
+
+    jwt.verify(
+        refreshToken,
+        process.env.REFRESH_SECRET,
+        async (err, decoded) => {
+            if (err) return res.sendStatus(403);
+
+
+            const user = await userModel.findById(decoded.id);
+            if (!user) return res.sendStatus(401);
+
+
+            const accessToken = generateAccessToken({
+                id: user.id,
+                email: user.email_or_phone,
+            });
+
+            res.json({
+                accessToken,
+                user: {
+                    id: user.id,
+                    email: user.email_or_phone,
+                },
+            });
+        }
+    );
+});
+
 
 
 app.post('/api/admin/login', async (req, res) => {
