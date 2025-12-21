@@ -43,23 +43,25 @@ function App() {
     useContext(AuthContext);
 
   useEffect(() => {
-    console.log("Inside useffect");
+    console.log("🔄 refreshLogin effect started");
+
     const refreshLogin = async () => {
+      console.log("➡️ calling /api/refresh");
+
       try {
-        console.log("Refreshing");
         const res = await axios.post(
           `${baseUrl}/api/refresh`,
           {},
-          {
-            withCredentials: true,
-          }
+          { withCredentials: true }
         );
 
+        console.log("✅ refresh success", res.data);
         setAccessToken(res.data.accessToken);
         setUser(res.data.user);
-      } catch {
+      } catch (err) {
+        console.log("⚠️ refresh failed", err?.response?.status);
       } finally {
-        console.log("refreshed");
+        console.log("🟢 refresh finished");
         setAuthLoading(false);
       }
     };
