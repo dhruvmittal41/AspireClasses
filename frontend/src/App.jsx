@@ -38,12 +38,15 @@ const PrivateRoute = ({ children }) => {
 };
 
 function App() {
+  console.log("App mounted");
   const { setAccessToken, setUser, setAuthLoading, authLoading } =
     useContext(AuthContext);
 
   useEffect(() => {
+    console.log("Inside useffect");
     const refreshLogin = async () => {
       try {
+        console.log("Refreshing");
         const res = await axios.post(
           `${baseUrl}/api/refresh`,
           {},
@@ -56,18 +59,18 @@ function App() {
         setUser(res.data.user);
       } catch {
       } finally {
+        console.log("refreshed");
         setAuthLoading(false);
       }
     };
 
-    if (authLoading) {
-      return (
-        <div style={{ textAlign: "center", marginTop: "40vh" }}>Loading...</div>
-      );
-    }
-
     refreshLogin();
   }, []);
+  if (authLoading) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "40vh" }}>Loading...</div>
+    );
+  }
 
   return (
     <BrowserRouter>
