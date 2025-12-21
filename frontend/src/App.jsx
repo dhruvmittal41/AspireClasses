@@ -50,7 +50,7 @@ function App() {
           }
         );
 
-        setAccessToken(res.data.token);
+        setAccessToken(res.data.accessToken);
         setUser(res.data.user);
       } catch {
       } finally {

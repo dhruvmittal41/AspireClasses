@@ -38,7 +38,7 @@ const LoginPage = () => {
       );
 
       if (response.data?.token) {
-        setAccessToken(response.data.token);
+        setAccessToken(response.data.accessToken);
         setUser(response.data.user);
         navigate("/home");
       } else {
