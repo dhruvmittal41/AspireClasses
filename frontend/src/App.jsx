@@ -45,10 +45,12 @@ function App() {
         const res = await axios.post(
           `${baseUrl}/api/refresh`,
           {},
-          { withCredentials: true }
+          {
+            withCredentials: true,
+          }
         );
 
-        setAccessToken(res.data.accessToken);
+        setAccessToken(res.data.token);
         setUser(res.data.user);
       } catch {
       } finally {

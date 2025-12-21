@@ -37,8 +37,8 @@ const LoginPage = () => {
         { withCredentials: true }
       );
 
-      if (response.data?.accessToken) {
-        setAccessToken(response.data.accessToken);
+      if (response.data?.token) {
+        setAccessToken(response.data.token);
         setUser(response.data.user);
         navigate("/home");
       } else {
