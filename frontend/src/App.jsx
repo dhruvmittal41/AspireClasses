@@ -38,8 +38,8 @@ const PrivateRoute = ({ children }) => {
 };
 
 function App() {
-  const { setAccessToken, setUser, setAuthLoading } = useContext(AuthContext);
-  console.log("AuthContext:", useContext(AuthContext));
+  const { setAccessToken, setUser, setAuthLoading, authLoading } =
+    useContext(AuthContext);
 
   useEffect(() => {
     const refreshLogin = async () => {
