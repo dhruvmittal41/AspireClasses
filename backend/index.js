@@ -10,6 +10,7 @@ const errorMiddleware = require('./middleware/errorMiddleware');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const url = process.env.FRONTEND_URL;
+const cookieParser = require("cookie-parser");
 
 const app = express();
 
@@ -23,7 +24,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use(require('cookie-parser')());
+app.use(cookieParser());
 
 
 app.use('/api', authRoutes);
@@ -38,38 +39,44 @@ const generateAccessToken = (user) =>
 
 
 app.post("/api/refresh", async (req, res) => {
-    const refreshToken = req.cookies.refreshToken;
+    try {
+        const refreshToken = req.cookies?.refreshToken;
 
-    if (!refreshToken) {
-        return res.sendStatus(401);
-    }
+        if (!refreshToken) {
+            return res.sendStatus(401);
+        }
 
-    jwt.verify(
-        refreshToken,
-        process.env.REFRESH_SECRET,
-        async (err, decoded) => {
-            if (err) return res.sendStatus(403);
+        const decoded = jwt.verify(
+            refreshToken,
+            process.env.REFRESH_SECRET
+        );
 
+        console.time("refresh-db");
+        const user = await UserModel.findById(decoded.id);
+        console.timeEnd("refresh-db");
 
-            const user = await userModel.findById(decoded.id);
-            if (!user) return res.sendStatus(401);
+        if (!user) {
+            return res.sendStatus(401);
+        }
 
+        const accessToken = generateAccessToken({
+            id: user.id,
+            email: user.email_or_phone,
+        });
 
-            const accessToken = generateAccessToken({
+        return res.json({
+            accessToken,
+            user: {
                 id: user.id,
                 email: user.email_or_phone,
-            });
-
-            res.json({
-                accessToken,
-                user: {
-                    id: user.id,
-                    email: user.email_or_phone,
-                },
-            });
-        }
-    );
+            },
+        });
+    } catch (err) {
+        console.error("REFRESH ERROR:", err.message);
+        return res.sendStatus(403);
+    }
 });
+
 
 
 
