@@ -32,7 +32,8 @@ app.use('/api', resultRoutes);
 app.use('/api', productroutes);
 
 
-
+const generateAccessToken = (user) =>
+    jwt.sign(user, process.env.ACCESS_SECRET, { expiresIn: '15m' });
 
 
 
