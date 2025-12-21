@@ -116,34 +116,39 @@ exports.registerUser = async (req, res, next) => {
 };
 
 exports.loginUser = async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-
     const { email } = req.body;
 
-    try {
-        const user = await UserModel.findByEmail(email);
-
-        if (!user) {
-            return res.status(400).json({ message: "Invalid Credentials" });
-        }
-
-        const userPayload = await UserModel.findById(user.id);
-
-        const token = generateToken(userPayload);
-        res.json({
-            token,
-            user: {
-                id: userPayload.id,
-                full_name: userPayload.full_name,
-            }
-        });
-    } catch (err) {
-        next(err);
+    if (!email) {
+        return res.status(400).json({ error: "Email or phone is required" });
     }
+
+    const user = await UserModel.findByEmail(email);
+    if (!user) {
+        return res.status(400).json({ error: "Invalid credentials" });
+    }
+
+    const payload = {
+        id: user.id,
+        email: user.email_or_phone,
+    };
+
+    const accessToken = generateAccessToken(payload);
+    const refreshToken = generateRefreshToken(payload);
+
+    res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        path: "/api",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json({
+        accessToken,
+        user: payload,
+    });
 };
+
 
 exports.getUserProfile = async (req, res, next) => {
     try {
