@@ -24,7 +24,7 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { setAccessToken, setUser } = useContext(AuthContext);
+  const { setAccessToken, setUser, setAuthLoading } = useContext(AuthContext);
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -40,6 +40,7 @@ const LoginPage = () => {
       if (response.data?.token) {
         setAccessToken(response.data.accessToken);
         setUser(response.data.user);
+        setAuthLoading(false);
         navigate("/home");
       } else {
         setError("Login failed.");
