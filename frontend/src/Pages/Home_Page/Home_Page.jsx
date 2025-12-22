@@ -11,6 +11,7 @@ import {
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+const { setAccessToken } = useContext(AuthContext);
 
 // Import Views
 import DashboardView from "./Dashboardview.jsx";
@@ -34,6 +35,8 @@ import {
 
 import "./Home_Page.css";
 import api from "../../api/axios.js";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext.jsx";
 
 const navMenuItems = [
   { name: "Dashboard", icon: <DashboardIcon />, view: <DashboardView /> },
