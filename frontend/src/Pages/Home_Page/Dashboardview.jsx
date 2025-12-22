@@ -174,7 +174,7 @@ const DashboardView = ({ userName = "Learner" }) => {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const response = api.get(`/api/results`);
+        const response = await api.get(`/api/results`);
         if (Array.isArray(response.data)) {
           const processedResults = response.data.map((result) => ({
             ...result,
