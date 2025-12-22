@@ -37,6 +37,14 @@ const PrivateRoute = ({ children }) => {
   return accessToken ? children : <Navigate to="/login" replace />;
 };
 
+const PublicRoute = ({ children }) => {
+  const { accessToken, authLoading } = useContext(AuthContext);
+
+  if (authLoading) return null;
+
+  return accessToken ? <Navigate to="/home" replace /> : children;
+};
+
 function App() {
   console.log("App mounted");
   const { setAccessToken, setUser, setAuthLoading, authLoading } =
@@ -77,8 +85,22 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/"
+          element={
+            <PublicRoute>
+              <LandingPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <LoginPage />
+            </PublicRoute>
+          }
+        />
         <Route path="/register" element={<Register />} />
 
         <Route
