@@ -4,7 +4,7 @@ import axios from "axios";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
-import Spinner from "./components/spinner";
+import Spinner from "./components/Spinner";
 import { useDelayedLoading } from "./hooks/useDelayedLoading";
 
 import LandingPage from "./Pages/Landing_Page/Landing_Page.jsx";
