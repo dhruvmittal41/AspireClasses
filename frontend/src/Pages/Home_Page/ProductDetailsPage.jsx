@@ -15,6 +15,7 @@ import {
   Modal,
 } from "react-bootstrap";
 import { motion } from "framer-motion";
+import api from "../../api/axios";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -31,11 +32,7 @@ const ProductDetailsPage = ({ onNavigateToProfile, isProfileComplete }) => {
       setError(null);
       try {
         const endpoint = "/api/test_bundles/";
-        const response = await axios.get(`${baseUrl}${endpoint}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const response = await api.get(`${endpoint}`);
         setBundles(response.data);
       } catch (err) {
         setError("Could not load bundles. Please try again.");
@@ -50,11 +47,7 @@ const ProductDetailsPage = ({ onNavigateToProfile, isProfileComplete }) => {
 
   const handleBuyNow = async (bundle) => {
     try {
-      const response = await axios.get(`${baseUrl}/api/user`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await api.get(`/api/user`);
 
       const userProfileStat = response.data?.profilestat;
 
@@ -171,7 +164,6 @@ const ProductDetailsPage = ({ onNavigateToProfile, isProfileComplete }) => {
         </motion.div>
       </Container>
 
-      {/* --- Profile Completion Modal --- */}
       <Modal
         show={showProfileModal}
         onHide={() => setShowProfileModal(false)}

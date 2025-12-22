@@ -122,13 +122,12 @@ const HomePage = () => {
     </>
   );
   const handleMobileMenuClick = (itemName) => {
-    handleMenuClick(itemName); // Re-use your existing logic
-    setSidebarOpen(false); // <-- UX IMPROVEMENT: Close the sidebar on click
+    handleMenuClick(itemName);
+    setSidebarOpen(false);
   };
 
   return (
     <div className="home-page-layout">
-      {/* === DESKTOP NAVBAR === */}
       <Navbar
         expand="lg"
         sticky="top"
@@ -144,8 +143,6 @@ const HomePage = () => {
                 key={item.name}
                 active={activeItem === item.name}
                 onClick={() => handleMenuClick(item.name)}
-                // No need for the extra ternary operator for the 'active' class
-                // The `active` prop handles this for you.
                 className="d-flex align-items-center nav-item-link"
               >
                 {item.icon}
@@ -179,7 +176,6 @@ const HomePage = () => {
         </Container>
       </Navbar>
 
-      {/* === MOBILE NAVBAR === */}
       <Navbar
         expand="lg"
         sticky="top"
@@ -190,22 +186,20 @@ const HomePage = () => {
             variant="outline-light"
             className="menu-toggle"
             onClick={() => setSidebarOpen(true)}
-            aria-label="Toggle navigation" // <-- IMPROVEMENT: Added for accessibility
-            aria-controls="mobile-sidebar" // <-- IMPROVEMENT: Points to the sidebar
+            aria-label="Toggle navigation"
+            aria-controls="mobile-sidebar"
           >
             ☰
           </Button>
 
-          {/* IMPROVEMENT: Use the image logo for brand consistency */}
           <Navbar.Brand className="brand-logo">
             <img src={logo} alt="PrepSphere Logo" className="nav-logo-img" />
           </Navbar.Brand>
 
-          {/* Profile dropdown remains the same */}
           <Nav>
             <NavDropdown
               title={profileMenuTitle}
-              id="profile-dropdown-mobile" // Use a unique id
+              id="profile-dropdown-mobile"
               align="end"
             >
               <NavDropdown.Item onClick={() => handleMenuClick("Profile")}>
@@ -220,12 +214,11 @@ const HomePage = () => {
         </Container>
       </Navbar>
 
-      {/* === MOBILE SIDEBAR === */}
       <Offcanvas
         show={isSidebarOpen}
         onHide={() => setSidebarOpen(false)}
         className="sidebar-mobile"
-        id="mobile-sidebar" // <-- IMPROVEMENT: Add ID for aria-controls
+        id="mobile-sidebar"
       >
         <Offcanvas.Header closeButton>
           <Offcanvas.Title>Menu</Offcanvas.Title>
@@ -236,7 +229,6 @@ const HomePage = () => {
               <Nav.Link
                 key={item.name}
                 active={activeItem === item.name}
-                // Use the new handler here
                 onClick={() => handleMobileMenuClick(item.name)}
                 className={`d-flex align-items-center sidebar-btn ${
                   activeItem === item.name ? "active" : ""
@@ -247,7 +239,6 @@ const HomePage = () => {
               </Nav.Link>
             ))}
           </Nav>
-          {/* This section remains the same */}
           <div className="p-2">
             <Button
               variant="danger"
@@ -261,7 +252,6 @@ const HomePage = () => {
         </Offcanvas.Body>
       </Offcanvas>
 
-      {/* === MAIN CONTENT === */}
       <main className="main-content">
         <div className="content-wrapper p-3 p-md-4">
           <AnimatePresence mode="wait">

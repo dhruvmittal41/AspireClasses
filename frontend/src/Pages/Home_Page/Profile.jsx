@@ -13,6 +13,7 @@ import {
   Alert,
 } from "react-bootstrap";
 import { motion } from "framer-motion";
+import api from "../../api/axios";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -41,11 +42,7 @@ const Profile = () => {
     const fetchUserData = async () => {
       setIsLoading(true);
       try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(`${baseUrl}/api/user`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
+        const response = await api.get(`/api/user`);
         const userData = response.data;
         if (userData.dob) {
           userData.dob = new Date(userData.dob).toISOString().split("T")[0];
@@ -95,10 +92,7 @@ const Profile = () => {
     if (!validateProfileForm()) return;
 
     try {
-      const token = localStorage.getItem("token");
-      await axios.post(`${baseUrl}/api/user/details`, profileData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.post(`/api/user/details`, profileData);
 
       setNotification({
         show: true,

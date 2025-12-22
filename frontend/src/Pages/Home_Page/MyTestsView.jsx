@@ -13,10 +13,10 @@ import {
 } from "react-bootstrap";
 import { BookIcon, ArrowRightIcon } from "./Icons";
 import "./MyTestView.css";
+import api from "../../api/axios";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
-// --- Loading Component ---
 const LoadingState = () => (
   <div
     className="d-flex justify-content-center align-items-center"
@@ -26,7 +26,6 @@ const LoadingState = () => (
   </div>
 );
 
-// --- Empty State Component ---
 const EmptyState = ({ onBrowse }) => (
   <motion.div
     className="text-center p-4 p-md-5 bg-light rounded border-dashed shadow-sm empty-state"
@@ -62,9 +61,7 @@ const MyTestsView = () => {
     const fetchBoughtTests = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${baseUrl}/api/user/mytests`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
+        const res = await api.get(`/api/user/mytests`);
         setBoughtTests(Array.isArray(res.data) ? res.data : [res.data]);
       } catch (error) {
         console.error("Error fetching tests:", error);

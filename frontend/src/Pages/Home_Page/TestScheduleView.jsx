@@ -3,18 +3,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import {
-  Container,
-  Card,
-  Button,
-  Row,
-  Col,
-  Badge,
-} from "react-bootstrap";
-// Note: Removed Icons, Stack, Spinner, Alert as they are no longer used.
-// Note: Removed useState, useEffect, axios as the API call is no longer needed.
+import { Container, Card, Button, Row, Col, Badge } from "react-bootstrap";
 
-// --- Animation Variants ---
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -28,20 +18,12 @@ const itemVariants = {
   visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 200 } },
 };
 
-// Note: Removed formatDate function as it's no longer used.
-
 const TestScheduleView = () => {
-  // Note: Removed all state (upcomingTests, isLoading, error)
   const navigate = useNavigate();
 
-  // Note: Removed useEffect hook that fetched upcoming tests
-
-  // Note: Removed handleViewDetails handler
   const handleViewBundle = () => {
     navigate(`/details/bundle/amu-9th-entrance-series`);
   };
-
-  // Note: Removed isLoading and error conditional returns
 
   return (
     <Container
@@ -61,7 +43,6 @@ const TestScheduleView = () => {
       </div>
 
       <Row xs={1} sm={2} md={3} lg={4} className="g-4 justify-content-center">
-        {/* --- Featured Bundle Card --- */}
         <Col
           as={motion.div}
           variants={itemVariants}
@@ -115,9 +96,6 @@ const TestScheduleView = () => {
             </Card.Body>
           </Card>
         </Col>
-
-        {/* --- Upcoming Tests Section Removed --- */}
-        {/* The <AnimatePresence> and upcomingTests.map(...) block has been deleted. */}
       </Row>
     </Container>
   );
