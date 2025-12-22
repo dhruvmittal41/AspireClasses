@@ -86,7 +86,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route
-          path="/"
+          path=""
           element={
             <PublicRoute>
               <LandingPage />
