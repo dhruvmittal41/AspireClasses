@@ -13,6 +13,7 @@ import {
 } from "react-bootstrap";
 import { FaChartLine, FaBookOpen, FaQuoteLeft } from "react-icons/fa";
 import "./DashboardView.css";
+import api from "../../api/axios";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -173,15 +174,11 @@ const DashboardView = ({ userName = "Learner" }) => {
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get(`${baseUrl}/api/results`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
+        const response = api.get(`/api/results`);
         if (Array.isArray(response.data)) {
           const processedResults = response.data.map((result) => ({
             ...result,
-            max_score: result.max_score || 100, // Keep default for data consistency
+            max_score: result.max_score || 100,
           }));
           setResults(processedResults.slice(0, 5));
         } else {
@@ -200,14 +197,12 @@ const DashboardView = ({ userName = "Learner" }) => {
 
   return (
     <>
-      {/* This new wrapper contains the shapes and sits behind everything */}
       <div className="background-animation-wrapper">
         <div className="floating-shape shape1" />
         <div className="floating-shape shape2" />
         <div className="floating-shape shape3" />
       </div>
 
-      {/* The main container no longer holds the shapes */}
       <Container
         as={motion.div}
         className="py-4 dashboard-container"

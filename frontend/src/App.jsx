@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useContext } from "react";
 import axios from "axios";
+import api from "./api/axios";
+import { attachAuthInterceptor } from "./api/attachAuth";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
@@ -54,6 +56,12 @@ function App() {
   console.log("App mounted");
   const { setAccessToken, setUser, setAuthLoading, authLoading } =
     useContext(AuthContext);
+
+  const { accessToken } = useContext(AuthContext);
+
+  useEffect(() => {
+    attachAuthInterceptor(() => accessToken);
+  }, [accessToken]);
 
   useEffect(() => {
     console.log("🔄 refreshLogin effect started");
