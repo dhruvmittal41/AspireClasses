@@ -4,8 +4,8 @@ import axios from "axios";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
-import Spinner from "../components/Spinner";
-import { useDelayedLoading } from "../hooks/useDelayedLoading";
+import Spinner from "./components/spinner";
+import { useDelayedLoading } from "./hooks/useDelayedLoading";
 
 import LandingPage from "./Pages/Landing_Page/Landing_Page.jsx";
 import Register from "./Pages/Register_page/Register_Page.jsx";
