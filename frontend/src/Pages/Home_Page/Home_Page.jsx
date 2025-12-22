@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Navbar,
@@ -11,7 +11,6 @@ import {
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-const { setAccessToken } = useContext(AuthContext);
 
 // Import Views
 import DashboardView from "./Dashboardview.jsx";
@@ -45,6 +44,8 @@ const navMenuItems = [
   { name: "Results", icon: <ResultsIcon />, view: <ResultsView /> },
   { name: "Ask a Doubt", icon: <DoubtIcon />, view: <AskADoubtView /> },
 ];
+
+const { setAccessToken } = useContext(AuthContext);
 
 const HomePage = () => {
   const [username, setUserName] = useState("User");
