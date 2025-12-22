@@ -4,6 +4,8 @@ import axios from "axios";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
+import Spinner from "../components/Spinner";
+import { useDelayedLoading } from "../hooks/useDelayedLoading";
 
 import LandingPage from "./Pages/Landing_Page/Landing_Page.jsx";
 import Register from "./Pages/Register_page/Register_Page.jsx";
@@ -28,10 +30,10 @@ const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const PrivateRoute = ({ children }) => {
   const { accessToken, authLoading } = useContext(AuthContext);
+  const showLoader = useDelayedLoading(authLoading, 600);
 
-  if (authLoading) {
-    console.log("AuthLoading");
-    return null;
+  if (showLoader) {
+    return <Spinner text="Checking authentication..." />;
   }
 
   return accessToken ? children : <Navigate to="/login" replace />;
@@ -39,8 +41,11 @@ const PrivateRoute = ({ children }) => {
 
 const PublicRoute = ({ children }) => {
   const { accessToken, authLoading } = useContext(AuthContext);
+  const showLoader = useDelayedLoading(authLoading, 600);
 
-  if (authLoading) return null;
+  if (showLoader) {
+    return <Spinner text="Preparing your experience..." />;
+  }
 
   return accessToken ? <Navigate to="/home" replace /> : children;
 };
