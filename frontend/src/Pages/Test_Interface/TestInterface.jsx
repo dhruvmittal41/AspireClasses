@@ -19,6 +19,7 @@ import {
 import "katex/dist/katex.min.css";
 import { InlineMath, BlockMath } from "react-katex";
 import "./TestInterface.css";
+import api from "../../api/axios";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -72,14 +73,9 @@ const TestInterface = ({ id, onBack }) => {
   useEffect(() => {
     const fetchTest = async () => {
       try {
-        const token = localStorage.getItem("token");
         const [questionsRes, testDetailsRes] = await Promise.all([
-          axios.get(`${baseUrl}/api/tests/${id}/questions`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${baseUrl}/api/tests/${id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+          api.get(`/api/tests/${id}/questions`),
+          api.get(`/api/tests/${id}`),
         ]);
         setTestData({ ...testDetailsRes.data, questions: questionsRes.data });
         setTimeLeft(testDetailsRes.data.duration_minutes * 60);
@@ -96,18 +92,16 @@ const TestInterface = ({ id, onBack }) => {
     async (isAutoSubmit = false) => {
       setIsSubmitting(true);
       try {
-        const token = localStorage.getItem("token");
         const formattedAnswers = Object.entries(answers).map(
           ([questionId, selectedOption]) => ({
             questionId: parseInt(questionId, 10),
             selectedOption,
           })
         );
-        await axios.post(
-          `${baseUrl}/api/tests/${id}/submit`,
-          { answers: formattedAnswers, testId: id },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        await api.post(`/api/tests/${id}/submit`, {
+          answers: formattedAnswers,
+          testId: id,
+        });
         if (!isAutoSubmit) {
           alert("✅ Test submitted successfully!");
         }

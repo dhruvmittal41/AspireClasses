@@ -7,6 +7,7 @@ import { AnimatePresence } from "framer-motion";
 import { Container, Spinner, Alert, Stack } from "react-bootstrap";
 import TestOverview from "./TestOverview";
 import TestInterface from "./TestInterface";
+import api from "../../api/axios";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -25,10 +26,8 @@ const TestPage = () => {
       try {
         setLoading(true);
         setError(null);
-        const token = localStorage.getItem("token"); // Get token
-        const res = await axios.get(`${baseUrl}/api/tests`, {
-          headers: { Authorization: `Bearer ${token}` }, // Add token to header
-        });
+
+        const res = await api.get(`/api/tests`);
         setTests(res.data || []);
       } catch (err) {
         setError("Failed to load tests. Please try again later.");
@@ -43,10 +42,7 @@ const TestPage = () => {
         setLoading(true);
         setError(null);
         setIsTestStarted(false);
-        const token = localStorage.getItem("token"); // Get token
-        const res = await axios.get(`${baseUrl}/api/tests/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }, // Add token to header
-        });
+        const res = await api.get(`/api/tests/${id}`);
         setSelectedTest(res.data);
       } catch (err) {
         setError(
