@@ -45,8 +45,6 @@ const navMenuItems = [
   { name: "Ask a Doubt", icon: <DoubtIcon />, view: <AskADoubtView /> },
 ];
 
-const { setAccessToken } = useContext(AuthContext);
-
 const HomePage = () => {
   const [username, setUserName] = useState("User");
   const [activeItem, setActiveItem] = useState("Dashboard");
@@ -69,6 +67,7 @@ const HomePage = () => {
     }
   }, []);
 
+  const { setAccessToken } = useContext(AuthContext);
   async function handleLogout() {
     try {
       api.post(`/api/logout`);
