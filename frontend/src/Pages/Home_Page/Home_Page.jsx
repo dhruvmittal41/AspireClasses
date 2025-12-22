@@ -33,6 +33,7 @@ import {
 } from "./Icons";
 
 import "./Home_Page.css";
+import api from "../../api/axios.js";
 
 const navMenuItems = [
   { name: "Dashboard", icon: <DashboardIcon />, view: <DashboardView /> },
@@ -65,13 +66,16 @@ const HomePage = () => {
   }, []);
 
   async function handleLogout() {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    await axios.post(`${baseUrl}/api/logout`, {}, { withCredentials: true });
-    setAccessToken(null);
-    setUser(null);
-    navigate("/login");
-    navigate("/");
+    try {
+      api.post(`/api/logout`);
+    } catch (err) {
+      console.error("Logout failed:", err);
+    } finally {
+      setAccessToken(null);
+      setUser(null);
+
+      navigate("/", { replace: true });
+    }
   }
 
   const handleMenuClick = (name) => {

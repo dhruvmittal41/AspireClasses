@@ -39,6 +39,19 @@ const generateAccessToken = (user) =>
 
 
 
+
+app.post("/api/logout", (req, res) => {
+    res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        path: "/",
+    });
+
+    res.sendStatus(200);
+});
+
+
 app.post("/api/refresh", async (req, res) => {
     try {
         const refreshToken = req.cookies?.refreshToken;
