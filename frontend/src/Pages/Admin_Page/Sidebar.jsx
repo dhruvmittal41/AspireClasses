@@ -1,43 +1,31 @@
 // src/components/Sidebar.jsx
 
+import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Nav, Button } from "react-bootstrap";
-import "./Sidebar.css";
-import api from "../../api/axios";
-import { useContext } from "react";
-import { AuthContext } from "../../context/AuthContext";
+import "./Sidebar.css"; // We'll link to a new, smaller CSS file
 
-const { setAccessToken, setUser } = useContext(AuthContext);
-
-const ctx = useContext(AuthContext);
-console.log("Auth context:", ctx);
-
+// Pass handleClose from the parent AdminDashboard to close the offcanvas on mobile after navigation
 const Sidebar = ({ handleClose }) => {
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    try {
-      await api.post(`/api/logout`, {}, { withCredentials: true });
-    } catch (err) {
-      console.error("Admin logout failed:", err);
-    } finally {
-      setAccessToken(null);
-      setUser(null);
-
-      if (handleClose) handleClose();
-
-      navigate("/admin/login", { replace: true });
-    }
+  const handleLogout = () => {
+    localStorage.removeItem("admin_token");
+    if (handleClose) handleClose(); // Close mobile sidebar if function is provided
+    navigate("/admin/login");
   };
 
+  // Combine handleClose with navigation for mobile
   const handleNavClick = () => {
     if (handleClose) handleClose();
   };
 
   return (
+    // Use flexbox utilities for layout and padding
     <div className="d-flex flex-column h-100 p-3">
       <h2 className="h4 text-center mb-4 text-white">Admin Menu</h2>
 
+      {/* flex-grow-1 pushes the logout button to the bottom */}
       <Nav className="flex-column nav-pills flex-grow-1" as="nav">
         <Nav.Link
           as={NavLink}
@@ -65,6 +53,7 @@ const Sidebar = ({ handleClose }) => {
         </Nav.Link>
       </Nav>
 
+      {/* mt-auto pushes this to the bottom of the flex container */}
       <div className="d-grid mt-auto">
         <Button variant="danger" onClick={handleLogout}>
           Logout
