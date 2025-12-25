@@ -4,17 +4,29 @@ import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Nav, Button } from "react-bootstrap";
 import "./Sidebar.css"; // We'll link to a new, smaller CSS file
+import api from "../../api/axios";
+
+const { setAccessToken, setUser } = useContext(AuthContext);
 
 // Pass handleClose from the parent AdminDashboard to close the offcanvas on mobile after navigation
 const Sidebar = ({ handleClose }) => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("admin_token");
-    if (handleClose) handleClose(); // Close mobile sidebar if function is provided
-    navigate("/admin/login");
-  };
+  const handleLogout = async () => {
+    try {
+      await api.post(`/api/logout`, {}, { withCredentials: true });
+    } catch (err) {
+      console.error("Admin logout failed:", err);
+    } finally {
+      // Clear auth state
+      setAccessToken(null);
+      setUser(null);
 
+      if (handleClose) handleClose(); // close sidebar if exists
+
+      navigate("/admin/login", { replace: true });
+    }
+  };
   // Combine handleClose with navigation for mobile
   const handleNavClick = () => {
     if (handleClose) handleClose();

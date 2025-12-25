@@ -5,6 +5,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Container, Card, Form, Button, Alert, Spinner } from "react-bootstrap";
 import "./AdminLogin.css"; // We'll link to a new, smaller CSS file
+import api from "../../api/axios";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -21,12 +22,10 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${baseUrl}/api/admin/login`, {
+      const response = await api.post(`/api/admin/login`, {
         username,
         password,
       });
-      const { token } = response.data;
-      localStorage.setItem("admin_token", token);
       navigate("/admin/assign-test");
     } catch (err) {
       const message =

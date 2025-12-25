@@ -12,6 +12,7 @@ import {
   Row,
   Col,
 } from "react-bootstrap";
+import api from "../../api/axios";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -31,12 +32,9 @@ const AssignTest = () => {
       try {
         setLoading(true);
         setError("");
-        const token = localStorage.getItem("admin_token");
         const [usersResponse, testsResponse] = await Promise.all([
-          axios.get(`${baseUrl}/api/user/all`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${baseUrl}/api/tests`),
+          api.get(`/api/user/all`),
+          api.get(`/api/tests`),
         ]);
 
         setUsers(usersResponse.data || []);
@@ -62,11 +60,11 @@ const AssignTest = () => {
     setSuccessMessage("");
     try {
       const token = localStorage.getItem("admin_token");
-      const response = await axios.post(
-        `${baseUrl}/api/user/assigntest`,
-        { userId: selectedUser, testId: selectedTest, isPaid: isPaid },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await api.post(`/api/user/assigntest`, {
+        userId: selectedUser,
+        testId: selectedTest,
+        isPaid: isPaid,
+      });
       setSuccessMessage(response.data.message || "Test assigned successfully!");
       setTimeout(() => setSuccessMessage(""), 3000);
     } catch (err) {

@@ -50,10 +50,7 @@ const CreateNewTest = () => {
 
     setSubmitting(true);
     try {
-      const token = localStorage.getItem("admin_token");
-      const response = await axios.post(`${baseUrl}/api/tests`, formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.post(`/api/tests`, formData);
 
       setSuccessMessage(response.data.message || "Test created successfully!");
       setFormData({

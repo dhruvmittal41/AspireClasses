@@ -19,6 +19,7 @@ import "./UpdateQuestions.css";
 
 import "katex/dist/katex.min.css";
 import { InlineMath } from "react-katex";
+import api from "../../api/axios";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -73,16 +74,11 @@ const QuestionImageUploader = ({
     formData.append("questionImage", file);
 
     try {
-      const response = await axios.post(
-        `${baseUrl}/api/upload-image`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${localStorage.getItem("admin_token")}`,
-          },
-        }
-      );
+      const response = await api.post(`/api/upload-image`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       onUploadComplete(response.data.image_url);
     } catch (err) {
       setUploadError("Image upload failed.");
@@ -168,8 +164,6 @@ const AddQuestionForm = ({ testId, onQuestionAdded, onCancel }) => {
     // ... your existing validation logic
 
     try {
-      const token = localStorage.getItem("admin_token");
-
       // The payload now sends the raw user input directly
       const payload = {
         ...newQuestion,
@@ -177,12 +171,9 @@ const AddQuestionForm = ({ testId, onQuestionAdded, onCancel }) => {
         image_url: imageUrl,
       };
 
-      const response = await axios.post(
+      const response = await api.post(
         `${baseUrl}/api/tests/${testId}/questions`,
-        payload,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        payload
       );
       onQuestionAdded({ ...response.data.question, ...payload });
     } catch (err) {
@@ -309,7 +300,7 @@ export const UpdateQuestions = () => {
   useEffect(() => {
     const fetchTests = async () => {
       try {
-        const res = await axios.get(`${baseUrl}/api/tests`);
+        const res = await api.get(`/api/tests`);
         setTests(res.data);
       } catch (err) {
         setError("Failed to fetch tests.");
@@ -325,11 +316,7 @@ export const UpdateQuestions = () => {
     setIsAdding(false);
     setQuestions([]);
     try {
-      const token = localStorage.getItem("admin_token");
-      const res = await axios.get(
-        `${baseUrl}/api/tests/${selectedTest}/questions`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const res = await api.get(`/api/tests/${selectedTest}/questions`);
       const parsed = res.data.map((q) => ({
         ...q,
         options:
@@ -348,12 +335,8 @@ export const UpdateQuestions = () => {
 
   const handleSave = async (id) => {
     try {
-      const token = localStorage.getItem("admin_token");
-
       // Save the raw editedData directly, without formatting
-      await axios.put(`${baseUrl}/api/questions/${id}`, editedData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.put(`/api/questions/${id}`, editedData);
       setQuestions((q) =>
         q.map((item) => (item.id === id ? { ...editedData, id } : item))
       );
@@ -366,10 +349,7 @@ export const UpdateQuestions = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete?")) return;
     try {
-      const token = localStorage.getItem("admin_token");
-      await axios.delete(`${baseUrl}/api/questions/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.delete(`/api/questions/${id}`);
       setQuestions((q) => q.filter((item) => item.id !== id));
     } catch (err) {
       setError("Failed to delete.");
