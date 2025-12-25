@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import {
   Container,
   Row,
@@ -16,8 +15,6 @@ import {
 } from "react-bootstrap";
 import { motion } from "framer-motion";
 import api from "../../api/axios";
-
-const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const ProductDetailsPage = ({ onNavigateToProfile, isProfileComplete }) => {
   const navigate = useNavigate();

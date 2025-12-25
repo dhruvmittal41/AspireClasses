@@ -13,11 +13,10 @@ import {
   FaYoutube,
 } from "react-icons/fa";
 import { TfiAgenda } from "react-icons/tfi";
-import upwards from "./Upwards.svg";
 import certificate from "./Certificate.svg";
 import Learning from "./Learning.svg";
 import onlinetest from "./online_test.svg";
-// React-Bootstrap Components
+
 import {
   Navbar,
   Nav,
@@ -34,7 +33,6 @@ import logo from "./logo.png";
 
 import "./Landing_Page.css";
 
-// Reusable animation variants (unchanged)
 const sectionFadeIn = {
   hidden: { opacity: 0, y: 50 },
   visible: {
@@ -52,7 +50,6 @@ const cardHover = {
   transition: { type: "spring", stiffness: 300 },
 };
 
-// Helper component for animated sections (unchanged)
 const AnimatedSection = ({ children, id }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
@@ -71,21 +68,15 @@ const AnimatedSection = ({ children, id }) => {
   );
 };
 
-// --- Component Definitions (Refactored with React-Bootstrap) ---
-
 const AppNavbar = () => {
   return (
-    // No changes needed on the Navbar component itself
     <Navbar expand="lg" sticky="top" className="navbar-custom">
-      {/* CHANGE: Make the container fluid and a flexbox container */}
       <Container fluid className="px-4">
-        {/* This Navbar.Brand will now be pushed to the far left */}
         <Navbar.Brand as={Link} to="/">
           <img src={logo} alt="PrepSphere Logo" className="nav-logo-img" />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          {/* The 'ms-auto' ensures items are on the right within the collapsed menu */}
           <Nav className="ms-auto align-items-center">
             <Nav.Link href="/#home" className="mx-2">
               Home
@@ -128,13 +119,11 @@ const AppNavbar = () => {
     </Navbar>
   );
 };
-// HERO COMPONENT: ParallaxBackground is now INSIDE the hero section
 
 const Hero = () => (
   <section id="home" className="hero-section py-5">
     <Container>
       <Row className="align-items-center">
-        {/* === LEFT TEXT COLUMN === */}
         <Col xs={12} md={7}>
           <motion.h1
             className="display-3 fw-bold text-md-start text-center"
@@ -183,7 +172,6 @@ const Hero = () => (
           </motion.div>
         </Col>
 
-        {/* === RIGHT IMAGE COLUMN === */}
         <Col
           xs={12}
           md={5}
@@ -207,13 +195,11 @@ const Hero = () => (
 const WhyChooseUs = () => (
   <AnimatedSection id="why-us">
     <Container>
-      {/* === Section Heading === */}
       <h2 className="text-center display-5 mb-3">Why Choose AspireClasses?</h2>
       <p className="text-center text-muted fs-5 mb-5">
         We focus on what truly matters for your success.
       </p>
 
-      {/* === Feature Cards === */}
       <Row className="g-4">
         {[
           {
@@ -248,11 +234,7 @@ const WhyChooseUs = () => (
         ))}
       </Row>
 
-      {/* === SVG + Heading Section === */}
       <Row className="align-items-center mt-5">
-        {/* Left SVG */}
-
-        {/* Right Text */}
         <Col xs={12} md={6} className="text-center text-md-center">
           <motion.h2
             className="display-6 fw-bold"
@@ -408,11 +390,9 @@ const testSeriesData = [
 const TestSeriesCarousel = () => (
   <AnimatedSection id="test-series">
     <Container>
-      {/* === Section Title === */}
       <h2 className="text-center display-5 mb-5">Explore Our Test Series</h2>
-      {/* === SVG + Text Section Below Carousel === */}
+
       <Row className="align-items-center mt-5">
-        {/* Left SVG */}
         <Col
           xs={12}
           md={6}
@@ -430,7 +410,6 @@ const TestSeriesCarousel = () => (
           />
         </Col>
 
-        {/* Right Text */}
         <Col xs={12} md={6} className="text-center text-md-start">
           <motion.h2
             className="display-6 fw-bold"
@@ -448,7 +427,7 @@ const TestSeriesCarousel = () => (
           </p>
         </Col>
       </Row>
-      {/* === Carousel === */}
+
       <Row className="justify-content-center">
         <Col lg={10} md={12}>
           <Card className="shadow-lg border-0">

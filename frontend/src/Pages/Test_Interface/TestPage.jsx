@@ -21,7 +21,6 @@ const TestPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // --- MODIFIED: Add token to fetchAllTests ---
     const fetchAllTests = async () => {
       try {
         setLoading(true);
@@ -36,7 +35,6 @@ const TestPage = () => {
       }
     };
 
-    // --- MODIFIED: Add token to fetchSingleTest ---
     const fetchSingleTest = async () => {
       try {
         setLoading(true);
@@ -60,9 +58,7 @@ const TestPage = () => {
     }
   }, [id]);
 
-  // --- A SUGGESTION for better user experience after test submission ---
   const handleTestFinish = () => {
-    // Navigate user back to the home page after they finish a test
     navigate("/Home");
   };
 
@@ -76,8 +72,6 @@ const TestPage = () => {
     testsArrayLength: tests.length,
   });
   console.log("---------------------------------");
-
-  // --- All rendering logic below remains the same ---
 
   if (loading) {
     return (
@@ -107,7 +101,6 @@ const TestPage = () => {
           <TestInterface
             key={`interface-${id}`}
             id={id}
-            // MODIFIED: Use the new handler to navigate away after submission
             onBack={handleTestFinish}
           />
         ) : (

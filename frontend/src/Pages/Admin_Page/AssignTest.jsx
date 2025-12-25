@@ -1,7 +1,6 @@
 // src/components/AssignTest.jsx
 
-import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
+import { useState, useEffect, useContext } from "react";
 import {
   Container,
   Card,
@@ -13,8 +12,6 @@ import {
   Col,
 } from "react-bootstrap";
 import api from "../../api/axios";
-
-const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const AssignTest = () => {
   const [users, setUsers] = useState([]);

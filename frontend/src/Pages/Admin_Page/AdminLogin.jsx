@@ -1,13 +1,10 @@
 // src/components/AdminLogin.jsx
 
-import React, { useState, useContext } from "react";
-import axios from "axios";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Card, Form, Button, Alert, Spinner } from "react-bootstrap";
-import "./AdminLogin.css"; // We'll link to a new, smaller CSS file
+import "./AdminLogin.css";
 import api from "../../api/axios";
-
-const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const AdminLogin = () => {
   const [username, setUsername] = useState("");

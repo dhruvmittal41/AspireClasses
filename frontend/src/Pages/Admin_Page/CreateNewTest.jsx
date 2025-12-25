@@ -1,7 +1,6 @@
 // src/components/CreateNewTest.jsx
 
-import React, { useState, useContext } from "react";
-import axios from "axios";
+import { useState, useContext } from "react";
 import {
   Container,
   Card,
@@ -12,8 +11,7 @@ import {
   Alert,
   Spinner,
 } from "react-bootstrap";
-
-const baseUrl = import.meta.env.VITE_BASE_URL;
+import api from "../../api/axios";
 
 const CreateNewTest = () => {
   const [formData, setFormData] = useState({
@@ -50,7 +48,7 @@ const CreateNewTest = () => {
 
     setSubmitting(true);
     try {
-      const response = await axios.post(`/api/tests`, formData);
+      const response = await api.post(`/api/tests`, formData);
 
       setSuccessMessage(response.data.message || "Test created successfully!");
       setFormData({

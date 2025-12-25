@@ -37,7 +37,6 @@ const UserDetailForm = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [formError, setFormError] = useState("");
 
-  // --- Data fetching and form logic remains the same ---
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -47,7 +46,7 @@ const UserDetailForm = () => {
           axios.get(`${baseUrl}/api/user`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get(`${baseUrl}/api/test-series`), // Assuming this endpoint exists
+          axios.get(`${baseUrl}/api/test-series`),
         ]);
 
         if (userResponse.data) {
@@ -75,7 +74,6 @@ const UserDetailForm = () => {
   };
 
   const validateForm = () => {
-    // ... validation logic is unchanged
     const newErrors = {};
     if (!formData.dob) newErrors.dob = "Date of Birth is required.";
     if (!formData.gender) newErrors.gender = "Gender is required.";
@@ -133,7 +131,6 @@ const UserDetailForm = () => {
 
             <Form noValidate onSubmit={handleSubmit}>
               <Row className="g-3">
-                {/* Pre-filled Details */}
                 <Col md={4}>
                   <Form.Group>
                     <Form.Label>Full Name</Form.Label>
@@ -165,7 +162,6 @@ const UserDetailForm = () => {
                   </Form.Group>
                 </Col>
 
-                {/* Additional Required Fields */}
                 <Col md={6}>
                   <Form.Group>
                     <Form.Label>Date of Birth</Form.Label>
@@ -265,7 +261,6 @@ const UserDetailForm = () => {
                   </Form.Group>
                 </Col>
 
-                {/* Purchase Section */}
                 <Col xs={12}>
                   <Form.Group>
                     <Form.Label>Select Test Series</Form.Label>

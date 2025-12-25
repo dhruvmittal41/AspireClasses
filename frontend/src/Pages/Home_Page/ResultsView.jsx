@@ -1,8 +1,6 @@
 // src/ResultsView.jsx
-
 import React, { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-import axios from "axios";
 import {
   Container,
   Card,
@@ -41,10 +39,7 @@ ChartJS.register(
   Legend
 );
 
-const baseUrl = import.meta.env.VITE_BASE_URL;
-
 const TOTAL_QUESTIONS = 85;
-
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -293,7 +288,7 @@ const ResultsView = () => {
         </Col>
              
       </Row>
-            {/* --- Overall Performance Chart --- */}     
+         
       <motion.div variants={itemVariants}>
                
         <Card className="shadow-sm mb-5">
@@ -309,7 +304,7 @@ const ResultsView = () => {
                 scales: {
                   y: {
                     beginAtZero: true,
-                    max: TOTAL_QUESTIONS, // MODIFIED: Scale is 0-85
+                    max: TOTAL_QUESTIONS,
                     title: { display: true, text: "Correct Questions" },
                   },
                 },
@@ -321,8 +316,7 @@ const ResultsView = () => {
         </Card>
              
       </motion.div>
-            {/* --- Individual Result Cards --- */}     
-      <h2 className="mb-3">All Test Results</h2>     
+              <h2 className="mb-3">All Test Results</h2>     
       <Row>
                
         {results.map((result) => (
@@ -341,10 +335,9 @@ const ResultsView = () => {
             >
                            
               <Card.Body>
-                                <Card.Title>{result.test_name}</Card.Title>     
-                         
+                <Card.Title>{result.test_name}</Card.Title>               
                 <div className="d-flex justify-content-between align-items-center my-3">
-                                   
+                                 
                   <span className="fw-bold fs-4">
                                         {formatScoreOutOf85(result.score)}     
                                
@@ -359,8 +352,8 @@ const ResultsView = () => {
                 </div>
                                
                 <ProgressBar
-                  now={result.score} // `now` prop still uses 0-100 score for fill
-                  label={formatScoreOutOf85(result.score)} // label shows "X / 85"
+                  now={result.score}
+                  label={formatScoreOutOf85(result.score)}
                 />
                                
                 <Card.Text className="text-muted mt-2 text-end">
@@ -407,7 +400,7 @@ const ResultsView = () => {
                     scales: {
                       y: {
                         beginAtZero: true,
-                        max: TOTAL_QUESTIONS, // MODIFIED: Scale is 0-85
+                        max: TOTAL_QUESTIONS,
                         title: { display: true, text: "Correct Questions" },
                       },
                     },
@@ -484,35 +477,34 @@ const ResultsView = () => {
                           {getQuestionCounts(selectedResult.score).total}       
                                          
                         </span>
-                                                <br />                 
-                        <small className="text-muted">Total</small>             
-                               
-                      </div>
+                        <br />                 
+                        <small className="text-muted">Total</small>        
+                      </div>{" "}
                                          
-                    </div>
+                    </div>{" "}
                                
-                  </Card.Body>
+                  </Card.Body>{" "}
                                  
                 </Card>
-              )}
-                           
+              )}{" "}
+                         
               <Alert
                 variant={
                   getPerformanceFeedback(selectedResult?.score || 0).variant
                 }
               >
+                {" "}
                                
-                {getPerformanceFeedback(selectedResult?.score || 0).text}       
-                     
-              </Alert>
+                {getPerformanceFeedback(selectedResult?.score || 0).text}      
+              </Alert>{" "}
                          
-            </Col>
+            </Col>{" "}
                      
-          </Row>
+          </Row>{" "}
                  
-        </Modal.Body>
+        </Modal.Body>{" "}
              
-      </Modal>
+      </Modal>{" "}
          
     </Container>
   );

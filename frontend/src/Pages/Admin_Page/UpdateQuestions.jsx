@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
-import axios from "axios";
+import { useState, useEffect, useRef, useContext } from "react";
 import {
   Container,
   Card,
@@ -23,8 +22,6 @@ import api from "../../api/axios";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
-// --- Sub-component: KatexRenderer ---
-// This component parses a string for '$' delimiters and renders math accordingly
 const KatexRenderer = ({ text }) => {
   if (typeof text !== "string" || !text) {
     return null;
@@ -36,10 +33,8 @@ const KatexRenderer = ({ text }) => {
     <>
       {parts.map((part, index) => {
         if (index % 2 === 1) {
-          // This part was inside $'s, so render it as math
           return <InlineMath key={index} math={part} />;
         } else {
-          // This part was outside $'s, so render it as plain text
           return <span key={index}>{part}</span>;
         }
       })}
@@ -47,7 +42,6 @@ const KatexRenderer = ({ text }) => {
   );
 };
 
-// --- Sub-component: QuestionImageUploader ---
 const QuestionImageUploader = ({
   currentImageUrl,
   onUploadComplete,
@@ -82,7 +76,7 @@ const QuestionImageUploader = ({
       onUploadComplete(response.data.image_url);
     } catch (err) {
       setUploadError("Image upload failed.");
-      setPreview(currentImageUrl); // Revert preview on failure
+      setPreview(currentImageUrl);
     } finally {
       setIsUploading(false);
     }
@@ -148,7 +142,6 @@ const QuestionImageUploader = ({
   );
 };
 
-// --- Sub-component: AddQuestionForm ---
 const AddQuestionForm = ({ testId, onQuestionAdded, onCancel }) => {
   const [newQuestion, setNewQuestion] = useState({
     question_text: "",
@@ -161,10 +154,8 @@ const AddQuestionForm = ({ testId, onQuestionAdded, onCancel }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // ... your existing validation logic
 
     try {
-      // The payload now sends the raw user input directly
       const payload = {
         ...newQuestion,
         correct_option: correctAnswer,
@@ -286,7 +277,6 @@ const AddQuestionForm = ({ testId, onQuestionAdded, onCancel }) => {
   );
 };
 
-// --- Main Component: UpdateQuestions ---
 export const UpdateQuestions = () => {
   const [tests, setTests] = useState([]);
   const [selectedTest, setSelectedTest] = useState("");
@@ -335,7 +325,6 @@ export const UpdateQuestions = () => {
 
   const handleSave = async (id) => {
     try {
-      // Save the raw editedData directly, without formatting
       await api.put(`/api/questions/${id}`, editedData);
       setQuestions((q) =>
         q.map((item) => (item.id === id ? { ...editedData, id } : item))
@@ -421,7 +410,6 @@ export const UpdateQuestions = () => {
           <Card key={q.id}>
             <Card.Body>
               {editingId === q.id ? (
-                // Editing View
                 <Form>
                   <Form.Group className="mb-3">
                     <Form.Label>Question Text</Form.Label>
@@ -520,7 +508,6 @@ export const UpdateQuestions = () => {
                   </Stack>
                 </Form>
               ) : (
-                // Display View
                 <div>
                   <div className="d-flex justify-content-between align-items-start mb-2">
                     <h5 className="mb-0">
