@@ -9,6 +9,9 @@ import { AuthContext } from "../../context/AuthContext";
 
 const { setAccessToken, setUser } = useContext(AuthContext);
 
+const ctx = useContext(AuthContext);
+console.log("Auth context:", ctx);
+
 const Sidebar = ({ handleClose }) => {
   const navigate = useNavigate();
 

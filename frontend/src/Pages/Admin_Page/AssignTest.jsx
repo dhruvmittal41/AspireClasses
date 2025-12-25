@@ -56,7 +56,6 @@ const AssignTest = () => {
     setError("");
     setSuccessMessage("");
     try {
-      const token = localStorage.getItem("admin_token");
       const response = await api.post(`/api/user/assigntest`, {
         userId: selectedUser,
         testId: selectedTest,
