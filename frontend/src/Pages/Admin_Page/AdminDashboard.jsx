@@ -1,6 +1,6 @@
 // src/components/AdminDashboard.jsx
 
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Outlet } from "react-router-dom";
 import { Container, Navbar, Button, Offcanvas } from "react-bootstrap";
 import Sidebar from "./Sidebar"; // Your existing Sidebar component
