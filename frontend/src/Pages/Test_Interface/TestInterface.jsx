@@ -77,6 +77,7 @@ const TestInterface = ({ id, onBack }) => {
           api.get(`/api/tests/${id}/questions`),
           api.get(`/api/tests/${id}`),
         ]);
+
         setTestData({ ...testDetailsRes.data, questions: questionsRes.data });
         setTimeLeft(testDetailsRes.data.duration_minutes * 60);
       } catch (err) {
@@ -231,8 +232,17 @@ const TestInterface = ({ id, onBack }) => {
     );
   }
 
-  const { questions } = testData;
-  const currentQuestion = questions[currentQuestionIndex];
+  const questions = testData?.questions || [];
+  const currentQuestion = questions[currentQuestionIndex] || null;
+
+  if (!currentQuestion) {
+    return (
+      <Container className="d-flex justify-content-center align-items-center vh-100">
+        <Spinner animation="border" />
+        <p className="mt-2">Preparing questions…</p>
+      </Container>
+    );
+  }
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
 
