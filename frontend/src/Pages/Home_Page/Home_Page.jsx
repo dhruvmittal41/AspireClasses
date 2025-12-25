@@ -62,6 +62,7 @@ const HomePage = () => {
   }, [location.state]);
 
   useEffect(() => {
+    console.log(user);
     if (user) {
       setUserName(user.full_name || "User");
     }
