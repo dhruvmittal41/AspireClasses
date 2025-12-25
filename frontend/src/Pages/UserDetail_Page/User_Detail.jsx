@@ -14,7 +14,7 @@ import {
   Col,
   Alert,
 } from "react-bootstrap";
-import "./User_Detail.css"; // We'll link to our new, smaller CSS file
+import "./User_Detail.css";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 

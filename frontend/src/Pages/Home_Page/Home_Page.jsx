@@ -52,6 +52,8 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   const location = useLocation();
+  const { setAccessToken } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     if (location.state?.openProfile) {
@@ -60,14 +62,11 @@ const HomePage = () => {
   }, [location.state]);
 
   useEffect(() => {
-    const userDataString = localStorage.getItem("user");
-    if (userDataString) {
-      const userData = JSON.parse(userDataString);
-      setUserName(userData.full_name || "User");
+    if (user) {
+      setUserName(user.full_name || "User");
     }
   }, []);
 
-  const { setAccessToken } = useContext(AuthContext);
   async function handleLogout() {
     try {
       api.post(`/api/logout`);

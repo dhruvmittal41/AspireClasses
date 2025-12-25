@@ -15,8 +15,6 @@ import { FaChartLine, FaBookOpen, FaQuoteLeft } from "react-icons/fa";
 import "./DashboardView.css";
 import api from "../../api/axios";
 
-const baseUrl = import.meta.env.VITE_BASE_URL;
-
 // --- Animation Variants ---
 const containerVariants = {
   hidden: { opacity: 0 },
