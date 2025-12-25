@@ -6,6 +6,7 @@ import { Nav, Button } from "react-bootstrap";
 import "./Sidebar.css"; // We'll link to a new, smaller CSS file
 import api from "../../api/axios";
 import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 const { setAccessToken, setUser } = useContext(AuthContext);
 
