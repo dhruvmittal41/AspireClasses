@@ -140,6 +140,7 @@ exports.loginUser = async (req, res, next) => {
     const payload = {
         id: user.id,
         email: user.email_or_phone,
+        full_name: user.full_name,
     };
 
     const accessToken = generateAccessToken(payload);
