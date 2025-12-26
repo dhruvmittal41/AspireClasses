@@ -1,6 +1,8 @@
 const express = require('express');
 const { check } = require('express-validator');
 
+const { googleAuth } = require('../controllers/googleAuthController');
+
 
 const {
     sendOtp,
@@ -16,6 +18,8 @@ const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
+
+router.post("/google", googleAuth);
 
 router.post(
     '/send-otp',

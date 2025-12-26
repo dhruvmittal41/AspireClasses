@@ -12,9 +12,9 @@ import {
   Row,
   Col,
 } from "react-bootstrap";
+import { GoogleLogin } from "@react-oauth/google";
 import "./Register_Page.css";
 import SignUpIllustration from "./undraw_signup.svg";
-import { auth, setUpRecaptcha, signInWithPhoneNumber } from "../../firebase.js";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -28,10 +28,6 @@ const Register = () => {
     school: "",
     otp: "",
   });
-
-  const [usePhone, setUsePhone] = useState(false);
-  const [phone, setPhone] = useState("");
-  const [confirmationResult, setConfirmationResult] = useState(null);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -49,26 +45,16 @@ const Register = () => {
 
   const validateDetailsForm = () => {
     let errors = {};
-
     if (!/^[A-Za-z\s]{3,}$/.test(fullName.trim())) {
       errors.fullName = "Full Name must be at least 3 letters.";
     }
-
-    if (!usePhone) {
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailPattern.test(email.trim())) {
-        errors.email = "Enter a valid email address.";
-      }
-    } else {
-      if (!/^\+\d{10,15}$/.test(phone)) {
-        errors.phone = "Enter phone as +911234567890";
-      }
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email.trim())) {
+      errors.email = "Enter a valid email address.";
     }
-
     if (school.trim().length < 3) {
       errors.school = "School Name must be at least 3 characters.";
     }
-
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -79,23 +65,11 @@ const Register = () => {
     if (!validateDetailsForm()) return;
 
     setLoading(true);
-
     try {
-      if (usePhone) {
-        setUpRecaptcha();
-        const result = await signInWithPhoneNumber(
-          auth,
-          phone,
-          window.recaptchaVerifier
-        );
-        setConfirmationResult(result);
-        setStep(2);
-      } else {
-        await axios.post(`${baseUrl}/api/send-otp`, { email });
-        setStep(2);
-      }
+      await axios.post(`${baseUrl}/api/send-otp`, { email });
+      setStep(2);
     } catch (err) {
-      setError(err.message || "Failed to send OTP.");
+      setError(err.response?.data?.message || "Failed to send OTP.");
     } finally {
       setLoading(false);
     }
@@ -111,17 +85,12 @@ const Register = () => {
     }
 
     setLoading(true);
-
     try {
-      if (usePhone) {
-        await confirmationResult.confirm(otp);
-      }
-
       await axios.post(`${baseUrl}/api/register`, {
         fullName,
-        email: usePhone ? null : email,
-        phone: usePhone ? phone : null,
+        email,
         school,
+        otp,
       });
 
       setShowSuccessModal(true);
@@ -130,9 +99,21 @@ const Register = () => {
         navigate("/login");
       }, 2500);
     } catch (err) {
-      setError(err.message || "Registration failed.");
+      setError(err.response?.data?.message || "Registration failed.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleSignup = async (credentialResponse) => {
+    try {
+      const token = credentialResponse.credential;
+      const res = await axios.post(`${baseUrl}/api/google`, { token });
+
+      localStorage.setItem("token", res.data.token);
+      navigate("/dashboard");
+    } catch {
+      setError("Google signup failed.");
     }
   };
 
@@ -146,26 +127,19 @@ const Register = () => {
                 <Card.Body className="p-4 p-md-5">
                   <h1 className="text-center fw-bold mb-2">Create Account</h1>
 
-                  <p className="text-center text-muted mb-4">
-                    {step === 1
-                      ? "Join our community to get started."
-                      : "Enter the OTP you received"}
-                  </p>
-
                   {error && <Alert variant="danger">{error}</Alert>}
+
+                  <div className="d-flex justify-content-center mb-3">
+                    <GoogleLogin
+                      onSuccess={handleGoogleSignup}
+                      onError={() => setError("Google login failed")}
+                    />
+                  </div>
+
+                  <div className="text-center text-muted mb-3">OR</div>
 
                   {step === 1 ? (
                     <Form onSubmit={handleSendOtp}>
-                      <Form.Check
-                        type="switch"
-                        label={
-                          usePhone ? "Using Mobile OTP" : "Using Email OTP"
-                        }
-                        checked={usePhone}
-                        onChange={() => setUsePhone(!usePhone)}
-                        className="mb-3"
-                      />
-
                       <Form.Group className="mb-3">
                         <Form.Label>Full Name</Form.Label>
                         <Form.Control
@@ -174,32 +148,17 @@ const Register = () => {
                           onChange={handleChange}
                           isInvalid={!!fieldErrors.fullName}
                         />
-                        <Form.Control.Feedback type="invalid">
-                          {fieldErrors.fullName}
-                        </Form.Control.Feedback>
                       </Form.Group>
 
-                      {!usePhone ? (
-                        <Form.Group className="mb-3">
-                          <Form.Label>Email</Form.Label>
-                          <Form.Control
-                            name="email"
-                            value={email}
-                            onChange={handleChange}
-                            isInvalid={!!fieldErrors.email}
-                          />
-                        </Form.Group>
-                      ) : (
-                        <Form.Group className="mb-3">
-                          <Form.Label>Mobile Number</Form.Label>
-                          <Form.Control
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            placeholder="+911234567890"
-                            isInvalid={!!fieldErrors.phone}
-                          />
-                        </Form.Group>
-                      )}
+                      <Form.Group className="mb-3">
+                        <Form.Label>Email</Form.Label>
+                        <Form.Control
+                          name="email"
+                          value={email}
+                          onChange={handleChange}
+                          isInvalid={!!fieldErrors.email}
+                        />
+                      </Form.Group>
 
                       <Form.Group className="mb-3">
                         <Form.Label>School</Form.Label>
@@ -241,7 +200,7 @@ const Register = () => {
                       </Button>
 
                       <Button variant="link" onClick={() => setStep(1)}>
-                        Change Method
+                        Change Email
                       </Button>
                     </Form>
                   )}
@@ -263,8 +222,6 @@ const Register = () => {
           </Row>
         </Container>
       </div>
-
-      <div id="recaptcha-container"></div>
 
       <Modal show={showSuccessModal} centered backdrop="static">
         <Modal.Body className="text-center">
