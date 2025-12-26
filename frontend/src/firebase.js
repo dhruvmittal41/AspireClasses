@@ -21,15 +21,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-
 export const setUpRecaptcha = () => {
-    window.RecaptchaVerifier = new RecaptchaVerifier(
-        auth,
-        "recaptcha-container",
-        {
+    if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
             size: "invisible",
-        }
-    );
+            callback: () => { },
+            "expired-callback": () => { },
+        });
+    }
 };
-
 export { auth, RecaptchaVerifier, signInWithPhoneNumber };
