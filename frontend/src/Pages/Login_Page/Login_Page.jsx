@@ -57,16 +57,17 @@ const LoginPage = () => {
   const handleGoogleLogin = async (credentialResponse) => {
     try {
       const token = credentialResponse.credential;
-
       const res = await axios.post(`${baseUrl}/api/google`, { token });
 
-      if (res.data?.token) {
-        setAccessToken(res.data.token);
+      console.log("Google backend response:", res.data);
+
+      if (res.data?.accessToken) {
+        setAccessToken(res.data.accessToken);
         setUser(res.data.user);
         setAuthLoading(false);
         navigate("/home", { replace: true });
       } else {
-        setError("Google login failed.");
+        setError("Login failed.");
       }
     } catch (err) {
       console.error(err);
