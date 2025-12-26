@@ -14,26 +14,29 @@ import {
 } from "react-bootstrap";
 import "./Register_Page.css";
 import SignUpIllustration from "./undraw_signup.svg";
+import { auth, setUpRecaptcha, signInWithPhoneNumber } from "./firebase";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
 const Register = () => {
   const navigate = useNavigate();
 
-  const [step, setStep] = useState(1); // 1 for details, 2 for OTP
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     school: "",
-    otp: "", // Added OTP to the form data state
+    otp: "",
   });
+
+  const [usePhone, setUsePhone] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [confirmationResult, setConfirmationResult] = useState(null);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [usePhone, setUsePhone] = useState(false);
-  const [phone, setPhone] = useState("");
-  const [confirmationResult, setConfirmationResult] = useState(null);
 
   const { fullName, email, school, otp } = formData;
 
@@ -46,67 +49,88 @@ const Register = () => {
 
   const validateDetailsForm = () => {
     let errors = {};
+
     if (!/^[A-Za-z\s]{3,}$/.test(fullName.trim())) {
       errors.fullName = "Full Name must be at least 3 letters.";
     }
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email.trim())) {
-      errors.email = "Enter a valid email address.";
+
+    if (!usePhone) {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email.trim())) {
+        errors.email = "Enter a valid email address.";
+      }
+    } else {
+      if (!/^\+\d{10,15}$/.test(phone)) {
+        errors.phone = "Enter phone as +911234567890";
+      }
     }
+
     if (school.trim().length < 3) {
       errors.school = "School Name must be at least 3 characters.";
     }
+
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  // Step 1: Send user details to get an OTP
-  const handleSendOtp = async (event) => {
-    event.preventDefault();
+  const handleSendOtp = async (e) => {
+    e.preventDefault();
     setError(null);
     if (!validateDetailsForm()) return;
 
     setLoading(true);
+
     try {
-      // Call the new endpoint to send the OTP
-      await axios.post(`${baseUrl}/api/send-otp`, { email });
-      setStep(2); // Move to OTP entry step on success
+      if (usePhone) {
+        setUpRecaptcha();
+        const result = await signInWithPhoneNumber(
+          auth,
+          phone,
+          window.recaptchaVerifier
+        );
+        setConfirmationResult(result);
+        setStep(2);
+      } else {
+        await axios.post(`${baseUrl}/api/send-otp`, { email });
+        setStep(2);
+      }
     } catch (err) {
-      const errorMessage =
-        err.response?.data?.message || "Failed to send OTP. Please try again.";
-      setError(errorMessage);
+      setError(err.message || "Failed to send OTP.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Step 2: Send all details plus OTP to register
-  const handleRegister = async (event) => {
-    event.preventDefault();
+  const handleRegister = async (e) => {
+    e.preventDefault();
     setError(null);
-    if (otp.trim().length !== 6) {
+
+    if (otp.length !== 6) {
       setFieldErrors({ otp: "OTP must be 6 digits." });
       return;
     }
 
     setLoading(true);
+
     try {
-      // Call the final register endpoint with all data
+      if (usePhone) {
+        await confirmationResult.confirm(otp);
+      }
+
       await axios.post(`${baseUrl}/api/register`, {
         fullName,
-        email,
+        email: usePhone ? null : email,
+        phone: usePhone ? phone : null,
         school,
-        otp,
       });
+
       setShowSuccessModal(true);
       setTimeout(() => {
         setShowSuccessModal(false);
         navigate("/login");
       }, 2500);
     } catch (err) {
-      const errorMessage =
-        err.response?.data?.message || "Registration failed. Please try again.";
-      setError(errorMessage);
+      setError(err.message || "Registration failed.");
     } finally {
       setLoading(false);
     }
@@ -121,175 +145,131 @@ const Register = () => {
               <Card className="register-card-custom shadow-lg border-0">
                 <Card.Body className="p-4 p-md-5">
                   <h1 className="text-center fw-bold mb-2">Create Account</h1>
+
                   <p className="text-center text-muted mb-4">
                     {step === 1
                       ? "Join our community to get started."
-                      : `Enter the OTP sent to ${email}`}
+                      : "Enter the OTP you received"}
                   </p>
 
-                  {error && (
-                    <Alert variant="danger" className="text-center small py-2">
-                      {error}
-                    </Alert>
-                  )}
+                  {error && <Alert variant="danger">{error}</Alert>}
 
-                  {/* Conditionally render the correct form based on the step */}
                   {step === 1 ? (
-                    <Form noValidate onSubmit={handleSendOtp}>
-                      {/* --- STEP 1: Details Form --- */}
-                      <Form.Group className="mb-3" controlId="fullName">
+                    <Form onSubmit={handleSendOtp}>
+                      <Form.Check
+                        type="switch"
+                        label={
+                          usePhone ? "Using Mobile OTP" : "Using Email OTP"
+                        }
+                        checked={usePhone}
+                        onChange={() => setUsePhone(!usePhone)}
+                        className="mb-3"
+                      />
+
+                      <Form.Group className="mb-3">
                         <Form.Label>Full Name</Form.Label>
                         <Form.Control
-                          type="text"
                           name="fullName"
                           value={fullName}
                           onChange={handleChange}
-                          placeholder="e.g., Arjun Sharma"
                           isInvalid={!!fieldErrors.fullName}
-                          required
                         />
                         <Form.Control.Feedback type="invalid">
                           {fieldErrors.fullName}
                         </Form.Control.Feedback>
                       </Form.Group>
 
-                      <Form.Group className="mb-3" controlId="email">
-                        <Form.Label>Email</Form.Label>
-                        <Form.Control
-                          type="email"
-                          name="email"
-                          value={email}
-                          onChange={handleChange}
-                          placeholder="you@example.com"
-                          isInvalid={!!fieldErrors.email}
-                          required
-                        />
-                        <Form.Control.Feedback type="invalid">
-                          {fieldErrors.email}
-                        </Form.Control.Feedback>
-                      </Form.Group>
+                      {!usePhone ? (
+                        <Form.Group className="mb-3">
+                          <Form.Label>Email</Form.Label>
+                          <Form.Control
+                            name="email"
+                            value={email}
+                            onChange={handleChange}
+                            isInvalid={!!fieldErrors.email}
+                          />
+                        </Form.Group>
+                      ) : (
+                        <Form.Group className="mb-3">
+                          <Form.Label>Mobile Number</Form.Label>
+                          <Form.Control
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            placeholder="+911234567890"
+                            isInvalid={!!fieldErrors.phone}
+                          />
+                        </Form.Group>
+                      )}
 
-                      <Form.Group className="mb-3" controlId="school">
+                      <Form.Group className="mb-3">
                         <Form.Label>School</Form.Label>
                         <Form.Control
-                          type="text"
                           name="school"
                           value={school}
                           onChange={handleChange}
-                          placeholder="e.g., Aligarh Muslim University"
                           isInvalid={!!fieldErrors.school}
-                          required
                         />
-                        <Form.Control.Feedback type="invalid">
-                          {fieldErrors.school}
-                        </Form.Control.Feedback>
                       </Form.Group>
 
-                      <div className="d-grid mt-4">
-                        <Button
-                          variant="primary"
-                          type="submit"
-                          size="lg"
-                          disabled={loading}
-                        >
-                          {loading ? (
-                            <>
-                              <Spinner as="span" animation="border" size="sm" />{" "}
-                              <span className="ms-2">Sending OTP...</span>
-                            </>
-                          ) : (
-                            "Send OTP"
-                          )}
-                        </Button>
-                      </div>
+                      <Button
+                        type="submit"
+                        disabled={loading}
+                        className="w-100"
+                      >
+                        {loading ? "Sending OTP..." : "Send OTP"}
+                      </Button>
                     </Form>
                   ) : (
-                    <Form noValidate onSubmit={handleRegister}>
-                      {/* --- STEP 2: OTP Form --- */}
-                      <Form.Group className="mb-3" controlId="otp">
-                        <Form.Label>One-Time Password (OTP)</Form.Label>
+                    <Form onSubmit={handleRegister}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>OTP</Form.Label>
                         <Form.Control
-                          type="text"
                           name="otp"
                           value={otp}
                           onChange={handleChange}
-                          placeholder="Enter 6-digit OTP"
-                          isInvalid={!!fieldErrors.otp}
-                          required
                           maxLength={6}
-                          autoFocus
+                          isInvalid={!!fieldErrors.otp}
                         />
-                        <Form.Control.Feedback type="invalid">
-                          {fieldErrors.otp}
-                        </Form.Control.Feedback>
                       </Form.Group>
 
-                      <div className="d-grid mt-4">
-                        <Button
-                          variant="success"
-                          type="submit"
-                          size="lg"
-                          disabled={loading}
-                        >
-                          {loading ? (
-                            <>
-                              <Spinner as="span" animation="border" size="sm" />{" "}
-                              <span className="ms-2">Verifying...</span>
-                            </>
-                          ) : (
-                            "Verify & Register"
-                          )}
-                        </Button>
-                      </div>
-                      <div className="text-center mt-3">
-                        <Button
-                          variant="link"
-                          size="sm"
-                          onClick={() => setStep(1)}
-                          disabled={loading}
-                        >
-                          Change Email
-                        </Button>
-                      </div>
+                      <Button
+                        type="submit"
+                        disabled={loading}
+                        className="w-100"
+                      >
+                        {loading ? "Verifying..." : "Verify & Register"}
+                      </Button>
+
+                      <Button variant="link" onClick={() => setStep(1)}>
+                        Change Method
+                      </Button>
                     </Form>
                   )}
 
-                  <p className="text-center text-muted mt-4 small">
-                    Already have an account? <Link to="/login">Login here</Link>
+                  <p className="text-center mt-3">
+                    Already have an account? <Link to="/login">Login</Link>
                   </p>
                 </Card.Body>
               </Card>
             </Col>
 
-            <Col
-              md={5}
-              lg={6}
-              xl={7}
-              className="d-none d-md-flex align-items-center justify-content-center"
-            >
+            <Col md={5} className="d-none d-md-flex justify-content-center">
               <img
                 src={SignUpIllustration}
                 className="illustration-img"
-                alt="Sign Up Illustration"
+                alt=""
               />
             </Col>
           </Row>
         </Container>
       </div>
 
-      {/* Success Modal (no changes needed here) */}
-      <Modal
-        show={showSuccessModal}
-        centered
-        backdrop="static"
-        keyboard={false}
-      >
-        <Modal.Body className="text-center p-4">
-          <h2 className="text-success mb-3">🎉 Registration Successful!</h2>
-          <p className="text-muted">
-            You will be redirected to the login page shortly.
-          </p>
-          <Spinner animation="border" variant="success" className="mt-2" />
+      <div id="recaptcha-container"></div>
+
+      <Modal show={showSuccessModal} centered backdrop="static">
+        <Modal.Body className="text-center">
+          <h4 className="text-success">🎉 Registration Successful</h4>
+          <Spinner animation="border" />
         </Modal.Body>
       </Modal>
     </>
