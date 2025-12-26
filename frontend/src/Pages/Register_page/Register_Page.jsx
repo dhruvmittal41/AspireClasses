@@ -14,7 +14,11 @@ import {
 } from "react-bootstrap";
 import "./Register_Page.css";
 import SignUpIllustration from "./undraw_signup.svg";
-import { auth, setUpRecaptcha, signInWithPhoneNumber } from "./firebase";
+import {
+  auth,
+  setUpRecaptcha,
+  signInWithPhoneNumber,
+} from "frontend/src/firebase.js";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
