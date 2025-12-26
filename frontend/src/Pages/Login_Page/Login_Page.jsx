@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useContext } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
   Container,
@@ -13,6 +12,7 @@ import {
   Col,
 } from "react-bootstrap";
 import axios from "axios";
+import { GoogleLogin } from "@react-oauth/google";
 import "./Login_Page.css";
 import LoginIllustration from "./undraw_login.svg";
 import { AuthContext } from "../../context/AuthContext";
@@ -23,8 +23,10 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
   const { setAccessToken, setUser, setAuthLoading } = useContext(AuthContext);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -37,8 +39,6 @@ const LoginPage = () => {
         { withCredentials: true }
       );
 
-      console.log(response);
-
       if (response.data?.accessToken) {
         setAccessToken(response.data.accessToken);
         setUser(response.data.user);
@@ -48,11 +48,29 @@ const LoginPage = () => {
         setError("Login failed.");
       }
     } catch (err) {
-      setError(
-        err.response?.data?.error || "Something went wrong. Please try again."
-      );
+      setError(err.response?.data?.error || "Login failed.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async (credentialResponse) => {
+    try {
+      const token = credentialResponse.credential;
+
+      const res = await axios.post(`${baseUrl}/api/google`, { token });
+
+      if (res.data?.token) {
+        setAccessToken(res.data.token);
+        setUser(res.data.user);
+        setAuthLoading(false);
+        navigate("/home", { replace: true });
+      } else {
+        setError("Google login failed.");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Google login failed.");
     }
   };
 
@@ -60,7 +78,6 @@ const LoginPage = () => {
     <div className="login-page-background">
       <Container className="py-5">
         <Row className="d-flex justify-content-center align-items-center">
-          {/* Column 1: Login Form */}
           <Col xs={12} md={7} lg={6} xl={5}>
             <Card className="login-card-custom shadow-lg border-0">
               <Card.Body className="p-4 p-md-5">
@@ -68,6 +85,21 @@ const LoginPage = () => {
                 <p className="text-center text-muted mb-4">
                   Sign in to continue.
                 </p>
+
+                {error && (
+                  <Alert variant="danger" className="text-center small py-2">
+                    {error}
+                  </Alert>
+                )}
+
+                <div className="d-flex justify-content-center mb-3">
+                  <GoogleLogin
+                    onSuccess={handleGoogleLogin}
+                    onError={() => setError("Google login failed")}
+                  />
+                </div>
+
+                <div className="text-center text-muted mb-3">OR</div>
 
                 <Form onSubmit={handleLogin} noValidate>
                   <FloatingLabel
@@ -85,12 +117,6 @@ const LoginPage = () => {
                       disabled={loading}
                     />
                   </FloatingLabel>
-
-                  {error && (
-                    <Alert variant="danger" className="text-center small py-2">
-                      {error}
-                    </Alert>
-                  )}
 
                   <div className="d-grid mt-4">
                     <Button
@@ -116,6 +142,7 @@ const LoginPage = () => {
                     </Button>
                   </div>
                 </Form>
+
                 <p className="text-center text-muted mt-4 small">
                   Don't have an account? <Link to="/register">Sign up</Link>
                 </p>
@@ -123,7 +150,6 @@ const LoginPage = () => {
             </Card>
           </Col>
 
-          {/* Column 2: SVG Illustration */}
           <Col
             md={5}
             lg={6}
