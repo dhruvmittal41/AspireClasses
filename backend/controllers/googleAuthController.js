@@ -1,6 +1,6 @@
 const { OAuth2Client } = require("google-auth-library");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const User = require("../models/userModel");
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -17,27 +17,32 @@ exports.googleAuth = async (req, res) => {
             audience: process.env.GOOGLE_CLIENT_ID,
         });
 
-        const { email, name, picture, sub } = ticket.getPayload();
+        const payload = ticket.getPayload();
+        const email = payload.email;
+        const name = payload.name;
 
-        let user = await User.findOne({ email });
+        if (!email) {
+            return res.status(400).json({ message: "Google account has no email" });
+        }
+
+        let user = await User.findByEmail(email);
 
         if (!user) {
+            // Since Google signup doesn't ask for school, we store "Google User" as placeholder
             user = await User.create({
+                fullName: name || "Google User",
                 email,
-                fullName: name,
-                avatar: picture,
-                googleId: sub,
-                isVerified: true,
+                school: "Google Signup",
             });
         }
 
-        const jwtToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        const jwtToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
             expiresIn: "7d",
         });
 
         res.json({ token: jwtToken, user });
     } catch (err) {
-        console.error(err);
+        console.error("Google auth error:", err);
         res.status(401).json({ message: "Google authentication failed" });
     }
 };
