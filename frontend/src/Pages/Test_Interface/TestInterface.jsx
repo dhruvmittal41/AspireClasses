@@ -139,13 +139,13 @@ const TestInterface = ({ id, onBack }) => {
     return () => clearTimeout(timerId);
   }, [timeLeft, handleSubmit, isSubmitting]);
 
-  const blocker = (() => {
-    try {
-      return useBlocker(!isSubmitting && !!testData && !loading);
-    } catch {
-      return null;
-    }
-  })();
+  let blocker = null;
+
+  try {
+    blocker = useBlocker(!isSubmitting && !!testData && !loading);
+  } catch {
+    blocker = null;
+  }
 
   useEffect(() => {
     if (blocker?.state === "blocked") {
