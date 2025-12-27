@@ -83,6 +83,7 @@ app.post("/api/refresh", async (req, res) => {
             user: {
                 id: user.id,
                 email: user.email_or_phone,
+                full_name: user.full_name,
             },
         });
     } catch (err) {

@@ -14,8 +14,6 @@ import Register from "./Pages/Register_page/Register_Page.jsx";
 import LoginPage from "./Pages/Login_Page/Login_Page.jsx";
 import HomePage from "./Pages/Home_Page/Home_Page.jsx";
 import TestPage from "./Pages/Test_Interface/TestPage.jsx";
-import ShoppingPage from "./Pages/Shopping_Page/Shopping_Page.jsx";
-import UserDetailForm from "./Pages/UserDetail_Page/User_Detail.jsx";
 import ProductDetailsPage from "./Pages/Home_Page/ProductDetailsPage.jsx";
 import PaymentPage from "./Pages/Home_Page/PaymentPage.jsx";
 
