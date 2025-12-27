@@ -121,7 +121,13 @@ const MyTestsView = () => {
           ))}
         </Row>
       ) : (
-        <EmptyState onBrowse={() => navigate("/shop")} />
+        <EmptyState
+          onBrowse={() => {
+            document
+              .getElementById("get-tests")
+              ?.scrollIntoView({ behavior: "smooth" });
+          }}
+        />
       )}
     </Container>
   );

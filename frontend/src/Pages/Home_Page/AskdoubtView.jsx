@@ -33,8 +33,8 @@ const AskADoubtView = () => {
     }
   }, []);
 
-  const contactEmail = "support@yourplatform.com";
-  const contactPhone = "911234567890"; // Your WhatsApp number with country code
+  const contactEmail = "aspireclasses51@gmail.com";
+  const contactPhone = "9198027660";
   const emailSubject = `Doubt from ${username || "a user"}`;
 
   return (

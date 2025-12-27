@@ -135,24 +135,6 @@ function App() {
         />
 
         <Route
-          path="/shop"
-          element={
-            <PrivateRoute>
-              <ShoppingPage />
-            </PrivateRoute>
-          }
-        />
-
-        <Route
-          path="/userdetails"
-          element={
-            <PrivateRoute>
-              <UserDetailForm />
-            </PrivateRoute>
-          }
-        />
-
-        <Route
           path="/details/bundle/:id"
           element={
             <PrivateRoute>

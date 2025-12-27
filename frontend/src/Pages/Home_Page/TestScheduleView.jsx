@@ -30,6 +30,7 @@ const TestScheduleView = () => {
       as={motion.div}
       fluid
       key="test-schedule-view"
+      id="get-tests"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
