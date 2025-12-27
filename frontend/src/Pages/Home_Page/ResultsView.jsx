@@ -152,17 +152,12 @@ const ResultsView = () => {
       labels: [selectedResult?.test_name],
       datasets: [
         {
-          label: "Your Correct Answers",
+          label: "Your Score",
           data: [clampScore(selectedResult?.score)],
           backgroundColor: "#3B82F6",
         },
         {
-          label: "Average Correct Answers",
-          data: [clampScore(selectedResult?.average_score)],
-          backgroundColor: "#F97316",
-        },
-        {
-          label: "Highest Correct Answers",
+          label: "Highest Score",
           data: [clampScore(selectedResult?.highest_score)],
           backgroundColor: "#EF4444",
         },
@@ -224,17 +219,6 @@ const ResultsView = () => {
       <h1 className="display-5 mb-4">Results Dashboard</h1>
 
       <Row className="mb-4">
-        <Col md={4} as={motion.div} variants={itemVariants} className="mb-3">
-          <Card className="text-center shadow-sm h-100">
-            <Card.Body>
-              <Card.Title>Average Score</Card.Title>
-              <Card.Text className="display-4 fw-bold text-primary">
-                {formatScoreOutOf85(summaryStats.average)}
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-
         <Col md={4} as={motion.div} variants={itemVariants} className="mb-3">
           <Card className="text-center shadow-sm h-100">
             <Card.Body>
