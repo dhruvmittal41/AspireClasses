@@ -205,7 +205,6 @@ const TestInterface = ({ id, onBack }) => {
     setMarkedForReview(newMarked);
   };
 
-  // ---- UPDATED NAVIGATION ----
   const requestNavigation = () => setShowNavBlocker(true);
 
   const confirmNavigation = async () => {
@@ -214,7 +213,6 @@ const TestInterface = ({ id, onBack }) => {
   };
 
   const cancelNavigation = () => setShowNavBlocker(false);
-  // ----------------------------
 
   const handleSaveAnswer = () => {
     const questionId = testData.questions[currentQuestionIndex].id;

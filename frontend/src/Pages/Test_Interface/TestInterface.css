@@ -10,6 +10,31 @@
   overflow: hidden; /* Prevent page-level scroll when sidebar opens */
 }
 
+
+/* Answered + Marked */
+.btn-answered-review {
+  background-color: #6f42c1;  /* purple */
+  border-color: #6f42c1;
+  color: white;
+}
+
+.btn-answered-review:hover,
+.btn-answered-review:focus {
+  background-color: #5a32a3;
+  border-color: #5a32a3;
+  color: white;
+}
+
+/* Legend box */
+.answered-review-legend {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background-color: #6f42c1;
+  border-radius: 3px;
+  margin-right: 6px;
+}
+
 .main-row {
   flex-grow: 1;
   min-height: 0;
