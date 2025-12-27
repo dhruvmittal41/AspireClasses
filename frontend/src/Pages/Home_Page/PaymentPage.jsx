@@ -53,12 +53,14 @@ const PaymentPage = () => {
                   style={{ background: "#f8f9fa" }}
                 >
                   <p className="mb-2 small text-muted">Or use UPI ID:</p>
-                  <h5 className="fw-bold text-break">your-upi-id@okhdfcbank</h5>
+                  <h5 className="fw-bold text-break">
+                    mittaldhruv41@okhdfcbank
+                  </h5>
                   <hr />
                   <p className="mb-2 small text-muted">
                     For confirmation, contact:
                   </p>
-                  <h5 className="fw-bold">+91 12345 67890</h5>
+                  <h5 className="fw-bold">+91 8439468693</h5>
                 </div>
               </Col>
             </Row>
