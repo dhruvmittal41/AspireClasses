@@ -88,17 +88,24 @@ const TestInterface = ({ id, onBack }) => {
     };
     fetchTest();
   }, [id]);
+  const handleBeforeUnload = useCallback((e) => {
+    e.preventDefault();
+    e.returnValue = "Are you sure you want to leave? Test will be submitted.";
+  }, []);
 
   const handleSubmit = useCallback(
     async (isAutoSubmit = false) => {
       setIsSubmitting(true);
       try {
+        window.removeEventListener("beforeunload", handleBeforeUnload);
         const formattedAnswers = Object.entries(answers).map(
           ([questionId, selectedOption]) => ({
             questionId: parseInt(questionId, 10),
             selectedOption,
           })
         );
+        localStorage.removeItem(`test-${id}`);
+
         await api.post(`/api/tests/${id}/submit`, {
           answers: formattedAnswers,
           testId: id,
@@ -118,32 +125,34 @@ const TestInterface = ({ id, onBack }) => {
   );
 
   useEffect(() => {
-    if (timeLeft === null) return;
-    if (timeLeft === 0) {
+    if (timeLeft === null || isSubmitting) return;
+
+    if (timeLeft <= 0) {
       handleSubmit(true);
       return;
     }
-    const timerId = setInterval(() => setTimeLeft((t) => t - 1), 1000);
-    return () => clearInterval(timerId);
-  }, [timeLeft, handleSubmit]);
 
-  let blocker = null;
-  try {
-    blocker = useBlocker(!isSubmitting && !!testData && !loading);
-  } catch (e) {
-    blocker = null;
-  }
+    const timerId = setTimeout(() => {
+      setTimeLeft((t) => Math.max(t - 1, 0));
+    }, 1000);
+
+    return () => clearTimeout(timerId);
+  }, [timeLeft, handleSubmit, isSubmitting]);
+
+  const shouldBlock = !isSubmitting && !!testData && !loading;
+  const blocker =
+    typeof useBlocker === "function" ? useBlocker(shouldBlock) : null;
 
   useEffect(() => {
-    if (blocker && blocker.state === "blocked") {
+    if (blocker?.state === "blocked") {
       setShowNavBlocker(true);
     }
   }, [blocker]);
 
   const handleProceedNavigation = useCallback(async () => {
     if (blocker && blocker.state === "blocked") {
-      await handleSubmit(true); // Auto-submit the test
-      blocker.proceed(); // Then proceed with navigation
+      await handleSubmit(true);
+      blocker.proceed();
     }
   }, [blocker, handleSubmit]);
 
@@ -154,7 +163,7 @@ const TestInterface = ({ id, onBack }) => {
 
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (document.visibilityState === "hidden") {
+      if (document.visibilityState === "hidden" && !isSubmitting) {
         setShowLeaveWarning(true);
       }
     };
@@ -162,6 +171,37 @@ const TestInterface = ({ id, onBack }) => {
     return () =>
       document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, []);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(`test-${id}`);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setAnswers(parsed.answers || {});
+      setCurrentQuestionIndex(parsed.currentQuestionIndex || 0);
+      setTimeLeft(parsed.timeLeft || null);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+    localStorage.setItem(
+      `test-${id}`,
+      JSON.stringify({
+        answers,
+        currentQuestionIndex,
+        timeLeft,
+      })
+    );
+  }, [answers, currentQuestionIndex, timeLeft, id]);
+
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === "ArrowRight") handleNext();
+      if (e.key === "ArrowLeft") handlePrevious();
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [handleNext, handlePrevious]);
 
   useEffect(() => {
     const handleBeforeUnload = (e) => {
@@ -417,24 +457,30 @@ const TestInterface = ({ id, onBack }) => {
                   )}
                   <Form>
                     <Stack gap={3} className="mt-3">
-                      {currentQuestion.options.map((optionText, index) => {
-                        const optionKey = getOptionKey(index);
-                        return (
-                          <Form.Check
-                            key={optionKey}
-                            type="radio"
-                            id={`q${currentQuestion.id}-opt${optionKey}`}
-                            name={`question-${currentQuestion.id}`}
-                            label={<KatexRenderer text={optionText.trim()} />}
-                            value={optionKey}
-                            checked={answers[currentQuestion.id] === optionKey}
-                            onChange={() =>
-                              handleAnswerChange(currentQuestion.id, optionKey)
-                            }
-                            className="option-label"
-                          />
-                        );
-                      })}
+                      {Array.isArray(currentQuestion.options) &&
+                        currentQuestion.options.map((optionText, index) => {
+                          const optionKey = getOptionKey(index);
+                          return (
+                            <Form.Check
+                              key={optionKey}
+                              type="radio"
+                              id={`q${currentQuestion.id}-opt${optionKey}`}
+                              name={`question-${currentQuestion.id}`}
+                              label={<KatexRenderer text={optionText.trim()} />}
+                              value={optionKey}
+                              checked={
+                                answers[currentQuestion.id] === optionKey
+                              }
+                              onChange={() =>
+                                handleAnswerChange(
+                                  currentQuestion.id,
+                                  optionKey
+                                )
+                              }
+                              className="option-label"
+                            />
+                          );
+                        })}
                     </Stack>
                   </Form>
                 </div>
