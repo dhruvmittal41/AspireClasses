@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
 import { motion } from "framer-motion";
-import axios from "axios";
 import {
   Container,
   Row,
@@ -28,6 +27,14 @@ const containerVariants = {
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
   visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } },
+};
+
+const TOTAL_QUESTIONS = 85;
+
+const clampScore = (score) => {
+  const s = Number(score);
+  if (Number.isNaN(s) || s < 0) return 0;
+  return Math.min(s, TOTAL_QUESTIONS);
 };
 
 // --- Recent Results Table ---
@@ -61,12 +68,9 @@ const RecentResults = React.memo(({ results, loading, error }) => (
                 {results.map((result) => (
                   <tr key={result.id}>
                     <td>{result.test_name}</td>
-                    <td>
-                      {/* UPDATED: Display score out of 85 */}
-                      {typeof result.score === "number"
-                        ? `${result.score} / 85`
-                        : "N/A"}
-                    </td>
+                    <td>{`${clampScore(
+                      result.score
+                    )} / ${TOTAL_QUESTIONS}`}</td>
                   </tr>
                 ))}
               </tbody>
@@ -176,8 +180,10 @@ const DashboardView = ({ userName = "Learner" }) => {
         if (Array.isArray(response.data)) {
           const processedResults = response.data.map((result) => ({
             ...result,
-            max_score: result.max_score || 100,
+            score: clampScore(result.score),
+            max_score: TOTAL_QUESTIONS,
           }));
+
           setResults(processedResults.slice(0, 5));
         } else {
           console.error("API did not return an array:", response.data);
