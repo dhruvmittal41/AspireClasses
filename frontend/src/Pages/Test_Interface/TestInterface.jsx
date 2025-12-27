@@ -214,12 +214,17 @@ const TestInterface = ({ id, onBack }) => {
 
   const cancelNavigation = () => setShowNavBlocker(false);
 
-  const handleSaveAnswer = () => {
+  const handleSaveAndNext = () => {
     const questionId = testData.questions[currentQuestionIndex].id;
+
     if (markedForReview.has(questionId)) {
       const newMarked = new Set(markedForReview);
       newMarked.delete(questionId);
       setMarkedForReview(newMarked);
+    }
+
+    if (currentQuestionIndex < testData.questions.length - 1) {
+      setCurrentQuestionIndex((i) => i + 1);
     }
   };
 
@@ -491,15 +496,12 @@ const TestInterface = ({ id, onBack }) => {
                       ? "Unmark Review"
                       : "Mark for Review"}
                   </Button>
-                  <Button variant="info" onClick={handleSaveAnswer}>
-                    Save Answer
-                  </Button>
                   <Button
                     variant="success"
-                    onClick={handleNext}
+                    onClick={handleSaveAndNext}
                     disabled={currentQuestionIndex === questions.length - 1}
                   >
-                    Next
+                    Save & Next
                   </Button>
                 </Stack>
               </Card.Footer>
