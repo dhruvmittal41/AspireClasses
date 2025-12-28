@@ -19,12 +19,15 @@ const HOURS_24 = 24 * 60 * 60 * 1000;
 
 const getTestStatus = (test) => {
   const now = new Date();
-  const scheduledAt = new Date(test.date_scheduled);
+  const scheduledAt = test.date_scheduled
+    ? new Date(test.date_scheduled)
+    : null;
+
   const lastAttempt = test.last_attempt_at
     ? new Date(test.last_attempt_at)
     : null;
 
-  if (now < scheduledAt) {
+  if (scheduledAt && now < scheduledAt) {
     return {
       state: "scheduled",
       availableAt: scheduledAt,
@@ -146,7 +149,7 @@ const MyTestsView = () => {
                     {status.state === "scheduled" && (
                       <Button disabled variant="secondary" className="mt-auto">
                         Available at{" "}
-                        {new Date(test.scheduled_at).toLocaleString()}
+                        {new Date(test.date_scheduled).toLocaleString()}
                       </Button>
                     )}
 
