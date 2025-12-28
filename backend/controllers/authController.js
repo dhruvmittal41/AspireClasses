@@ -242,7 +242,7 @@ exports.getBoughtTests = async (req, res, next) => {
         }
 
         const { rows: testRows } = await db.query(
-            `SELECT id, test_name, subject_topic, num_questions FROM tests WHERE id = $1`,
+            `SELECT id, test_name, subject_topic, num_questions, date_scheduled FROM tests WHERE id = $1`,
             [user.assigned_testid]
         );
 
