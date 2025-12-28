@@ -17,14 +17,14 @@ import api from "../../api/axios";
 
 const HOURS_24 = 24 * 60 * 60 * 1000;
 
-const getTestStatus = (test) => {
+const getTestStatus = (test, lastAttemptData) => {
   const now = new Date();
   const scheduledAt = test.date_scheduled
     ? new Date(test.date_scheduled)
     : null;
 
-  const lastAttempt = test.last_attempt_at
-    ? new Date(test.last_attempt_at)
+  const lastAttempt = lastAttemptData.submitted_at
+    ? new Date(lastAttemptData.submitted_at)
     : null;
 
   if (scheduledAt && now < scheduledAt) {
@@ -92,6 +92,7 @@ const EmptyState = ({ onBrowse }) => (
 
 const MyTestsView = () => {
   const [boughtTests, setBoughtTests] = useState([]);
+  const [lastAttemptData, setLastAttemptData] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -100,7 +101,11 @@ const MyTestsView = () => {
       try {
         setLoading(true);
         const res = await api.get(`/api/user/mytests`);
+        const response = await api.get("/api/results");
         setBoughtTests(Array.isArray(res.data) ? res.data : [res.data]);
+        setLastAttemptData(
+          Array.isArray(response.data) ? response.data : [response.data]
+        );
       } catch (error) {
         console.error("Error fetching tests:", error);
         setBoughtTests([]);
@@ -119,7 +124,7 @@ const MyTestsView = () => {
       {boughtTests.length > 0 ? (
         <Row className="g-4">
           {boughtTests.map((test) => {
-            const status = getTestStatus(test);
+            const status = getTestStatus(test, lastAttemptData);
 
             return (
               <Col key={test.id} xs={12} sm={6} md={6} lg={4}>
