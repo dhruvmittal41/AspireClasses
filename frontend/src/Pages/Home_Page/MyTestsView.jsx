@@ -15,7 +15,42 @@ import { BookIcon, ArrowRightIcon } from "./Icons";
 import "./MyTestView.css";
 import api from "../../api/axios";
 
-const baseUrl = import.meta.env.VITE_BASE_URL;
+const HOURS_24 = 24 * 60 * 60 * 1000;
+
+const getTestStatus = (test) => {
+  const now = new Date();
+  const scheduledAt = new Date(test.scheduled_at);
+  const lastAttempt = test.last_attempt_at
+    ? new Date(test.last_attempt_at)
+    : null;
+
+  if (now < scheduledAt) {
+    return {
+      state: "scheduled",
+      availableAt: scheduledAt,
+    };
+  }
+
+  if (lastAttempt) {
+    const diff = now - lastAttempt;
+    if (diff < HOURS_24) {
+      return {
+        state: "locked",
+        unlockAt: new Date(lastAttempt.getTime() + HOURS_24),
+      };
+    }
+    return { state: "reattempt" };
+  }
+
+  return { state: "start" };
+};
+
+const formatRemainingTime = (date) => {
+  const diff = date - new Date();
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  return `${hours}h ${minutes}m`;
+};
 
 const LoadingState = () => (
   <div
@@ -75,6 +110,24 @@ const MyTestsView = () => {
 
   if (loading) return <LoadingState />;
 
+  const status = getTestStatus(test);
+
+  if (status.state === "scheduled") {
+    return (
+      <Button disabled variant="secondary" className="mt-auto">
+        Available at {new Date(test.scheduled_at).toLocaleString()}
+      </Button>
+    );
+  }
+
+  if (status.state === "locked") {
+    return (
+      <Button disabled variant="warning" className="mt-auto">
+        Locked ({formatRemainingTime(status.unlockAt)})
+      </Button>
+    );
+  }
+
   return (
     <Container as={motion.div} fluid className="my-tests-container">
       <h1 className="display-5 mb-4 text-center">My Tests</h1>
@@ -106,13 +159,21 @@ const MyTestsView = () => {
                   </Card.Text>
                   <Button
                     as={motion.button}
-                    variant="primary"
+                    variant={
+                      status.state === "reattempt"
+                        ? "outline-primary"
+                        : "primary"
+                    }
                     className="mt-auto d-flex align-items-center justify-content-center start-btn"
                     onClick={() => navigate(`/tests/${test.id}`)}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <span className="me-2">Start Test</span>
+                    <span className="me-2">
+                      {status.state === "reattempt"
+                        ? "Reattempt Test"
+                        : "Start Test"}
+                    </span>
                     <ArrowRightIcon />
                   </Button>
                 </Card.Body>
