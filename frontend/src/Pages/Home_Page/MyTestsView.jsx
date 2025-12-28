@@ -19,7 +19,7 @@ const HOURS_24 = 24 * 60 * 60 * 1000;
 
 const getTestStatus = (test) => {
   const now = new Date();
-  const scheduledAt = new Date(test.scheduled_at);
+  const scheduledAt = new Date(test.date_scheduled);
   const lastAttempt = test.last_attempt_at
     ? new Date(test.last_attempt_at)
     : null;
