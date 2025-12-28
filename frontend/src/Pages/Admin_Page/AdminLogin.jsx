@@ -1,28 +1,35 @@
 // src/components/AdminLogin.jsx
 
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Card, Form, Button, Alert, Spinner } from "react-bootstrap";
-import "./AdminLogin.css";
+import { AuthContext } from "../../context/AuthContext";
 import api from "../../api/axios";
+import "./AdminLogin.css";
 
 const AdminLogin = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const { setAccessToken, setUser, setAuthLoading } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
+    setAuthLoading(true);
 
     try {
-      const response = await api.post(`/api/admin/login`, {
-        username,
-        password,
-      });
+      const res = await api.post("/api/admin/login", { username, password });
+
+      const token = res.data.token; // 👈 backend sends { token }
+
+      setAccessToken(token);
+      setUser({ username, role: "admin" });
+
       navigate("/admin/assign-test");
     } catch (err) {
       const message =
@@ -30,6 +37,7 @@ const AdminLogin = () => {
       setError(message);
     } finally {
       setLoading(false);
+      setAuthLoading(false);
     }
   };
 
@@ -53,39 +61,32 @@ const AdminLogin = () => {
             )}
 
             <Form onSubmit={handleLogin}>
-              <Form.Group className="mb-3" controlId="username">
+              <Form.Group className="mb-3">
                 <Form.Label>Username</Form.Label>
                 <Form.Control
-                  type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  required
                   disabled={loading}
+                  required
                 />
               </Form.Group>
 
-              <Form.Group className="mb-4" controlId="password">
+              <Form.Group className="mb-4">
                 <Form.Label>Password</Form.Label>
                 <Form.Control
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  required
                   disabled={loading}
+                  required
                 />
               </Form.Group>
 
               <div className="d-grid">
-                <Button variant="primary" type="submit" disabled={loading}>
+                <Button type="submit" disabled={loading}>
                   {loading ? (
                     <>
-                      <Spinner
-                        as="span"
-                        animation="border"
-                        size="sm"
-                        role="status"
-                        aria-hidden="true"
-                      />
+                      <Spinner size="sm" animation="border" />
                       <span className="ms-2">Logging In...</span>
                     </>
                   ) : (
