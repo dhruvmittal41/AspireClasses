@@ -110,76 +110,79 @@ const MyTestsView = () => {
 
   if (loading) return <LoadingState />;
 
-  const status = getTestStatus(test);
-
-  if (status.state === "scheduled") {
-    return (
-      <Button disabled variant="secondary" className="mt-auto">
-        Available at {new Date(test.scheduled_at).toLocaleString()}
-      </Button>
-    );
-  }
-
-  if (status.state === "locked") {
-    return (
-      <Button disabled variant="warning" className="mt-auto">
-        Locked ({formatRemainingTime(status.unlockAt)})
-      </Button>
-    );
-  }
-
   return (
     <Container as={motion.div} fluid className="my-tests-container">
       <h1 className="display-5 mb-4 text-center">My Tests</h1>
       {boughtTests.length > 0 ? (
         <Row className="g-4">
-          {boughtTests.map((test) => (
-            <Col key={test.id} xs={12} sm={6} md={6} lg={4}>
-              <Card
-                as={motion.div}
-                className="h-100 test-card shadow-sm"
-                whileHover={{ scale: 1.03 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
-                <div className="test-card-header d-flex align-items-center justify-content-between p-3">
-                  <div className="d-flex align-items-center">
-                    <BookIcon className="me-2" />
-                    <span className="subject-text">{test.subject_topic}</span>
+          {boughtTests.map((test) => {
+            const status = getTestStatus(test);
+
+            return (
+              <Col key={test.id} xs={12} sm={6} md={6} lg={4}>
+                <Card
+                  as={motion.div}
+                  className="h-100 test-card shadow-sm"
+                  whileHover={{ scale: 1.03 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  <div className="test-card-header d-flex align-items-center justify-content-between p-3">
+                    <div className="d-flex align-items-center">
+                      <BookIcon className="me-2" />
+                      <span className="subject-text">{test.subject_topic}</span>
+                    </div>
+                    <Badge bg="info" className="level-badge">
+                      {test.difficulty || "Medium"}
+                    </Badge>
                   </div>
-                  <Badge bg="info" className="level-badge">
-                    {test.difficulty || "Medium"}
-                  </Badge>
-                </div>
-                <Card.Body className="d-flex flex-column p-3">
-                  <Card.Title className="h5 fw-bold mb-2">
-                    {test.test_name}
-                  </Card.Title>
-                  <Card.Text className="text-muted mb-3">
-                    {test.num_questions} Questions
-                  </Card.Text>
-                  <Button
-                    as={motion.button}
-                    variant={
-                      status.state === "reattempt"
-                        ? "outline-primary"
-                        : "primary"
-                    }
-                    className="mt-auto d-flex align-items-center justify-content-center start-btn"
-                    onClick={() => navigate(`/tests/${test.id}`)}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <span className="me-2">
-                      {status.state === "reattempt"
-                        ? "Reattempt Test"
-                        : "Start Test"}
-                    </span>
-                    <ArrowRightIcon />
-                  </Button>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))}
+                  <Card.Body className="d-flex flex-column p-3">
+                    <Card.Title className="h5 fw-bold mb-2">
+                      {test.test_name}
+                    </Card.Title>
+                    <Card.Text className="text-muted mb-3">
+                      {test.num_questions} Questions
+                    </Card.Text>
+
+                    {status.state === "scheduled" && (
+                      <Button disabled variant="secondary" className="mt-auto">
+                        Available at{" "}
+                        {new Date(test.scheduled_at).toLocaleString()}
+                      </Button>
+                    )}
+
+                    {status.state === "locked" && (
+                      <Button disabled variant="warning" className="mt-auto">
+                        Locked ({formatRemainingTime(status.unlockAt)})
+                      </Button>
+                    )}
+
+                    {(status.state === "start" ||
+                      status.state === "reattempt") && (
+                      <Button
+                        as={motion.button}
+                        variant={
+                          status.state === "reattempt"
+                            ? "outline-primary"
+                            : "primary"
+                        }
+                        className="mt-auto d-flex align-items-center justify-content-center start-btn"
+                        onClick={() => navigate(`/tests/${test.id}`)}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <span className="me-2">
+                          {status.state === "reattempt"
+                            ? "Reattempt Test"
+                            : "Start Test"}
+                        </span>
+                        <ArrowRightIcon />
+                      </Button>
+                    )}
+                  </Card.Body>
+                </Card>
+              </Col>
+            );
+          })}
         </Row>
       ) : (
         <EmptyState
