@@ -259,7 +259,6 @@ exports.getBoughtTests = async (req, res, next) => {
       FROM user_tests ut
       JOIN tests t ON t.id = ut.test_id
       WHERE ut.user_id = $1
-      ORDER BY ut.assigned_at DESC
       `,
             [userId]
         );
