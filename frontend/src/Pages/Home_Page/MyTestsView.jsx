@@ -113,10 +113,15 @@ const MyTestsView = () => {
         const res = await api.get(`/api/user/mytests`);
         const response = await api.get("/api/results");
 
-        setBoughtTests(Array.isArray(res.data) ? res.data : [res.data]);
-        setLastAttemptData(
-          Array.isArray(response.data) ? response.data : [response.data]
-        );
+        const testsData = Array.isArray(res.data?.tests)
+          ? res.data.tests
+          : Array.isArray(res.data)
+          ? res.data
+          : [];
+
+        setBoughtTests(testsData);
+
+        setLastAttemptData(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
         console.error("Error fetching tests:", error);
         setBoughtTests([]);

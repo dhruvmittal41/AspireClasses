@@ -62,6 +62,10 @@ const AssignTest = () => {
         isPaid: isPaid,
       });
       setSuccessMessage(response.data.message || "Test assigned successfully!");
+      setSuccessMessage(response.data.message || "Test assigned successfully!");
+      setSelectedUser("");
+      setSelectedTest("");
+      setIsPaid(false);
       setTimeout(() => setSuccessMessage(""), 3000);
     } catch (err) {
       const message =

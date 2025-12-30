@@ -184,15 +184,18 @@ exports.getAllUsers = async (req, res, next) => {
     }
 };
 
-const assignTestToUser = async (userId, testId, isPaid) => {
-    const { rows } = await db.query(
-        `UPDATE users
-         SET assigned_testid = $1, is_paid = $2
-         WHERE id = $3
-         RETURNING id, full_name, assigned_testid, is_paid`,
-        [testId, isPaid, userId]
-    );
-    return rows[0];
+const assignTestToUser = async (userId, testId, isPaid = false) => {
+    const query = `
+        INSERT INTO user_tests (user_id, test_id, is_paid, assigned_at)
+        VALUES ($1, $2, $3, NOW())
+        ON CONFLICT (user_id, test_id) DO NOTHING
+        RETURNING *;
+    `;
+
+    const values = [userId, testId, isPaid];
+
+    const { rows } = await db.query(query, values);
+    return rows[0] || null;
 };
 
 exports.assignTest = async (req, res, next) => {
@@ -203,17 +206,21 @@ exports.assignTest = async (req, res, next) => {
             return res.status(400).json({ message: "User ID and Test ID are required" });
         }
 
-        const updatedUser = await assignTestToUser(userId, testId, isPaid);
+        const assignment = await assignTestToUser(userId, testId, isPaid);
 
-        if (!updatedUser) {
-            return res.status(404).json({ message: "User not found or update failed" });
+        if (!assignment) {
+            return res.status(400).json({ message: "Test already assigned or assignment failed" });
         }
 
-        res.json({ message: "Test assigned successfully", user: updatedUser });
+        res.status(201).json({
+            message: "Test assigned successfully",
+            assignment
+        });
     } catch (err) {
         next(err);
     }
 };
+
 
 
 
@@ -226,31 +233,24 @@ exports.getBoughtTests = async (req, res, next) => {
             return res.status(401).json({ message: "Unauthorized" });
         }
 
-        const { rows: userRows } = await db.query(
-            `SELECT assigned_testid, is_paid FROM users WHERE id = $1`,
+        const { rows } = await db.query(
+            `
+      SELECT 
+        t.id,
+        t.test_name,
+        t.subject_topic,
+        t.num_questions,
+        t.date_scheduled,
+        ut.is_paid
+      FROM user_tests ut
+      JOIN tests t ON t.id = ut.test_id
+      WHERE ut.user_id = $1
+      ORDER BY ut.assigned_at DESC
+      `,
             [userId]
         );
 
-        if (userRows.length === 0) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        const user = userRows[0];
-
-        if (!user.is_paid || !user.assigned_testid) {
-            return res.json([]);
-        }
-
-        const { rows: testRows } = await db.query(
-            `SELECT id, test_name, subject_topic, num_questions, date_scheduled FROM tests WHERE id = $1`,
-            [user.assigned_testid]
-        );
-
-        if (testRows.length === 0) {
-            return res.status(404).json({ message: "Test not found" });
-        }
-
-        res.json(testRows[0]);
+        res.json(rows);
     } catch (err) {
         next(err);
     }
