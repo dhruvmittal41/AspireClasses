@@ -200,7 +200,7 @@ const assignTestToUser = async (userId, testId, isPaid = false) => {
 
 exports.assignTest = async (req, res, next) => {
     try {
-        const { userId, testId, isPaid } = req.body;
+        const { userId, testId } = req.body;
 
         if (!userId || !testId) {
             return res.status(400).json({ message: "User ID and Test ID are required" });
