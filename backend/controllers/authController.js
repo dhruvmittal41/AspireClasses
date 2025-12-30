@@ -186,13 +186,13 @@ exports.getAllUsers = async (req, res, next) => {
 
 const assignTestToUser = async (userId, testId, isPaid = false) => {
     const query = `
-        INSERT INTO user_tests (user_id, test_id, is_paid, assigned_at)
+        INSERT INTO user_tests (user_id, test_id,assigned_at)
         VALUES ($1, $2, $3, NOW())
         ON CONFLICT (user_id, test_id) DO NOTHING
         RETURNING *;
     `;
 
-    const values = [userId, testId, isPaid];
+    const values = [userId, testId];
 
     const { rows } = await db.query(query, values);
     return rows[0] || null;
@@ -206,7 +206,7 @@ exports.assignTest = async (req, res, next) => {
             return res.status(400).json({ message: "User ID and Test ID are required" });
         }
 
-        const assignment = await assignTestToUser(userId, testId, isPaid);
+        const assignment = await assignTestToUser(userId, testId);
 
         if (!assignment) {
             return res.status(400).json({ message: "Test already assigned or assignment failed" });
