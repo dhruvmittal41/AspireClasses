@@ -106,6 +106,7 @@ const ResultsView = () => {
     const fetchResults = async () => {
       try {
         const response = await api.get("/api/results");
+        console.log("API RESULTS:", response.data);
         setResults(response.data || []);
       } catch (err) {
         console.error("Failed to fetch results:", err);
