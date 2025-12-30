@@ -187,7 +187,7 @@ exports.getAllUsers = async (req, res, next) => {
 const assignTestToUser = async (userId, testId = false) => {
     const query = `
         INSERT INTO user_tests (user_id, test_id)
-        VALUES ($1, $2, $3, NOW())
+        VALUES ($1, $2)
         ON CONFLICT (user_id, test_id) DO NOTHING
         RETURNING *;
     `;
