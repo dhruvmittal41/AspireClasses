@@ -233,15 +233,29 @@ exports.getBoughtTests = async (req, res, next) => {
             return res.status(401).json({ message: "Unauthorized" });
         }
 
-        const { rows } = await db.query(
+        // Check if user is paid
+        const { rows: userRows } = await db.query(
+            `SELECT is_paid FROM users WHERE id = $1`,
+            [userId]
+        );
+
+        if (userRows.length === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (!userRows[0].is_paid) {
+            return res.json([]); // Not paid = no access
+        }
+
+        // Fetch assigned tests
+        const { rows: testRows } = await db.query(
             `
       SELECT 
         t.id,
         t.test_name,
         t.subject_topic,
         t.num_questions,
-        t.date_scheduled,
-        ut.is_paid
+        t.date_scheduled
       FROM user_tests ut
       JOIN tests t ON t.id = ut.test_id
       WHERE ut.user_id = $1
@@ -250,7 +264,7 @@ exports.getBoughtTests = async (req, res, next) => {
             [userId]
         );
 
-        res.json(rows);
+        res.json(testRows);
     } catch (err) {
         next(err);
     }
