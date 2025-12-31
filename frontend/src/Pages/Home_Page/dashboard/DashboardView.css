@@ -1,97 +1,88 @@
-/* ================================
-   Theme Variables
-================================ */
+/* --- CSS Variables for Easy Theming --- */
 :root {
-  --primary-color: #bbac79;
-  --secondary-color: #c7b992;
-  --success-color: #8a9a5b;
+  /* New Theme Colors */
+  --primary-color: #bbac79; /* A rich, muted gold */
+  --secondary-color: #c7b992; /* A lighter, complementary gold */
+  --success-color: #8a9a5b; /* A warm, earthy green for accents */
+  --light-bg: #FCFBF7; /* Soft, off-white for backgrounds */
+  --medium-bg: #EAE6D9; /* A slightly darker off-white for hover states */
+  --text-primary: #4A3F28; /* A strong, dark brown for headers and key text */
+  --text-secondary: #6D5F3B; /* A softer brown for body text */
+  --border-color: #EAE6D9; /* A subtle border that matches the theme */
 
-  --bg-light: #fcfbf7;
-  --bg-medium: #eae6d9;
-
-  --text-primary: #4a3f28;
-  --text-secondary: #6d5f3b;
-
-  --border-color: #e0dccf;
-
-  --gradient-primary: linear-gradient(
-    135deg,
-    var(--primary-color),
-    var(--secondary-color)
-  );
-
-  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.05);
-  --shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  /* Gradients and Shadows using new colors */
+  --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  --shadow-sm: 0 0.125rem 0.25rem rgba(74, 63, 40, 0.075);
+  --shadow: 0 0.5rem 1rem rgba(74, 63, 40, 0.15);
 }
 
-/* ================================
-   Layout
-================================ */
+/* --- Main Dashboard Container --- */
 .dashboard-container {
   position: relative;
   z-index: 1;
-  max-width: 1200px;
 }
 
+<<<<<<< HEAD
 /* ===============================
    Header
 ================================ */
-.dashboard-header {
-  background: var(--gradient-primary);
-  color: var(--text-primary);
-  border-radius: 1rem;
-  padding: 2rem;
-  box-shadow: var(--shadow-sm);
-  margin-bottom: 1.5rem;
-  text-align: center;
+=======
+/* --- Background Animation Wrapper --- */
+.background-animation-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1;
 }
 
-/* ================================
-   Quote
-================================ */
+
+/* --- Header & Quote --- */
+>>>>>>> parent of ae2be9c (fixed exports)
+.dashboard-header {
+  background: var(--gradient-primary);
+  padding: 2rem 1.5rem;
+  color: var(--text-primary); /* Dark text for readability on gold background */
+}
+
 .quote-section {
   background: var(--gradient-primary);
+  position: relative;
+  overflow: hidden;
   color: var(--text-primary);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  box-shadow: var(--shadow-sm);
 }
 
 .quote-icon {
   font-size: 1.5rem;
-  opacity: 0.75;
-  margin-bottom: 0.5rem;
+  opacity: 0.8;
 }
 
-/* ================================
-   Icons
-================================ */
+/* --- Component-specific Icons --- */
 .icon-primary {
   color: var(--primary-color);
 }
-
 .icon-success {
   color: var(--success-color);
 }
 
-/* ================================
-   Test Cards
-================================ */
+/* --- Demo Test Cards --- */
 .test-card-custom {
-  background-color: var(--bg-light);
+  background-color: var(--light-bg);
   border: 1px solid var(--border-color);
-  border-radius: 0.75rem;
-  padding: 1rem;
-  color: var(--text-secondary);
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background-color 0.2s ease-out;
+  color: var(--text-secondary);
+  text-align: left;
 }
 
-.test-card-custom:hover {
-  transform: translateY(-4px);
+.test-card-custom:hover,
+.test-card-custom:focus-visible {
+  background-color: var(--medium-bg);
+  border-color: #d3cec0; /* A slightly darker border on hover */
   box-shadow: var(--shadow);
-  background-color: var(--bg-medium);
+  transform: translateY(-4px);
 }
 
 .test-card-custom h3 {
@@ -99,86 +90,73 @@
   color: var(--text-primary);
 }
 
-/* ================================
-   Floating Background
-================================ */
-.background-animation-wrapper {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  overflow: hidden;
-}
-
+/* --- Floating Background Shapes --- */
 .floating-shape {
   position: absolute;
   border-radius: 50%;
   filter: blur(120px);
-  opacity: 0.18;
-  animation: float 10s ease-in-out infinite alternate;
+  opacity: 0.2;
+  will-change: transform;
 }
 
+/* Shapes now use the new theme colors automatically */
 .shape1 {
-  width: 260px;
-  height: 260px;
+  width: 250px;
+  height: 250px;
   background: var(--primary-color);
-  top: -100px;
-  left: -100px;
+  top: -80px;
+  left: -80px;
+  animation: float 8s ease-in-out infinite alternate;
 }
 
 .shape2 {
-  width: 220px;
-  height: 220px;
+  width: 200px;
+  height: 200px;
   background: var(--secondary-color);
-  bottom: 0;
-  right: 60px;
-  animation-duration: 12s;
+  bottom: 20px;
+  right: 50px;
+  animation: float 10s ease-in-out infinite alternate-reverse;
 }
 
 .shape3 {
-  width: 200px;
-  height: 200px;
+  width: 180px;
+  height: 180px;
   background: var(--success-color);
   bottom: -60px;
   left: 120px;
-  animation-duration: 14s;
+  animation: float 12s ease-in-out infinite alternate;
 }
 
 @keyframes float {
   from {
-    transform: translateY(0) translateX(0);
+    transform: translateY(0px) translateX(0px) rotate(0deg);
   }
   to {
-    transform: translateY(-20px) translateX(15px);
+    transform: translateY(-20px) translateX(15px) rotate(20deg);
   }
 }
 
-/* ================================
-   Responsive
-================================ */
+/* --- Responsive Adjustments --- */
 @media (max-width: 768px) {
-  .dashboard-header,
-  .quote-section {
-    padding: 1.25rem;
+  .dashboard-header {
+    padding: 1.5rem 1rem;
   }
 
   h1 {
-    font-size: 1.6rem;
+    font-size: 1.75rem;
   }
 
   .floating-shape {
-    filter: blur(90px);
-    opacity: 0.12;
+    opacity: 0.15;
+    filter: blur(80px);
   }
 
   .shape1 {
-    width: 180px;
-    height: 180px;
-  }
-
-  .shape2,
-  .shape3 {
     width: 150px;
     height: 150px;
+  }
+  .shape2, .shape3 {
+    width: 120px;
+    height: 120px;
   }
 }
