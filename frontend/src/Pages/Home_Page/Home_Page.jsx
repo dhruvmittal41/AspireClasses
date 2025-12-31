@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
 // Import Views
-import DashboardView from "./Dashboardview.jsx";
+import DashboardView from "./dashboard/Dashboardview.jsx";
 import MyTestsView from "./MyTestsView";
 import TestScheduleView from "./TestScheduleView";
 import ResultsView from "./ResultsView";
