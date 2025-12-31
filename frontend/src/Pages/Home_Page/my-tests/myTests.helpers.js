@@ -9,7 +9,7 @@ export const getLatestAttemptForTest = (testId, attempts = []) => {
 export const getTestStatus = (test, lastAttempt = {}) => {
     const now = new Date();
     const scheduledAt = test.date_scheduled ? new Date(test.date_scheduled) : null;
-    const last = lastAttempt.submitted_at ? new Date(lastAttempt.submitted_at) : null;
+    // const last = lastAttempt.submitted_at ? new Date(lastAttempt.submitted_at) : null;
 
     if (scheduledAt && now < scheduledAt) {
         return { state: "scheduled", availableAt: scheduledAt };
