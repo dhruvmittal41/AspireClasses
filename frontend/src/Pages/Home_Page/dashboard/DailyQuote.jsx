@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import { useMemo } from "react";
 export const DailyQuote = React.memo(() => {
   const quotes = useMemo(
     () => [
