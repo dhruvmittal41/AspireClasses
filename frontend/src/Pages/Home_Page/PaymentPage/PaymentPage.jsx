@@ -6,10 +6,9 @@ import { Container, Card, Row, Col, Button, Alert } from "react-bootstrap";
 import { motion } from "framer-motion";
 
 const PaymentPage = () => {
-  const { state } = useLocation(); // Get product name & price
+  const { state } = useLocation();
   const navigate = useNavigate();
 
-  // Fallback if state is not passed correctly
   const productName = state?.name || "the selected item";
   const productPrice = state?.price || "the specified amount";
 

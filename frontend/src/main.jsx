@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
-import { AuthProvider } from "./context/AuthContext";
+import App from "./app/App";
+import { AuthProvider } from "./auth/AuthProvider";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
 import "./react-debug";

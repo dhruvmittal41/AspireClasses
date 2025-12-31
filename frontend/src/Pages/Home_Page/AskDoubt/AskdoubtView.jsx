@@ -1,26 +1,8 @@
-// src/AskADoubtView.jsx
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Container, Card, Button } from "react-bootstrap";
-import { EmailIcon, WhatsAppIcon } from "./Icons"; // Assuming these are valid local components
-import "./AskdoubtView.css"; // We will use a much smaller CSS file
-
-// Framer Motion variants remain the same
-const containerVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { when: "beforeChildren", staggerChildren: 0.15 },
-  },
-  exit: { opacity: 0, y: -20, transition: { duration: 0.2 } },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 15 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
-};
+import { EmailIcon, WhatsAppIcon } from "../icons/Icons";
+import "./AskdoubtView.css";
 
 const AskADoubtView = () => {
   const [username, setUserName] = useState("");

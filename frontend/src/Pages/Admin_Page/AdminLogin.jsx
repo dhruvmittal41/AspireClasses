@@ -3,7 +3,7 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Card, Form, Button, Alert, Spinner } from "react-bootstrap";
-import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from "../../auth/AuthProvider";
 import api from "../../api/axios";
 import "./AdminLogin.css";
 

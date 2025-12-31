@@ -15,7 +15,7 @@ import axios from "axios";
 import { GoogleLogin } from "@react-oauth/google";
 import "./Login_Page.css";
 import LoginIllustration from "./undraw_login.svg";
-import { AuthContext } from "../../context/AuthContext";
+import { AuthContext } from "../../auth/AuthProvider";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
