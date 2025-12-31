@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import { itemVariants } from "./dashboard.animations";
 import { TOTAL_QUESTIONS } from "./dashboard.constants";
 import { clampScore } from "./dashboard.helpers";
+import React from "react";
 
 const RecentResults = React.memo(({ results, loading, error }) => (
   <Card as={motion.div} variants={itemVariants} className="shadow-sm">
