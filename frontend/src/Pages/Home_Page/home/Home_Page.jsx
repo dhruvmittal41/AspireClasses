@@ -7,7 +7,7 @@ import HomeNavbar from "./HomeNavbar";
 import HomeMobileNavbar from "./HomeMobileNavbar";
 import HomeSidebar from "./HomeSideBar";
 import HomeContent from "./HomeContent";
-
+import "./Home_Page.css";
 const HomePage = () => {
   const [activeItem, setActiveItem] = useState("Dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
