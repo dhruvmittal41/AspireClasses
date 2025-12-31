@@ -1,6 +1,6 @@
 import { Navbar, Nav, Container, NavDropdown, Image } from "react-bootstrap";
 import { motion } from "framer-motion";
-
+import "./Home_Page.css";
 const HomeNavbar = ({
   navItems,
   activeItem,

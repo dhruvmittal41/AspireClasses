@@ -4,7 +4,7 @@ import TestScheduleView from "../TestSchedule/TestScheduleView";
 import ResultsView from "../results/ResultsView";
 import AskADoubtView from "../AskDoubt/AskdoubtView";
 import ProfileView from "../profile/Profile";
-
+import "./Home_Page.css";
 const VIEW_MAP = {
   Dashboard: DashboardView,
   "My Tests": MyTestsView,

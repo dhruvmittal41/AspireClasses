@@ -1,6 +1,6 @@
 import { Offcanvas, Nav, Button } from "react-bootstrap";
 import { LogoutIcon } from "../icons/Icons";
-
+import "./Home_Page.css";
 const HomeSidebar = ({
   show,
   onClose,

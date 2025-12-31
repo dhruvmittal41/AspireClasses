@@ -1,5 +1,5 @@
 import { Navbar, Nav, Container, NavDropdown, Button } from "react-bootstrap";
-
+import "./Home_Page.css";
 const HomeMobileNavbar = ({ onMenuOpen, profileMenuTitle, onLogout }) => (
   <Navbar expand="lg" sticky="top" className="main-header d-lg-none glass-nav">
     <Container fluid className="justify-content-between">
