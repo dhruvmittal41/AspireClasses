@@ -16,11 +16,25 @@ const UserModel = require('./models/userModel')
 const app = express();
 
 
-
+const allowedOrigins = [
+    url,
+    "http://localhost:3000",
+    "http://localhost:5173", // vite
+    "http://127.0.0.1:3000"
+];
 
 
 app.use(cors({
-    origin: url,
+    origin: function (origin, callback) {
+
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     credentials: true,
 }));
 
