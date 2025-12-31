@@ -1,4 +1,4 @@
-const DailyQuote = React.memo(() => {
+export const DailyQuote = React.memo(() => {
   const quotes = useMemo(
     () => [
       "Success is the sum of small efforts repeated day in and day out.",
