@@ -5,6 +5,8 @@ import { AuthProvider } from "./auth/AuthProvider";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
 import "./react-debug";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
