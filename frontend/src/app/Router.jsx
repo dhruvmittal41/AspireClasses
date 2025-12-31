@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import PrivateRoute from "../auth/PrivateRoute";
 import PublicRoute from "../auth/PublicRoute";
 import PrivateadminRoute from "../Pages/Admin_Page/PrivateRoute";
-import { publicRoutes, privateRoutes, adminRoutes } from "./routes.config";
+import { publicRoutes, privateRoutes, adminRoutes } from "./routes.config.jsx";
 
 export default function Router() {
   return (
