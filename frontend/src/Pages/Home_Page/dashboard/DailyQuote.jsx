@@ -1,4 +1,4 @@
-export const dailyQuote = React.memo(() => {
+export const DailyQuote = React.memo(() => {
   const quotes = useMemo(
     () => [
       "Success is the sum of small efforts repeated day in and day out.",
@@ -29,3 +29,5 @@ export const dailyQuote = React.memo(() => {
     </motion.div>
   );
 });
+
+export default DailyQuote;

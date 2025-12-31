@@ -43,3 +43,5 @@ const FreeDemoTests = React.memo(() => {
     </Card>
   );
 });
+
+export default FreeDemoTests;

@@ -5,7 +5,7 @@ import "./DashboardView.css";
 import { containerVariants, itemVariants } from "./dashboard.animations";
 import RecentResults from "./RecentResults";
 import FreeDemoTests from "./FreeDemoTests";
-import dailyQuote from "./DailyQuote";
+import DailyQuote from "./DailyQuote";
 import { useDashboardResults } from "../../../hooks/useDashboardResults";
 
 const DashboardView = ({ userName = "Learner" }) => {
@@ -24,7 +24,7 @@ const DashboardView = ({ userName = "Learner" }) => {
         <p>Here’s your learning progress today.</p>
       </motion.div>
 
-      <dailyQuote />
+      <DailyQuote />
 
       <Row className="g-4">
         <Col lg={8}>
