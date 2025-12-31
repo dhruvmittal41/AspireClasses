@@ -216,9 +216,11 @@ const MyTestsView = () => {
       ) : (
         <EmptyState
           onBrowse={() => {
-            document
-              .getElementById("get-tests")
-              ?.scrollIntoView({ behavior: "smooth" });
+            window.open(
+              "https://aspireclasses.cloud/details/bundle/amu-9th-entrance-series",
+              "_blank",
+              "noopener,noreferrer"
+            );
           }}
         />
       )}
