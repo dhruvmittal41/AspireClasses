@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../auth/AuthProvider";
-import { NAV_ITEMS } from "./home.config";
+import { NAV_ITEMS } from "./home.config.jsx";
 
 import HomeNavbar from "./HomeNavbar";
 import HomeMobileNavbar from "./HomeMobileNavbar";
