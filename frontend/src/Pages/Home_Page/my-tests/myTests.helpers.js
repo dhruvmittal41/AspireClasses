@@ -15,13 +15,13 @@ export const getTestStatus = (test, lastAttempt = {}) => {
         return { state: "scheduled", availableAt: scheduledAt };
     }
 
-    if (last) {
-        const diff = now - last;
-        if (diff < HOURS_24) {
-            return { state: "locked", unlockAt: new Date(last.getTime() + HOURS_24) };
-        }
-        return { state: "reattempt" };
-    }
+    // if (last) {
+    //     const diff = now - last;
+    //     if (diff < HOURS_24) {
+    //         return { state: "locked", unlockAt: new Date(last.getTime() + HOURS_24) };
+    //     }
+    //     return { state: "reattempt" };
+    // }
 
     return { state: "start" };
 };
