@@ -6,7 +6,7 @@ import { containerVariants, itemVariants } from "./dashboard.animations";
 import RecentResults from "./RecentResults";
 import FreeDemoTests from "./FreeDemoTests";
 import DailyQuote from "./DailyQuote";
-import { useDashboardResults } from "../../hooks/useDashboardResults";
+import { useDashboardResults } from "../../../hooks/useDashboardResults";
 
 const DashboardView = ({ userName = "Learner" }) => {
   const { results, loading, error } = useDashboardResults();
