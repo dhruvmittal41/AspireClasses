@@ -14,7 +14,7 @@ const HomeNavbar = ({
     className="main-header d-none d-lg-flex glass-nav shadow-sm"
   >
     <Container fluid>
-      <Navbar.Brand>PrepSphere</Navbar.Brand>
+      <Image src="frontend\src\Pages\Home_Page\icons\logo.png" />
       <Nav className="me-auto">
         {navItems.map((item) => (
           <Nav.Link
