@@ -102,11 +102,23 @@ RecentResults.propTypes = {
 // --- Free Demo Tests ---
 const FreeDemoTests = React.memo(() => {
   const demoTests = [
-    { id: 1, title: "AMU 9th Entrance" },
-    { id: 2, title: "JEE Mains Mock" },
-    { id: 3, title: "NEET Biology Basics" },
-    { id: 4, title: "Navodaya Practice" },
+    {
+      id: 1,
+      title: "AMU 9th Entrance",
+      url: "https://aspireclasses.cloud/tests/1",
+    },
+    { id: 2, title: "JEE Mains Mock", comingSoon: true },
+    { id: 3, title: "NEET Biology Basics", comingSoon: true },
+    { id: 4, title: "Navodaya Practice", comingSoon: true },
   ];
+
+  const handleClick = (test) => {
+    if (test.url) {
+      window.location.href = test.url;
+    } else {
+      alert("Coming soon!");
+    }
+  };
 
   return (
     <Card as={motion.div} variants={itemVariants} className="shadow-sm">
@@ -122,7 +134,7 @@ const FreeDemoTests = React.memo(() => {
                 className="test-card-custom w-100 p-3 rounded"
                 whileHover={{ scale: 1.05, y: -4 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => alert(`Starting demo test: ${test.title}`)}
+                onClick={() => handleClick(test)}
               >
                 <h3 className="h6 mb-0 text-center">{test.title}</h3>
               </motion.button>
