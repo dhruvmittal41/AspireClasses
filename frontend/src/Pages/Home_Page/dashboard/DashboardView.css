@@ -22,11 +22,6 @@
   z-index: 1;
 }
 
-<<<<<<< HEAD
-/* ===============================
-   Header
-================================ */
-=======
 /* --- Background Animation Wrapper --- */
 .background-animation-wrapper {
   position: fixed;
@@ -40,7 +35,6 @@
 
 
 /* --- Header & Quote --- */
->>>>>>> parent of ae2be9c (fixed exports)
 .dashboard-header {
   background: var(--gradient-primary);
   padding: 2rem 1.5rem;
