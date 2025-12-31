@@ -6,7 +6,7 @@ import { itemVariants } from "./dashboard.animations";
 import { TOTAL_QUESTIONS } from "./dashboard.constants";
 import { clampScore } from "./dashboard.helpers";
 
-const RecentResults = React.memo(({ results, loading, error }) => (
+export const RecentResults = React.memo(({ results, loading, error }) => (
   <Card as={motion.div} variants={itemVariants} className="shadow-sm">
     <Card.Header as="h5" className="d-flex align-items-center">
       <FaChartLine className="me-2 icon-primary" />
