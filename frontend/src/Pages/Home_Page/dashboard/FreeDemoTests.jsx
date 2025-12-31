@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { Card, Row, Col } from "react-bootstrap";
 import { motion } from "framer-motion";
 import { FaBookOpen } from "react-icons/fa";
+import "./DasboardView.css";
 
 import { itemVariants } from "./dashboard.animations";
 

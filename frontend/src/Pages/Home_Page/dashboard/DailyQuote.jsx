@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import { FaQuoteLeft } from "react-icons/fa";
 import PropTypes from "prop-types";
+import "./DasboardView.css";
 
 export const DailyQuote = React.memo(() => {
   const quotes = useMemo(
