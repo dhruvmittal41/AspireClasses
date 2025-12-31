@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Card, Table, Spinner, Alert } from "react-bootstrap";
 import { motion } from "framer-motion";
 import { FaChartLine } from "react-icons/fa";
-import "./DasboardView.css";
+import "./DashboardView.css";
 
 import { itemVariants } from "./dashboard.animations";
 import { TOTAL_QUESTIONS } from "./dashboard.constants";
