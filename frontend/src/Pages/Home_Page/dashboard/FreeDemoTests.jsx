@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { FaBookOpen } from "react-icons/fa";
 
 import { itemVariants } from "./dashboard.animations";
-import "./FreeDemoTests.css"; // optional
 
 const FreeDemoTests = React.memo(() => {
   const demoTests = [
