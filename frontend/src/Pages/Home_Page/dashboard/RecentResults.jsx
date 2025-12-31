@@ -1,11 +1,12 @@
+import React from "react";
+import PropTypes from "prop-types";
 import { Card, Table, Spinner, Alert } from "react-bootstrap";
 import { motion } from "framer-motion";
 import { FaChartLine } from "react-icons/fa";
-import PropTypes from "prop-types";
+
 import { itemVariants } from "./dashboard.animations";
 import { TOTAL_QUESTIONS } from "./dashboard.constants";
 import { clampScore } from "./dashboard.helpers";
-import React from "react";
 
 const RecentResults = React.memo(({ results, loading, error }) => (
   <Card as={motion.div} variants={itemVariants} className="shadow-sm">
@@ -13,15 +14,22 @@ const RecentResults = React.memo(({ results, loading, error }) => (
       <FaChartLine className="me-2 icon-primary" />
       Recent Results
     </Card.Header>
+
     <Card.Body>
       {loading && (
         <div className="d-flex justify-content-center align-items-center h-100">
-          <Spinner animation="border" role="status">
+          <Spinner
+            animation="border"
+            role="status"
+            aria-label="Loading results"
+          >
             <span className="visually-hidden">Loading...</span>
           </Spinner>
         </div>
       )}
+
       {error && <Alert variant="danger">{error}</Alert>}
+
       {!loading && !error && (
         <>
           {results.length > 0 ? (
@@ -29,7 +37,6 @@ const RecentResults = React.memo(({ results, loading, error }) => (
               <thead>
                 <tr>
                   <th>Test Name</th>
-                  {/* Changed header for clarity */}
                   <th>Score</th>
                 </tr>
               </thead>
@@ -55,13 +62,15 @@ const RecentResults = React.memo(({ results, loading, error }) => (
   </Card>
 ));
 
+RecentResults.displayName = "RecentResults";
+
 RecentResults.propTypes = {
   results: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
       test_name: PropTypes.string.isRequired,
       score: PropTypes.number.isRequired,
-      max_score: PropTypes.number.isRequired,
+      max_score: PropTypes.number,
     })
   ).isRequired,
   loading: PropTypes.bool.isRequired,

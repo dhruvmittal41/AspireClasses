@@ -1,5 +1,8 @@
+import React from "react";
+import PropTypes from "prop-types";
 import { Container, Row, Col } from "react-bootstrap";
 import { motion } from "framer-motion";
+
 import "./DashboardView.css";
 
 import { containerVariants, itemVariants } from "./dashboard.animations";
@@ -14,14 +17,15 @@ const DashboardView = ({ userName = "Learner" }) => {
   return (
     <Container
       as={motion.div}
+      className="py-4 dashboard-container"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
       exit="exit"
     >
       <motion.div className="dashboard-header" variants={itemVariants}>
-        <h1>Hey {userName} 👋</h1>
-        <p>Here’s your learning progress today.</p>
+        <h1 className="fw-bold">Hey {userName} 👋</h1>
+        <p className="lead mb-0">Here’s your learning progress today.</p>
       </motion.div>
 
       <DailyQuote />
@@ -36,6 +40,12 @@ const DashboardView = ({ userName = "Learner" }) => {
       </Row>
     </Container>
   );
+};
+
+DashboardView.displayName = "DashboardView";
+
+DashboardView.propTypes = {
+  userName: PropTypes.string,
 };
 
 export default DashboardView;

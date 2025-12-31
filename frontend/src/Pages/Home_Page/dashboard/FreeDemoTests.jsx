@@ -1,5 +1,12 @@
 import React from "react";
-import { Card } from "react-bootstrap";
+import PropTypes from "prop-types";
+import { Card, Row, Col } from "react-bootstrap";
+import { motion } from "framer-motion";
+import { FaBookOpen } from "react-icons/fa";
+
+import { itemVariants } from "./dashboard.animations";
+import "./FreeDemoTests.css"; // optional
+
 const FreeDemoTests = React.memo(() => {
   const demoTests = [
     {
@@ -26,11 +33,13 @@ const FreeDemoTests = React.memo(() => {
         <FaBookOpen className="me-2 icon-success" />
         Try a Free Demo Test
       </Card.Header>
+
       <Card.Body>
         <Row className="g-3">
           {demoTests.map((test) => (
             <Col key={test.id} xs={12} sm={6}>
               <motion.button
+                type="button"
                 className="test-card-custom w-100 p-3 rounded"
                 whileHover={{ scale: 1.05, y: -4 }}
                 whileTap={{ scale: 0.95 }}
@@ -45,5 +54,8 @@ const FreeDemoTests = React.memo(() => {
     </Card>
   );
 });
+
+FreeDemoTests.displayName = "FreeDemoTests";
+FreeDemoTests.propTypes = {};
 
 export default FreeDemoTests;
