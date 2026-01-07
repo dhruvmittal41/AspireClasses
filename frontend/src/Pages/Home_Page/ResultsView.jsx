@@ -302,7 +302,7 @@ const ResultsView = () => {
                   label={formatScoreOutOf85(result.score)}
                 />
                 <Card.Text className="text-muted mt-2 text-end">
-                  Highest: {formatScoreOutOf85(result.highest_score)}
+                  Topper's Score: {formatScoreOutOf85(result.highest_score)}
                 </Card.Text>
               </Card.Body>
             </Card>

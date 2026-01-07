@@ -517,6 +517,13 @@ const TestInterface = ({ id, onBack }) => {
                   >
                     Save & Next
                   </Button>
+                  <Button
+                    variant="success"
+                    onClick={handleNext}
+                    disabled={currentQuestionIndex === questions.length - 1}
+                  >
+                    Next
+                  </Button>
                 </Stack>
               </Card.Footer>
             </Card>
