@@ -13,6 +13,7 @@ const findByUserId = async (userId) => {
     const { rows } = await db.query(
         `SELECT 
         r.id, 
+        r.test_id,
         r.score, 
         r.unattempted_count,
         r.submitted_at,
