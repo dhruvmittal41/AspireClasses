@@ -2,6 +2,7 @@
 const TestModel = require('../models/testModel');
 const { createResult } = require('../models/resultModel');
 const { findFullQuestionDetails, updateHighestScore } = require('../models/testModel');
+const db = require('../config/db');
 
 exports.getAllTests = async (req, res, next) => {
     try {
@@ -58,7 +59,7 @@ exports.updateTest = async (req, res) => {
             date_scheduled
         } = req.body;
 
-        const result = await pool.query(
+        const result = await db.query(
             `UPDATE tests SET
         test_name = $1,
         num_questions = $2,
