@@ -160,6 +160,7 @@ function App() {
             <Route path="assign-test" element={<AssignTest />} />
             <Route path="update-questions" element={<UpdateQuestions />} />
             <Route path="new" element={<CreateOrUpdateTest />} />
+            <Route path="tests" element={<ManageTests />} />
             <Route path="edit/:testId" element={<CreateOrUpdateTest />} />
           </Route>
         </Route>

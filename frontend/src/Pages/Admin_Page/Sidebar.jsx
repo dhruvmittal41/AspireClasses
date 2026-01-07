@@ -26,29 +26,24 @@ const Sidebar = ({ handleClose }) => {
       <h2 className="h4 text-center mb-4 text-white">Admin Menu</h2>
 
       {/* flex-grow-1 pushes the logout button to the bottom */}
-      <Nav className="flex-column nav-pills flex-grow-1" as="nav">
-        <Nav.Link
-          as={NavLink}
-          to="/admin/assign-test"
-          className="sidebar-link-custom"
-          onClick={handleNavClick}
-        >
+      <Nav className="flex-column nav-pills flex-grow-1">
+        <Nav.Link as={NavLink} to="/admin/assign-test" onClick={handleNavClick}>
           Assign Test
         </Nav.Link>
+
         <Nav.Link
           as={NavLink}
           to="/admin/update-questions"
-          className="sidebar-link-custom"
           onClick={handleNavClick}
         >
           Update Questions
         </Nav.Link>
-        <Nav.Link
-          as={NavLink}
-          to="/admin/new"
-          className="sidebar-link-custom"
-          onClick={handleNavClick}
-        >
+
+        <Nav.Link as={NavLink} to="/admin/tests" onClick={handleNavClick}>
+          Manage Tests
+        </Nav.Link>
+
+        <Nav.Link as={NavLink} to="/admin/new" onClick={handleNavClick}>
           Create New Test
         </Nav.Link>
       </Nav>
