@@ -25,6 +25,7 @@ import { UpdateQuestions } from "./Pages/Admin_Page/UpdateQuestions.jsx";
 import CreateNewTest from "./Pages/Admin_Page/CreateNewTest.jsx";
 
 import { AuthContext } from "./context/AuthContext";
+import Review_Test from "./Pages/Test_Interface/Review_Test.jsx";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -131,6 +132,7 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route path="/tests/:id/review" element={<Review_Test />} />
 
         <Route
           path="/details/bundle/:id"

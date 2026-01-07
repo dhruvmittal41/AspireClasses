@@ -52,7 +52,7 @@ const getTestStatus = (test, lastAttemptData = {}) => {
         unlockAt: new Date(lastAttempt.getTime() + HOURS_24),
       };
     }
-    return { state: "reattempt" };
+    return { state: "review" };
   }
 
   return { state: "start" };
@@ -186,22 +186,26 @@ const MyTestsView = () => {
                     )}
 
                     {(status.state === "start" ||
-                      status.state === "reattempt") && (
+                      status.state === "review") && (
                       <Button
                         as={motion.button}
                         variant={
-                          status.state === "reattempt"
-                            ? "outline-primary"
+                          status.state === "review"
+                            ? "outline-success"
                             : "primary"
                         }
                         className="mt-auto d-flex align-items-center justify-content-center start-btn"
-                        onClick={() => navigate(`/tests/${test.id}`)}
+                        onClick={() =>
+                          status.state === "review"
+                            ? navigate(`/tests/${test.id}/review`)
+                            : navigate(`/tests/${test.id}`)
+                        }
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
                         <span className="me-2">
-                          {status.state === "reattempt"
-                            ? "Reattempt Test"
+                          {status.state === "review"
+                            ? "Review Test"
                             : "Start Test"}
                         </span>
                         <ArrowRightIcon />

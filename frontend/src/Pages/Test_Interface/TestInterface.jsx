@@ -118,6 +118,7 @@ const TestInterface = ({ id, onBack }) => {
           })
         );
         localStorage.removeItem(`test-${id}`);
+        localStorage.setItem(`review-${id}`, JSON.stringify(answers));
 
         await api.post(`/api/tests/${id}/submit`, {
           answers: formattedAnswers,
