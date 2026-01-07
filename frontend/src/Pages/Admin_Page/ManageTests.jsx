@@ -33,7 +33,7 @@ const ManageTests = () => {
       </thead>
       <tbody>
         {tests.map((test) => (
-          <tr key={test._id}>
+          <tr key={test.id}>
             <td>{test.test_name}</td>
             <td>{test.test_category}</td>
             <td>{test.num_questions}</td>
