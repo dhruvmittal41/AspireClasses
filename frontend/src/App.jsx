@@ -159,11 +159,8 @@ function App() {
           <Route path="/admin" element={<AdminDashboard />}>
             <Route path="assign-test" element={<AssignTest />} />
             <Route path="update-questions" element={<UpdateQuestions />} />
-            <Route path="/tests/new" element={<CreateOrUpdateTest />} />
-            <Route
-              path="/tests/edit/:testId"
-              element={<CreateOrUpdateTest />}
-            />
+            <Route path="new" element={<CreateOrUpdateTest />} />
+            <Route path="edit:testId" element={<CreateOrUpdateTest />} />
           </Route>
         </Route>
 
