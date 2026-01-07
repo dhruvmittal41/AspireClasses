@@ -45,7 +45,7 @@ const Sidebar = ({ handleClose }) => {
         </Nav.Link>
         <Nav.Link
           as={NavLink}
-          to="/admin/create-test"
+          to="/admin/new"
           className="sidebar-link-custom"
           onClick={handleNavClick}
         >
