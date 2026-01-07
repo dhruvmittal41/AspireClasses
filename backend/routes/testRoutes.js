@@ -12,7 +12,8 @@ const {
     createTest,
     addQuestionToTest,
     uploadQuestionImage,
-    deleteQuestionImage
+    deleteQuestionImage,
+    updateTest
 } = require('../controllers/testController');
 const { protect } = require('../middleware/authMiddleware');
 const upload = require('../middleware/Cloudinary.js');
@@ -25,6 +26,7 @@ router.get('/tests/:id', getTestById);
 router.get('/tests/:id/questions', protect, getTestQuestions);
 router.post('/tests/:id/submit', protect, submitTest);
 router.put('/questions/:id', protect, updateQuestion);
+router.put('/tests/:id', updateTest);
 router.delete('/questions/:id', protect, deleteQuestion);
 router.post('/tests', createTest);
 router.post('/tests/:testId/questions', addQuestionToTest);

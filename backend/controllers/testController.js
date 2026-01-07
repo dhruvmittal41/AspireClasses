@@ -42,6 +42,57 @@ exports.getTestById = async (req, res, next) => {
     }
 };
 
+
+exports.updateTest = async (req, res) => {
+    try {
+        const id = Number(req.params.id);
+        if (!id) return res.status(400).json({ message: "Invalid test id" });
+
+        const {
+            test_name,
+            num_questions,
+            duration_minutes,
+            subject_topic,
+            instructions,
+            test_category,
+            date_scheduled
+        } = req.body;
+
+        const result = await pool.query(
+            `UPDATE tests SET
+        test_name = $1,
+        num_questions = $2,
+        duration_minutes = $3,
+        subject_topic = $4,
+        instructions = $5,
+        test_category = $6,
+        date_scheduled = $7
+      WHERE id = $8
+      RETURNING *`,
+            [
+                test_name,
+                num_questions,
+                duration_minutes,
+                subject_topic,
+                instructions,
+                test_category,
+                date_scheduled,
+                id
+            ]
+        );
+
+        if (result.rowCount === 0)
+            return res.status(404).json({ message: "Test not found" });
+
+        res.json({ message: "Test updated successfully", test: result.rows[0] });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Failed to update test" });
+    }
+};
+
+
 exports.getTestQuestions = async (req, res, next) => {
     try {
         const questions = await TestModel.findQuestionsByTestId(req.params.id);
@@ -138,7 +189,6 @@ exports.submitTest = async (req, res, next) => {
 exports.createTest = async (req, res, next) => {
     try {
         const {
-
             test_name,
             num_questions,
             duration_minutes,
