@@ -84,7 +84,6 @@ const CreateOrUpdateTest = () => {
 
       setTimeout(() => {
         setSuccessMessage("");
-        navigate("/tests"); // redirect after success
       }, 1500);
     } catch (err) {
       setError(err.response?.data?.message || "Operation failed.");
