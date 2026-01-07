@@ -71,6 +71,7 @@ const TestInterface = ({ id, onBack }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [unattemptedCount, setUnattemptedCount] = useState(0);
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
 
   useEffect(() => {
     if (!testData?.questions) return;
@@ -427,7 +428,7 @@ const TestInterface = ({ id, onBack }) => {
                   <Button
                     variant="danger"
                     size="lg"
-                    onClick={() => handleSubmit(false)}
+                    onClick={() => setShowSubmitConfirm(true)}
                   >
                     Submit Test
                   </Button>
@@ -577,6 +578,42 @@ const TestInterface = ({ id, onBack }) => {
           </Button>
           <Button variant="danger" onClick={confirmNavigation}>
             Leave & Submit
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <Modal
+        show={showSubmitConfirm}
+        onHide={() => setShowSubmitConfirm(false)}
+        backdrop="static"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>📝 Confirm Submit</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to submit your test? You cannot change answers
+          after submission.
+          {unattemptedCount > 0 && (
+            <Alert variant="warning" className="mt-3">
+              You still have {unattemptedCount} unanswered questions.
+            </Alert>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setShowSubmitConfirm(false)}
+          >
+            Continue Test
+          </Button>
+          <Button
+            variant="danger"
+            onClick={() => {
+              setShowSubmitConfirm(false);
+              handleSubmit(false);
+            }}
+          >
+            Yes, Submit
           </Button>
         </Modal.Footer>
       </Modal>
