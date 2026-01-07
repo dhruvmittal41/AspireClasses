@@ -73,6 +73,15 @@ const formatScoreOutOf85 = (score) => {
   return `${clampScore(score)} / ${TOTAL_QUESTIONS}`;
 };
 
+const getCounts = (result) => {
+  const correct = clampScore(result?.score || 0);
+  const unattempted = Number(result?.unattempted_count || 0);
+  const total = TOTAL_QUESTIONS;
+  const incorrect = Math.max(total - correct - unattempted, 0);
+
+  return { correct, incorrect, unattempted, total };
+};
+
 const getPerformanceFeedback = (score) => {
   const s = clampScore(score);
   if (s >= 75)
@@ -148,6 +157,7 @@ const ResultsView = () => {
     ],
   };
 
+  const counts = getCounts(selectedResult);
   const modalChartData = {
     bar: {
       labels: [selectedResult?.test_name],
@@ -164,16 +174,14 @@ const ResultsView = () => {
         },
       ],
     },
+
     doughnut: {
-      labels: ["Correct", "Incorrect"],
+      labels: ["Correct", "Incorrect", "Unattempted"],
       datasets: [
         {
-          data: [
-            clampScore(selectedResult?.score),
-            TOTAL_QUESTIONS - clampScore(selectedResult?.score),
-          ],
-          backgroundColor: ["#3B82F6", "#E5E7EB"],
-          borderColor: ["#FFFFFF", "#FFFFFF"],
+          data: [counts.correct, counts.incorrect, counts.unattempted],
+          backgroundColor: ["#3B82F6", "#EF4444", "#FBBF24"],
+          borderColor: ["#FFFFFF", "#FFFFFF", "#FFFFFF"],
           borderWidth: 2,
         },
       ],
@@ -328,6 +336,19 @@ const ResultsView = () => {
             </Col>
             <Col md={4}>
               <div style={{ height: "180px" }} className="mb-4">
+                <p>
+                  <strong>Correct:</strong> {counts.correct}
+                </p>
+                <p>
+                  <strong>Incorrect:</strong> {counts.incorrect}
+                </p>
+                <p>
+                  <strong>Unattempted:</strong> {counts.unattempted}
+                </p>
+                <p>
+                  <strong>Total:</strong> {counts.total}
+                </p>
+
                 <Doughnut data={modalChartData.doughnut} />
               </div>
               <h5>Performance Insights</h5>

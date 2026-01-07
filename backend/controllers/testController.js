@@ -97,13 +97,12 @@ exports.deleteQuestion = async (req, res, next) => {
 };
 
 exports.submitTest = async (req, res, next) => {
-    const { testId, answers } = req.body;
+    const { testId, answers, unattemptedCount } = req.body;
     const userId = req.user.id;
 
     try {
         let score = 0;
 
-        // Check answers in parallel
         await Promise.all(
             answers.map(async (answer) => {
                 const question = await findFullQuestionDetails(answer.questionId);
@@ -113,21 +112,26 @@ exports.submitTest = async (req, res, next) => {
             })
         );
 
-        // Save result
-        const result = await createResult({ userId, testId, score });
+        const result = await createResult({
+            userId,
+            testId,
+            score,
+            unattemptedCount,
+        });
 
-        // Update highest score
         await updateHighestScore(testId, score);
 
         res.status(201).json({
-            message: 'Test submitted successfully!',
+            message: "Test submitted successfully!",
             score: result.score,
+            unattemptedCount: result.unattempted_count,
             resultId: result.id,
         });
     } catch (err) {
         next(err);
     }
 };
+
 
 
 

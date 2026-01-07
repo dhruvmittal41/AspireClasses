@@ -69,9 +69,19 @@ const TestInterface = ({ id, onBack }) => {
   const [showLeaveWarning, setShowLeaveWarning] = useState(false);
   const [showNavBlocker, setShowNavBlocker] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false); // <-- NEW: For desktop sidebar toggle
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [unattemptedCount, setUnattemptedCount] = useState(0);
 
-  // --- LOGIC ---
+  useEffect(() => {
+    if (!testData?.questions) return;
+
+    const total = testData.questions.length;
+    const attempted = Object.keys(answers).length;
+    const unattempted = total - attempted;
+
+    setUnattemptedCount(unattempted);
+  }, [answers, testData]);
+
   useEffect(() => {
     const fetchTest = async () => {
       try {
@@ -112,6 +122,7 @@ const TestInterface = ({ id, onBack }) => {
         await api.post(`/api/tests/${id}/submit`, {
           answers: formattedAnswers,
           testId: id,
+          unattemptedCount,
         });
         if (!isAutoSubmit) {
           alert("✅ Test submitted successfully!");
@@ -160,6 +171,7 @@ const TestInterface = ({ id, onBack }) => {
       setAnswers(parsed.answers || {});
       setCurrentQuestionIndex(parsed.currentQuestionIndex || 0);
       setTimeLeft(parsed.timeLeft || null);
+      setUnattemptedCount(parsed.unattemptedCount || 0);
     }
   }, [id]);
 
@@ -171,9 +183,10 @@ const TestInterface = ({ id, onBack }) => {
         answers,
         currentQuestionIndex,
         timeLeft,
+        unattemptedCount,
       })
     );
-  }, [answers, currentQuestionIndex, timeLeft, id]);
+  }, [answers, currentQuestionIndex, timeLeft, unattemptedCount, id]);
 
   useEffect(() => {
     const handleKey = (e) => {
