@@ -41,7 +41,7 @@ const ManageTests = () => {
             <td>
               <Button
                 size="sm"
-                onClick={() => navigate(`/admin/edit/${test._id}`)}
+                onClick={() => navigate(`/admin/edit/${test.id}`)}
               >
                 Edit
               </Button>
