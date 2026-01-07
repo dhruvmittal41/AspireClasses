@@ -168,7 +168,7 @@ const ResultsView = () => {
           backgroundColor: "#3B82F6",
         },
         {
-          label: "Highest Score",
+          label: "Topper's Score",
           data: [clampScore(selectedResult?.highest_score)],
           backgroundColor: "#EF4444",
         },
