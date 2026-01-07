@@ -1,6 +1,7 @@
-// src/components/CreateNewTest.jsx
+// src/components/CreateOrUpdateTest.jsx
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Container,
   Card,
@@ -13,7 +14,11 @@ import {
 } from "react-bootstrap";
 import api from "../../api/axios";
 
-const CreateNewTest = () => {
+const CreateOrUpdateTest = () => {
+  const { testId } = useParams(); // from route /tests/edit/:testId
+  const navigate = useNavigate();
+  const isEditMode = Boolean(testId);
+
   const [formData, setFormData] = useState({
     test_name: "",
     num_questions: "",
@@ -23,9 +28,29 @@ const CreateNewTest = () => {
     test_category: "standard",
     date_scheduled: "",
   });
+
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (isEditMode) {
+      fetchTest();
+    }
+  }, [testId]);
+
+  const fetchTest = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get(`/api/tests/${testId}`);
+      setFormData(res.data);
+    } catch (err) {
+      setError("Failed to load test details.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,29 +72,34 @@ const CreateNewTest = () => {
     }
 
     setSubmitting(true);
-    try {
-      const response = await api.post(`/api/tests`, formData);
 
-      setSuccessMessage(response.data.message || "Test created successfully!");
-      setFormData({
-        test_name: "",
-        num_questions: "",
-        duration_minutes: "",
-        subject_topic: "",
-        instructions: "",
-        test_category: "standard",
-        date_scheduled: "",
-      });
-      setTimeout(() => setSuccessMessage(""), 4000);
+    try {
+      if (isEditMode) {
+        await api.put(`/api/tests/${testId}`, formData);
+        setSuccessMessage("Test updated successfully!");
+      } else {
+        await api.post(`/api/tests`, formData);
+        setSuccessMessage("Test created successfully!");
+      }
+
+      setTimeout(() => {
+        setSuccessMessage("");
+        navigate("/tests"); // redirect after success
+      }, 1500);
     } catch (err) {
-      const message =
-        err.response?.data?.message ||
-        "Failed to create the test. Please try again.";
-      setError(message);
+      setError(err.response?.data?.message || "Operation failed.");
     } finally {
       setSubmitting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="text-center py-5">
+        <Spinner animation="border" />
+      </div>
+    );
+  }
 
   return (
     <Container className="py-4">
@@ -77,7 +107,9 @@ const CreateNewTest = () => {
         <Col lg={10} xl={8}>
           <Card className="shadow-sm">
             <Card.Body className="p-4 p-md-5">
-              <h2 className="text-center mb-4">Create a New Test</h2>
+              <h2 className="text-center mb-4">
+                {isEditMode ? "Update Test" : "Create a New Test"}
+              </h2>
 
               {successMessage && (
                 <Alert variant="success">{successMessage}</Alert>
@@ -87,10 +119,9 @@ const CreateNewTest = () => {
               <Form onSubmit={handleSubmit}>
                 <Row className="g-3">
                   <Col md={6}>
-                    <Form.Group controlId="test_name">
+                    <Form.Group>
                       <Form.Label>Test Name*</Form.Label>
                       <Form.Control
-                        type="text"
                         name="test_name"
                         value={formData.test_name}
                         onChange={handleChange}
@@ -98,8 +129,9 @@ const CreateNewTest = () => {
                       />
                     </Form.Group>
                   </Col>
+
                   <Col md={6}>
-                    <Form.Group controlId="test_category">
+                    <Form.Group>
                       <Form.Label>Test Category</Form.Label>
                       <Form.Select
                         name="test_category"
@@ -112,8 +144,9 @@ const CreateNewTest = () => {
                       </Form.Select>
                     </Form.Group>
                   </Col>
+
                   <Col md={6}>
-                    <Form.Group controlId="num_questions">
+                    <Form.Group>
                       <Form.Label>Number of Questions*</Form.Label>
                       <Form.Control
                         type="number"
@@ -124,9 +157,10 @@ const CreateNewTest = () => {
                       />
                     </Form.Group>
                   </Col>
+
                   <Col md={6}>
-                    <Form.Group controlId="duration_minutes">
-                      <Form.Label>Duration (in minutes)*</Form.Label>
+                    <Form.Group>
+                      <Form.Label>Duration (minutes)*</Form.Label>
                       <Form.Control
                         type="number"
                         name="duration_minutes"
@@ -136,8 +170,9 @@ const CreateNewTest = () => {
                       />
                     </Form.Group>
                   </Col>
+
                   <Col xs={12}>
-                    <Form.Group controlId="subject_topic">
+                    <Form.Group>
                       <Form.Label>Subject / Topics</Form.Label>
                       <Form.Control
                         as="textarea"
@@ -145,12 +180,12 @@ const CreateNewTest = () => {
                         name="subject_topic"
                         value={formData.subject_topic}
                         onChange={handleChange}
-                        placeholder="e.g., Ch-1 Rational Numbers, Ch-2 Linear Equations..."
                       />
                     </Form.Group>
                   </Col>
+
                   <Col xs={12}>
-                    <Form.Group controlId="instructions">
+                    <Form.Group>
                       <Form.Label>Instructions</Form.Label>
                       <Form.Control
                         as="textarea"
@@ -158,17 +193,17 @@ const CreateNewTest = () => {
                         name="instructions"
                         value={formData.instructions}
                         onChange={handleChange}
-                        placeholder="e.g., All questions are compulsory."
                       />
                     </Form.Group>
                   </Col>
+
                   <Col xs={12}>
-                    <Form.Group controlId="date_scheduled">
-                      <Form.Label>Scheduled Date (Optional)</Form.Label>
+                    <Form.Group>
+                      <Form.Label>Scheduled Date</Form.Label>
                       <Form.Control
                         type="date"
                         name="date_scheduled"
-                        value={formData.date_scheduled}
+                        value={formData.date_scheduled || ""}
                         onChange={handleChange}
                       />
                     </Form.Group>
@@ -178,24 +213,15 @@ const CreateNewTest = () => {
                 <div className="d-grid mt-4">
                   <Button
                     variant="success"
-                    type="submit"
                     size="lg"
+                    type="submit"
                     disabled={submitting}
                   >
-                    {submitting ? (
-                      <>
-                        <Spinner
-                          as="span"
-                          animation="border"
-                          size="sm"
-                          role="status"
-                          aria-hidden="true"
-                        />
-                        <span className="ms-2">Creating Test...</span>
-                      </>
-                    ) : (
-                      "Create Test"
-                    )}
+                    {submitting
+                      ? "Saving..."
+                      : isEditMode
+                      ? "Update Test"
+                      : "Create Test"}
                   </Button>
                 </div>
               </Form>
@@ -207,4 +233,4 @@ const CreateNewTest = () => {
   );
 };
 
-export default CreateNewTest;
+export default CreateOrUpdateTest;

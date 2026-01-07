@@ -26,6 +26,7 @@ import CreateNewTest from "./Pages/Admin_Page/CreateNewTest.jsx";
 
 import { AuthContext } from "./context/AuthContext";
 import Review_Test from "./Pages/Test_Interface/Review_Test.jsx";
+import CreateOrUpdateTest from "./Pages/Admin_Page/CreateNewTest.jsx";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -158,7 +159,11 @@ function App() {
           <Route path="/admin" element={<AdminDashboard />}>
             <Route path="assign-test" element={<AssignTest />} />
             <Route path="update-questions" element={<UpdateQuestions />} />
-            <Route path="create-test" element={<CreateNewTest />} />
+            <Route path="/tests/new" element={<CreateOrUpdateTest />} />
+            <Route
+              path="/tests/edit/:testId"
+              element={<CreateOrUpdateTest />}
+            />
           </Route>
         </Route>
 
