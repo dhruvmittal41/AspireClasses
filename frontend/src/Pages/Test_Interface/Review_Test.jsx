@@ -9,7 +9,6 @@ import {
   Card,
   Button,
   Spinner,
-  Alert,
   Form,
   Stack,
   Image,
@@ -22,11 +21,11 @@ const getOptionKey = (index) => String.fromCharCode(97 + index);
 
 const KatexRenderer = ({ text }) => {
   if (!text) return null;
-  const displayParts = text.split("$$");
+  const parts = text.split("$$");
   return (
     <>
-      {displayParts.map((part, i) =>
-        i % 2 ? <BlockMath key={i} math={part} /> : part
+      {parts.map((p, i) =>
+        i % 2 ? <BlockMath key={i} math={p} /> : <span key={i}>{p}</span>
       )}
     </>
   );
@@ -44,19 +43,14 @@ const Review_Test = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   useEffect(() => {
-    const loadReview = async () => {
-      try {
-        const res = await api.get(`/api/tests/${id}/questions`);
-        setQuestions(res.data || []);
-        const saved = localStorage.getItem(`review-${id}`);
-        setUserAnswers(saved ? JSON.parse(saved) : {});
-      } catch {
-        alert("Failed to load review");
-      } finally {
-        setLoading(false);
-      }
+    const load = async () => {
+      const q = await api.get(`/api/tests/${id}/questions`);
+      setQuestions(q.data || []);
+      const saved = localStorage.getItem(`review-${id}`);
+      setUserAnswers(saved ? JSON.parse(saved) : {});
+      setLoading(false);
     };
-    loadReview();
+    load();
   }, [id]);
 
   if (loading)
@@ -77,116 +71,167 @@ const Review_Test = () => {
   };
 
   return (
-    <Container
-      as={motion.div}
-      fluid
-      className={`p-3 test-interface-container ${
-        isPaletteOpen ? "sidebar-open" : ""
-      }`}
-    >
-      <Button
-        variant="primary"
-        className="d-lg-none palette-toggle-btn"
-        onClick={() => setIsPaletteOpen(!isPaletteOpen)}
+    <>
+      <Container
+        as={motion.div}
+        fluid
+        className={`p-3 test-interface-container ${
+          isPaletteOpen ? "sidebar-open" : ""
+        }`}
       >
-        <FaArrowRight />
-      </Button>
+        {isPaletteOpen && (
+          <div
+            className="palette-overlay d-lg-none"
+            onClick={() => setIsPaletteOpen(false)}
+          />
+        )}
 
-      {/* HEADER */}
-      <Row className="mb-3 align-items-center test-header-row bg-light p-2 rounded shadow-sm">
-        <Col xs="auto" className="d-none d-lg-block">
-          <Button
-            variant="outline-secondary"
-            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-          >
-            {isSidebarCollapsed ? <FaBars /> : <FaTimes />}
-          </Button>
-        </Col>
-        <Col>
-          <h4 className="mb-0 text-center">Review Test</h4>
-        </Col>
-        <Col xs="auto">
-          <Button variant="secondary" onClick={() => navigate(-1)}>
-            Back
-          </Button>
-        </Col>
-      </Row>
-
-      <Row className="g-3 main-row">
-        {/* PALETTE */}
-        <Col
-          lg={3}
-          md={4}
-          className={`palette-sidebar ${isPaletteOpen ? "open" : ""} ${
-            isSidebarCollapsed ? "d-none" : ""
-          }`}
+        <Button
+          variant="primary"
+          className="d-lg-none palette-toggle-btn"
+          onClick={() => setIsPaletteOpen(!isPaletteOpen)}
         >
-          <Card className="h-100 shadow-sm">
-            <Card.Header as="h5">Question Palette</Card.Header>
-            <Card.Body>
-              <Row xs={4} sm={5} md={4} lg={5} className="g-2 text-center">
-                {questions.map((q, index) => (
-                  <Col key={q.id}>
-                    <Button
-                      variant={
-                        index === currentQuestionIndex
-                          ? "primary"
-                          : "outline-secondary"
-                      }
-                      onClick={() => setCurrentQuestionIndex(index)}
-                      className="rounded-circle w-100"
-                    >
-                      {index + 1}
-                    </Button>
-                  </Col>
-                ))}
-              </Row>
-            </Card.Body>
-          </Card>
-        </Col>
+          <FaArrowRight />
+        </Button>
 
-        {/* QUESTION */}
-        <Col md={isSidebarCollapsed ? 12 : 8} lg={isSidebarCollapsed ? 12 : 9}>
-          <Card className="h-100 shadow-sm">
-            <Card.Header>
-              Question {currentQuestionIndex + 1} of {questions.length}
-            </Card.Header>
-            <Card.Body className="scrollable-content">
-              <div className="lead">
-                <KatexRenderer text={currentQuestion.question_text} />
-              </div>
+        {/* HEADER */}
+        <Row className="mb-3 align-items-center test-header-row bg-light p-2 rounded shadow-sm">
+          <Col xs="auto" className="d-none d-lg-block">
+            <Button
+              variant="outline-secondary"
+              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            >
+              {isSidebarCollapsed ? <FaBars /> : <FaTimes />}
+            </Button>
+          </Col>
+          <Col>
+            <h4 className="test-title mb-0 text-center">Review Test</h4>
+          </Col>
+          <Col xs="auto">
+            <Button variant="secondary" onClick={() => navigate(-1)}>
+              Back
+            </Button>
+          </Col>
+        </Row>
 
-              {currentQuestion.image_url && (
-                <div className="text-center my-3">
-                  <Image src={currentQuestion.image_url} fluid rounded />
-                </div>
-              )}
+        {/* MAIN */}
+        <Row className="g-3 main-row">
+          {/* PALETTE */}
+          <Col
+            lg={3}
+            md={4}
+            id="question-palette"
+            className={`palette-sidebar ${isPaletteOpen ? "open" : ""} ${
+              isSidebarCollapsed ? "d-none" : ""
+            }`}
+          >
+            <Card className="h-100 d-flex flex-column shadow-sm">
+              <Card.Header as="h5">Question Palette</Card.Header>
+              <Card.Body className="overflow-auto">
+                <Row xs={4} sm={5} md={4} lg={5} className="g-2 text-center">
+                  {questions.map((q, index) => (
+                    <Col key={q.id}>
+                      <Button
+                        variant={
+                          index === currentQuestionIndex
+                            ? "primary"
+                            : "outline-secondary"
+                        }
+                        className="w-150 rounded-circle"
+                        onClick={() => setCurrentQuestionIndex(index)}
+                      >
+                        {index + 1}
+                      </Button>
+                    </Col>
+                  ))}
+                </Row>
+              </Card.Body>
+            </Card>
+          </Col>
 
-              <Form className="mt-3">
-                <Stack gap={3}>
-                  {currentQuestion.options.map((opt, i) => {
-                    const key = getOptionKey(i);
-                    return (
-                      <Form.Check
-                        key={key}
-                        type="radio"
-                        disabled
-                        checked={userAnswers[currentQuestion.id] === key}
-                        label={<KatexRenderer text={opt} />}
-                        className={`option-label ${getOptionStatus(
-                          currentQuestion.id,
-                          key
-                        )}`}
+          {/* QUESTION */}
+          <Col
+            md={isSidebarCollapsed ? 12 : 8}
+            lg={isSidebarCollapsed ? 12 : 9}
+          >
+            <Card className="h-100 d-flex flex-column shadow-sm">
+              <Card.Header>
+                Question {currentQuestionIndex + 1} of {questions.length}
+              </Card.Header>
+
+              <Card.Body className="d-flex flex-column scrollable-content">
+                <div className="overflow-auto p-2">
+                  <div className="lead">
+                    <KatexRenderer text={currentQuestion.question_text} />
+                  </div>
+
+                  {currentQuestion.image_url && (
+                    <div className="text-center my-3">
+                      <Image
+                        src={currentQuestion.image_url}
+                        fluid
+                        rounded
+                        style={{ maxHeight: "25vh", objectFit: "contain" }}
                       />
-                    );
-                  })}
+                    </div>
+                  )}
+
+                  <Form>
+                    <Stack gap={3} className="mt-3">
+                      {currentQuestion.options.map((opt, i) => {
+                        const key = getOptionKey(i);
+                        return (
+                          <Form.Check
+                            key={key}
+                            type="radio"
+                            disabled
+                            checked={userAnswers[currentQuestion.id] === key}
+                            label={<KatexRenderer text={opt} />}
+                            className={`option-label ${getOptionStatus(
+                              currentQuestion.id,
+                              key
+                            )}`}
+                          />
+                        );
+                      })}
+                    </Stack>
+                  </Form>
+                </div>
+              </Card.Body>
+
+              <Card.Footer className="bg-light p-3">
+                <Stack
+                  direction="horizontal"
+                  gap={2}
+                  className="justify-content-between"
+                >
+                  <Button
+                    variant="secondary"
+                    disabled={currentQuestionIndex === 0}
+                    onClick={() =>
+                      setCurrentQuestionIndex((i) => Math.max(i - 1, 0))
+                    }
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    disabled={currentQuestionIndex === questions.length - 1}
+                    onClick={() =>
+                      setCurrentQuestionIndex((i) =>
+                        Math.min(i + 1, questions.length - 1)
+                      )
+                    }
+                  >
+                    Next
+                  </Button>
                 </Stack>
-              </Form>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+              </Card.Footer>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
+    </>
   );
 };
 
