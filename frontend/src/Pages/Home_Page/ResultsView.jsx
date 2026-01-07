@@ -351,8 +351,8 @@ const ResultsView = () => {
 
                 <Doughnut data={modalChartData.doughnut} />
               </div>
-              <h5>Performance Insights</h5>
-              <p>{modalInsightText}</p>
+              {/* <h5>Performance Insights</h5>
+              <p>{modalInsightText}</p> */}
             </Col>
           </Row>
         </Modal.Body>
