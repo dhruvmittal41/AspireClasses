@@ -46,12 +46,12 @@ const getTestStatus = (test, lastAttemptData = {}) => {
 
   if (lastAttempt) {
     const diff = now - lastAttempt;
-    if (diff < HOURS_24) {
-      return {
-        state: "locked",
-        unlockAt: new Date(lastAttempt.getTime() + HOURS_24),
-      };
-    }
+    // if (diff < HOURS_24) {
+    //   return {
+    //     state: "locked",
+    //     unlockAt: new Date(lastAttempt.getTime() + HOURS_24),
+    //   };
+    // }
     return { state: "review" };
   }
 
