@@ -27,6 +27,7 @@ import CreateNewTest from "./Pages/Admin_Page/CreateNewTest.jsx";
 import { AuthContext } from "./context/AuthContext";
 import Review_Test from "./Pages/Test_Interface/Review_Test.jsx";
 import CreateOrUpdateTest from "./Pages/Admin_Page/CreateNewTest.jsx";
+import ManageTests from "./Pages/Admin_Page/ManageTests.jsx";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
