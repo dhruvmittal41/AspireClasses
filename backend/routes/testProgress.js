@@ -10,13 +10,9 @@ router.post("/save", async (req, res) => {
         return res.status(400).json({ message: "Invalid payload" });
     }
 
-    const client = db
-
     try {
-        await client.query("BEGIN");
-
         for (const { questionId, selectedOption } of answers) {
-            await client.query(
+            await db.query(
                 `
         INSERT INTO test_progress (user_id, test_id, question_id, selected_option)
         VALUES ($1, $2, $3, $4)
@@ -32,14 +28,10 @@ router.post("/save", async (req, res) => {
             );
         }
 
-        await client.query("COMMIT");
         res.json({ success: true });
     } catch (err) {
-        await client.query("ROLLBACK");
         console.error("SAVE PROGRESS ERROR:", err);
         res.status(500).json({ message: "Failed to save progress" });
-    } finally {
-        client.release();
     }
 });
 
