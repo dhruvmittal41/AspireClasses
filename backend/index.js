@@ -12,7 +12,7 @@ const bcrypt = require('bcryptjs');
 const url = process.env.FRONTEND_URL;
 const cookieParser = require("cookie-parser");
 const UserModel = require('./models/userModel');
-import testProgressRoutes from "./routes/testProgress.js";
+const testProgressRoutes = require("./routes/testProgress.js");
 
 app.use("/api/test-progress", testProgressRoutes);
 
