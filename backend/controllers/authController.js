@@ -184,19 +184,20 @@ exports.getAllUsers = async (req, res, next) => {
     }
 };
 
-const assignTestToUser = async (userId, testId = false) => {
+const assignTestToUser = async (userId, testId) => {
     const query = `
-        INSERT INTO user_tests (user_id, test_id)
-        VALUES ($1, $2)
+        INSERT INTO user_tests (user_id, test_id, is_paid)
+        VALUES ($1, $2, false)
         ON CONFLICT (user_id, test_id) DO NOTHING
         RETURNING *;
     `;
 
     const values = [userId, testId];
-
     const { rows } = await db.query(query, values);
     return rows[0] || null;
 };
+
+
 
 exports.assignTest = async (req, res, next) => {
     try {
@@ -209,7 +210,9 @@ exports.assignTest = async (req, res, next) => {
         const assignment = await assignTestToUser(userId, testId);
 
         if (!assignment) {
-            return res.status(400).json({ message: "Test already assigned or assignment failed" });
+            return res.status(409).json({
+                message: "Test already assigned to this user"
+            });
         }
 
         res.status(201).json({
@@ -225,6 +228,7 @@ exports.assignTest = async (req, res, next) => {
 
 
 
+
 exports.getBoughtTests = async (req, res, next) => {
     try {
         const userId = req.user?.id;
@@ -233,33 +237,21 @@ exports.getBoughtTests = async (req, res, next) => {
             return res.status(401).json({ message: "Unauthorized" });
         }
 
-        // Check if user is paid
-        const { rows: userRows } = await db.query(
-            `SELECT is_paid FROM users WHERE id = $1`,
-            [userId]
-        );
-
-        if (userRows.length === 0) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        if (!userRows[0].is_paid) {
-            return res.json([]); // Not paid = no access
-        }
-
-        // Fetch assigned tests
         const { rows: testRows } = await db.query(
             `
-      SELECT 
-        t.id,
-        t.test_name,
-        t.subject_topic,
-        t.num_questions,
-        t.date_scheduled
-      FROM user_tests ut
-      JOIN tests t ON t.id = ut.test_id
-      WHERE ut.user_id = $1
-      `,
+            SELECT 
+                t.id,
+                t.test_name,
+                t.subject_topic,
+                t.num_questions,
+                t.date_scheduled,
+                ut.paid_at
+            FROM user_tests ut
+            JOIN tests t ON t.id = ut.test_id
+            WHERE ut.user_id = $1
+              AND ut.is_paid = true
+            ORDER BY ut.paid_at DESC NULLS LAST
+            `,
             [userId]
         );
 
