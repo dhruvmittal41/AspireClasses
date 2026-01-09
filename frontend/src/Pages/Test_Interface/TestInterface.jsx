@@ -20,6 +20,8 @@ import { InlineMath, BlockMath } from "react-katex";
 import "./TestInterface.css";
 import api from "../../api/axios";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -73,6 +75,15 @@ const TestInterface = ({ id, onBack }) => {
   const [unattemptedCount, setUnattemptedCount] = useState(0);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
 
+  const { user, authLoading } = useContext(AuthContext);
+  if (authLoading) {
+    return (
+      <Container className="d-flex justify-content-center align-items-center vh-100">
+        <Spinner />
+      </Container>
+    );
+  }
+
   useEffect(() => {
     if (!testData?.questions) return;
 
@@ -107,20 +118,26 @@ const TestInterface = ({ id, onBack }) => {
     e.returnValue = "Are you sure you want to leave? Test will be submitted.";
   }, []);
 
-  const saveProgress = async () => {
+  const saveProgress = useCallback(async () => {
+    if (!user?.id || !id) return;
+
     const formattedAnswers = Object.entries(answers).map(
       ([questionId, selectedOption]) => ({
-        questionId: parseInt(questionId, 10),
+        questionId: Number(questionId),
         selectedOption,
       })
     );
 
-    await api.post("/api/test-progress/save", {
-      userId,
-      testId: id,
-      answers: formattedAnswers,
-    });
-  };
+    try {
+      await api.post("/api/test-progress/save", {
+        userId: user.id,
+        testId: id,
+        answers: formattedAnswers,
+      });
+    } catch (err) {
+      console.error("Failed to save progress:", err);
+    }
+  }, [answers, user?.id, id]);
 
   const handleSubmit = useCallback(
     async (isAutoSubmit = false) => {
@@ -171,10 +188,14 @@ const TestInterface = ({ id, onBack }) => {
   }, [timeLeft, handleSubmit, isSubmitting]);
 
   useEffect(() => {
-    if (Object.keys(answers).length > 0) {
+    if (!user?.id || Object.keys(answers).length === 0) return;
+
+    const timeout = setTimeout(() => {
       saveProgress();
-    }
-  }, [answers]);
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [answers, saveProgress, user?.id]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {

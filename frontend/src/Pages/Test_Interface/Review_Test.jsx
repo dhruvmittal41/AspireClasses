@@ -16,6 +16,8 @@ import {
 import { InlineMath, BlockMath } from "react-katex";
 import api from "../../api/axios";
 import "./TestInterface.css";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 const getOptionKey = (index) => String.fromCharCode(97 + index);
 
@@ -41,6 +43,14 @@ const Review_Test = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const { user, authLoading } = useContext(AuthContext);
+  if (authLoading) {
+    return (
+      <Container className="d-flex justify-content-center align-items-center vh-100">
+        <Spinner />
+      </Container>
+    );
+  }
 
   useEffect(() => {
     const load = async () => {
@@ -54,21 +64,27 @@ const Review_Test = () => {
   }, [id]);
 
   useEffect(() => {
+    if (!user?.id || !id) return;
+
     const loadProgress = async () => {
-      const res = await api.get("/api/test-progress/load", {
-        params: { userId, testId: id },
-      });
+      try {
+        const res = await api.get("/api/test-progress/load", {
+          params: { userId: user.id, testId: id },
+        });
 
-      const restored = {};
-      res.data.forEach((row) => {
-        restored[row.question_id] = row.selected_option;
-      });
+        const restored = {};
+        res.data.forEach((row) => {
+          restored[row.question_id] = row.selected_option;
+        });
 
-      userAnswers(restored);
+        setAnswers(restored);
+      } catch (err) {
+        console.error("Failed to load progress:", err);
+      }
     };
 
     loadProgress();
-  }, [id]);
+  }, [id, user?.id]);
 
   if (loading)
     return (
