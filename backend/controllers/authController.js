@@ -187,7 +187,7 @@ exports.getAllUsers = async (req, res, next) => {
 const assignTestToUser = async (userId, testId) => {
     const query = `
         INSERT INTO user_tests (user_id, test_id, is_paid)
-        VALUES ($1, $2, false)
+        VALUES ($1, $2, true)
         ON CONFLICT (user_id, test_id) DO NOTHING
         RETURNING *;
     `;
@@ -196,6 +196,7 @@ const assignTestToUser = async (userId, testId) => {
     const { rows } = await db.query(query, values);
     return rows[0] || null;
 };
+
 
 
 
