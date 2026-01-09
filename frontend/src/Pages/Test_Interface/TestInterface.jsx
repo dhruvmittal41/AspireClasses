@@ -129,11 +129,19 @@ const TestInterface = ({ id, onBack }) => {
     );
 
     try {
-      await api.post("/api/test-progress/save", {
-        userId: user.id,
-        testId: id,
-        answers: formattedAnswers,
-      });
+      await api.post(
+        "/api/test-progress/save",
+        {
+          userId: user.id,
+          testId: id,
+          answers: formattedAnswers,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
     } catch (err) {
       console.error("Failed to save progress:", err);
     }

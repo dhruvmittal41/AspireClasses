@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaArrowRight, FaBars, FaTimes } from "react-icons/fa";
@@ -16,7 +16,6 @@ import {
 import { InlineMath, BlockMath } from "react-katex";
 import api from "../../api/axios";
 import "./TestInterface.css";
-import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 
 const getOptionKey = (index) => String.fromCharCode(97 + index);
@@ -43,7 +42,9 @@ const Review_Test = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const { user, authLoading } = useContext(AuthContext);
+
+  const { user, authLoading, accessToken } = useContext(AuthContext);
+
   if (authLoading) {
     return (
       <Container className="d-flex justify-content-center align-items-center vh-100">
@@ -53,15 +54,23 @@ const Review_Test = () => {
   }
 
   useEffect(() => {
-    const load = async () => {
-      const q = await api.get(`/api/tests/${id}/questions`);
-      setQuestions(q.data || []);
-      // const saved = localStorage.getItem(`review-${id}`);
-      setUserAnswers(saved ? JSON.parse(saved) : {});
-      setLoading(false);
+    const loadQuestions = async () => {
+      try {
+        const q = await api.get(`/api/tests/${id}/questions`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        setQuestions(q.data || []);
+      } catch (err) {
+        console.error("Failed to load questions:", err);
+      } finally {
+        setLoading(false);
+      }
     };
-    load();
-  }, [id]);
+
+    loadQuestions();
+  }, [id, accessToken]);
 
   useEffect(() => {
     if (!user?.id || !id) return;
@@ -70,6 +79,9 @@ const Review_Test = () => {
       try {
         const res = await api.get("/api/test-progress/load", {
           params: { userId: user.id, testId: id },
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
         });
 
         const restored = {};
@@ -77,14 +89,14 @@ const Review_Test = () => {
           restored[row.question_id] = row.selected_option;
         });
 
-        setAnswers(restored);
+        setUserAnswers(restored);
       } catch (err) {
         console.error("Failed to load progress:", err);
       }
     };
 
     loadProgress();
-  }, [id, user?.id]);
+  }, [id, user?.id, accessToken]);
 
   if (loading)
     return (
@@ -96,10 +108,10 @@ const Review_Test = () => {
   const currentQuestion = questions[currentQuestionIndex];
 
   const getOptionStatus = (qid, key) => {
-    const user = userAnswers[qid];
+    const userAnswer = userAnswers[qid];
     const correct = questions.find((q) => q.id === qid)?.correct_option;
     if (key === correct) return "option-correct";
-    if (key === user && user !== correct) return "option-wrong";
+    if (key === userAnswer && userAnswer !== correct) return "option-wrong";
     return "";
   };
 
@@ -127,7 +139,6 @@ const Review_Test = () => {
           <FaArrowRight />
         </Button>
 
-        {/* HEADER */}
         <Row className="mb-3 align-items-center test-header-row bg-light p-2 rounded shadow-sm">
           <Col xs="auto" className="d-none d-lg-block">
             <Button
@@ -147,9 +158,7 @@ const Review_Test = () => {
           </Col>
         </Row>
 
-        {/* MAIN */}
         <Row className="g-3 main-row">
-          {/* PALETTE */}
           <Col
             lg={3}
             md={4}
@@ -182,7 +191,6 @@ const Review_Test = () => {
             </Card>
           </Col>
 
-          {/* QUESTION */}
           <Col
             md={isSidebarCollapsed ? 12 : 8}
             lg={isSidebarCollapsed ? 12 : 9}
