@@ -11,7 +11,11 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const url = process.env.FRONTEND_URL;
 const cookieParser = require("cookie-parser");
-const UserModel = require('./models/userModel')
+const UserModel = require('./models/userModel');
+import testProgressRoutes from "./routes/testProgress.js";
+
+app.use("/api/test-progress", testProgressRoutes);
+
 
 const app = express();
 
