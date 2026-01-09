@@ -107,6 +107,21 @@ const TestInterface = ({ id, onBack }) => {
     e.returnValue = "Are you sure you want to leave? Test will be submitted.";
   }, []);
 
+  const saveProgress = async () => {
+    const formattedAnswers = Object.entries(answers).map(
+      ([questionId, selectedOption]) => ({
+        questionId: parseInt(questionId, 10),
+        selectedOption,
+      })
+    );
+
+    await api.post("/api/test-progress/save", {
+      userId,
+      testId: id,
+      answers: formattedAnswers,
+    });
+  };
+
   const handleSubmit = useCallback(
     async (isAutoSubmit = false) => {
       setIsSubmitting(true);
@@ -119,7 +134,7 @@ const TestInterface = ({ id, onBack }) => {
           })
         );
         localStorage.removeItem(`test-${id}`);
-        localStorage.setItem(`review-${id}`, JSON.stringify(answers));
+        // localStorage.setItem(`review-${id}`, JSON.stringify(answers));
 
         await api.post(`/api/tests/${id}/submit`, {
           answers: formattedAnswers,
@@ -154,6 +169,12 @@ const TestInterface = ({ id, onBack }) => {
 
     return () => clearTimeout(timerId);
   }, [timeLeft, handleSubmit, isSubmitting]);
+
+  useEffect(() => {
+    if (Object.keys(answers).length > 0) {
+      saveProgress();
+    }
+  }, [answers]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {

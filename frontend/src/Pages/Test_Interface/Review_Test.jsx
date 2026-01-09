@@ -46,11 +46,28 @@ const Review_Test = () => {
     const load = async () => {
       const q = await api.get(`/api/tests/${id}/questions`);
       setQuestions(q.data || []);
-      const saved = localStorage.getItem(`review-${id}`);
+      // const saved = localStorage.getItem(`review-${id}`);
       setUserAnswers(saved ? JSON.parse(saved) : {});
       setLoading(false);
     };
     load();
+  }, [id]);
+
+  useEffect(() => {
+    const loadProgress = async () => {
+      const res = await api.get("/api/test-progress/load", {
+        params: { userId, testId: id },
+      });
+
+      const restored = {};
+      res.data.forEach((row) => {
+        restored[row.question_id] = row.selected_option;
+      });
+
+      userAnswers(restored);
+    };
+
+    loadProgress();
   }, [id]);
 
   if (loading)
