@@ -19,7 +19,7 @@ const testProgressRoutes = require("./routes/testProgress.js");
 
 const app = express();
 
-app.use("/api/test-progress", testProgressRoutes);
+
 const allowedOrigins = [
     url,
     "http://localhost:3000",
@@ -50,6 +50,7 @@ app.use('/api', authRoutes);
 app.use('/api', testRoutes);
 app.use('/api', resultRoutes);
 app.use('/api', productroutes);
+app.use("/api/test-progress", testProgressRoutes);
 
 
 const generateAccessToken = (user) =>
