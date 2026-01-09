@@ -251,7 +251,6 @@ exports.getBoughtTests = async (req, res, next) => {
             JOIN tests t ON t.id = ut.test_id
             WHERE ut.user_id = $1
               AND ut.is_paid = true
-            ORDER BY ut.paid_at DESC NULLS LAST
             `,
             [userId]
         );
