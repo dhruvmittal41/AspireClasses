@@ -10,7 +10,7 @@ router.post("/save", async (req, res) => {
         return res.status(400).json({ message: "Invalid payload" });
     }
 
-    const client = await db.connect();
+    const client = db
 
     try {
         await client.query("BEGIN");
