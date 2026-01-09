@@ -75,7 +75,7 @@ const TestInterface = ({ id, onBack }) => {
   const [unattemptedCount, setUnattemptedCount] = useState(0);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
 
-  const { user, authLoading } = useContext(AuthContext);
+  const { user, authLoading, accessToken } = useContext(AuthContext);
   if (authLoading) {
     return (
       <Container className="d-flex justify-content-center align-items-center vh-100">
