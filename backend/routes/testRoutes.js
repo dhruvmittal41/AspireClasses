@@ -84,7 +84,6 @@ router.get("/load", async (req, res) => {
     res.json(result.rows);
 });
 
-export default router;
 
 
 
