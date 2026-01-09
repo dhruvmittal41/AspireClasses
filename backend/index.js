@@ -14,12 +14,12 @@ const cookieParser = require("cookie-parser");
 const UserModel = require('./models/userModel');
 const testProgressRoutes = require("./routes/testProgress.js");
 
-app.use("/api/test-progress", testProgressRoutes);
+
 
 
 const app = express();
 
-
+app.use("/api/test-progress", testProgressRoutes);
 const allowedOrigins = [
     url,
     "http://localhost:3000",
