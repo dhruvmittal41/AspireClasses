@@ -245,7 +245,7 @@ exports.getBoughtTests = async (req, res, next) => {
                 t.test_name,
                 t.subject_topic,
                 t.num_questions,
-                t.date_scheduled,
+                t.date_scheduled
             FROM user_tests ut
             JOIN tests t ON t.id = ut.test_id
             WHERE ut.user_id = $1
