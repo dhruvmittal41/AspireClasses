@@ -115,6 +115,16 @@ app.get("/api/admin/tests/:testId/monitor", async (req, res) => {
     }
 });
 
+app.get("/api/admin/tests", async (req, res) => {
+    const { rows } = await db.query(`
+    SELECT id, test_name, subject_topic, num_questions, duration_minutes
+    FROM tests
+    ORDER BY created_at DESC
+  `);
+
+    res.json(rows);
+});
+
 
 app.post("/api/refresh", async (req, res) => {
     try {
