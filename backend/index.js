@@ -88,22 +88,22 @@ app.post("/api/tests/:testId/start", async (req, res) => {
 
 app.get("/api/admin/tests/:testId/monitor", async (req, res) => {
     try {
-
         const { testId } = req.params;
 
         const { rows } = await db.query(
             `
       SELECT 
         u.id AS user_id,
-        u.name,
-        u.email,
+        u.full_name AS name,
+        u.email_or_phone AS email,
         COALESCE(ta.status, 'not_started') AS status,
         ta.started_at,
         ta.completed_at
       FROM users u
       LEFT JOIN test_attempts ta
         ON ta.user_id = u.id AND ta.test_id = $1
-      ORDER BY u.name
+      WHERE u.assigned_testid = $1
+      ORDER BY u.full_name
       `,
             [testId]
         );
