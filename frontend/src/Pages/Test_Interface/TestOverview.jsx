@@ -4,10 +4,18 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Card, Button, Stack, ListGroup } from "react-bootstrap";
 
-const TestOverview = ({ testData, onStartTest }) => {
+const TestOverview = ({ testData }) => {
   const { test_name, subject_topic, num_questions, duration_minutes } =
     testData;
 
+  const onStartTest = async () => {
+    await fetch(`/api/tests/${testData.id}/start`, {
+      method: "POST",
+      credentials: "include",
+    });
+
+    navigate(`/test/${testData.id}`);
+  };
   const cardVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },

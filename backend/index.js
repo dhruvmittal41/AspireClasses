@@ -2,6 +2,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const db = require('../config/db');
 const authRoutes = require('./routes/authRoutes');
 const testRoutes = require('./routes/testRoutes');
 const resultRoutes = require('./routes/resultRoutes');
@@ -68,6 +69,50 @@ app.post("/api/logout", (req, res) => {
     });
 
     res.sendStatus(200);
+});
+
+app.post("/api/tests/:testId/start", async (req, res) => {
+    const userId = req.user.id;
+    const { testId } = req.params;
+
+    await db.query(`
+    INSERT INTO test_attempts (user_id, test_id, status, started_at)
+    VALUES ($1, $2, 'started', NOW())
+    ON CONFLICT (user_id, test_id)
+    DO UPDATE SET status = 'started', started_at = NOW()
+  `, [userId, testId]);
+
+    res.json({ success: true });
+});
+
+
+app.get("/api/admin/tests/:testId/monitor", async (req, res) => {
+    try {
+
+        const { testId } = req.params;
+
+        const { rows } = await db.query(
+            `
+      SELECT 
+        u.id AS user_id,
+        u.name,
+        u.email,
+        COALESCE(ta.status, 'not_started') AS status,
+        ta.started_at,
+        ta.completed_at
+      FROM users u
+      LEFT JOIN test_attempts ta
+        ON ta.user_id = u.id AND ta.test_id = $1
+      ORDER BY u.name
+      `,
+            [testId]
+        );
+
+        res.json(rows);
+    } catch (err) {
+        console.error("Monitor test error:", err);
+        res.status(500).json({ error: "Failed to load test monitor data" });
+    }
 });
 
 

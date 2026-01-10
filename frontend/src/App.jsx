@@ -28,6 +28,7 @@ import { AuthContext } from "./context/AuthContext";
 import Review_Test from "./Pages/Test_Interface/Review_Test.jsx";
 import CreateOrUpdateTest from "./Pages/Admin_Page/CreateNewTest.jsx";
 import ManageTests from "./Pages/Admin_Page/ManageTests.jsx";
+import TestMonitorGrid from "./Pages/Admin_Page/TestMonitorGrid.jsx";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -163,6 +164,7 @@ function App() {
             <Route path="new" element={<CreateOrUpdateTest />} />
             <Route path="tests" element={<ManageTests />} />
             <Route path="edit/:testId" element={<CreateOrUpdateTest />} />
+            <Route path="/admin/monitor-tests" element={<TestMonitorGrid />} />
           </Route>
         </Route>
 
