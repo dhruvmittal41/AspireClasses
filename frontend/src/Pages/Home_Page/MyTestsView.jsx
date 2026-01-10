@@ -27,34 +27,43 @@ const getLatestAttemptForTest = (testId, attempts) => {
   )[0];
 };
 
+const normalizeDateOnly = (dateString) => {
+  if (!dateString) return null;
+  const [y, m, d] = dateString.split("-").map(Number);
+  return new Date(y, m - 1, d, 0, 0, 0, 0); // local 00:00
+};
+
 const getTestStatus = (test, lastAttemptData = {}) => {
   const now = new Date();
-  const scheduledAt = test.date_scheduled
-    ? new Date(test.date_scheduled)
+
+  const scheduledStart = normalizeDateOnly(test.date_scheduled);
+  const scheduledEnd = scheduledStart
+    ? new Date(scheduledStart.getTime() + HOURS_24)
     : null;
 
   const lastAttempt = lastAttemptData.submitted_at
     ? new Date(lastAttemptData.submitted_at)
     : null;
 
-  if (scheduledAt && now < scheduledAt) {
+  // Before the scheduled day
+  if (scheduledStart && now < scheduledStart) {
     return {
       state: "scheduled",
-      availableAt: scheduledAt,
+      availableAt: scheduledStart,
     };
   }
 
+  // After scheduled window ends (no attempt yet)
+  if (scheduledEnd && now >= scheduledEnd && !lastAttempt) {
+    return { state: "locked" };
+  }
+
+  // Already attempted → review
   if (lastAttempt) {
-    const diff = now - lastAttempt;
-    // if (diff < HOURS_24) {
-    //   return {
-    //     state: "locked",
-    //     unlockAt: new Date(lastAttempt.getTime() + HOURS_24),
-    //   };
-    // }
     return { state: "review" };
   }
 
+  // Within the allowed 24h window
   return { state: "start" };
 };
 
@@ -175,7 +184,9 @@ const MyTestsView = () => {
                     {status.state === "scheduled" && (
                       <Button disabled variant="secondary" className="mt-auto">
                         Available at{" "}
-                        {new Date(test.date_scheduled).toLocaleString()}
+                        {normalizeDateOnly(
+                          test.date_scheduled
+                        ).toLocaleDateString()}
                       </Button>
                     )}
 
