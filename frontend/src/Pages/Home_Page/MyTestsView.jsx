@@ -138,6 +138,7 @@ const MyTestsView = () => {
     };
     fetchBoughtTests();
   }, []);
+  const sortedTests = [...boughtTests].sort((a, b) => a.id - b.id);
 
   if (loading) return <LoadingState />;
 
@@ -146,7 +147,7 @@ const MyTestsView = () => {
       <h1 className="display-5 mb-4 text-center">My Tests</h1>
       {boughtTests.length > 0 ? (
         <Row className="g-4">
-          {boughtTests.map((test) => {
+          {sortedTests.map((test) => {
             const latestAttempt = getLatestAttemptForTest(
               test.id,
               lastAttemptData
