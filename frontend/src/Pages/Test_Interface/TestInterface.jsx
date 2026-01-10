@@ -152,32 +152,44 @@ const TestInterface = ({ id, onBack }) => {
       setIsSubmitting(true);
       try {
         window.removeEventListener("beforeunload", handleBeforeUnload);
-        const formattedAnswers = Object.entries(answers).map(
+
+        const currentQ = testData.questions[currentQuestionIndex];
+        const currentAnswer = answers[currentQ?.id];
+
+        const finalAnswers = {
+          ...answers,
+          ...(currentAnswer !== undefined && { [currentQ.id]: currentAnswer }),
+        };
+
+        const formattedAnswers = Object.entries(finalAnswers).map(
           ([questionId, selectedOption]) => ({
             questionId: parseInt(questionId, 10),
             selectedOption,
           })
         );
+
+        const total = testData.questions.length;
+        const attempted = Object.values(finalAnswers).filter(
+          (v) => v !== null && v !== undefined && v !== ""
+        ).length;
+        const unattempted = total - attempted;
+
         localStorage.removeItem(`test-${id}`);
-        // localStorage.setItem(`review-${id}`, JSON.stringify(answers));
 
         await api.post(`/api/tests/${id}/submit`, {
           answers: formattedAnswers,
           testId: id,
-          unattemptedCount,
+          unattemptedCount: unattempted,
         });
-        if (!isAutoSubmit) {
-          alert("✅ Test submitted successfully!");
-        }
+
+        if (!isAutoSubmit) alert("✅ Test submitted successfully!");
         onBack();
       } catch (error) {
-        if (!isAutoSubmit) {
-          alert("⚠️ There was an error submitting your test.");
-        }
+        if (!isAutoSubmit) alert("⚠️ There was an error submitting your test.");
         setIsSubmitting(false);
       }
     },
-    [id, answers, onBack, handleBeforeUnload]
+    [id, answers, currentQuestionIndex, testData, onBack, handleBeforeUnload]
   );
 
   useEffect(() => {

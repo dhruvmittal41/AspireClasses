@@ -12,7 +12,7 @@ const FreeDemoTests = React.memo(() => {
     {
       id: 1,
       title: "AMU 9th Entrance",
-      url: "https://aspireclasses.cloud/tests/1",
+      url: "https://aspireclasses.cloud/tests/12",
     },
     { id: 2, title: "JEE Mains Mock", comingSoon: true },
     { id: 3, title: "NEET Biology Basics", comingSoon: true },
