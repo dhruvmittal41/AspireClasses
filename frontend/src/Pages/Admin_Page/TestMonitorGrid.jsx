@@ -141,12 +141,12 @@ const TestMonitorGrid = () => {
                         ? new Date(user.started_at).toLocaleString()
                         : "—"}
                     </div>
-                    <div>
+                    {/* <div>
                       <strong>Completed:</strong>{" "}
                       {user.completed_at
                         ? new Date(user.completed_at).toLocaleString()
                         : "—"}
-                    </div>
+                    </div> */}
                   </div>
                 </Card.Body>
               </Card>
