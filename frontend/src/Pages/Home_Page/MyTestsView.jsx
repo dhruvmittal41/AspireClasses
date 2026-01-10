@@ -29,8 +29,12 @@ const getLatestAttemptForTest = (testId, attempts) => {
 
 const normalizeDateOnly = (dateString) => {
   if (!dateString) return null;
-  const [y, m, d] = dateString.split("-").map(Number);
-  return new Date(y, m - 1, d, 0, 0, 0, 0); // local 00:00
+
+  const d = new Date(dateString);
+
+  if (isNaN(d)) return null;
+
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
 };
 
 const getTestStatus = (test, lastAttemptData = {}) => {
@@ -45,25 +49,18 @@ const getTestStatus = (test, lastAttemptData = {}) => {
     ? new Date(lastAttemptData.submitted_at)
     : null;
 
-  // Before the scheduled day
   if (scheduledStart && now < scheduledStart) {
-    return {
-      state: "scheduled",
-      availableAt: scheduledStart,
-    };
+    return { state: "scheduled", availableAt: scheduledStart };
   }
 
-  // After scheduled window ends (no attempt yet)
   if (scheduledEnd && now >= scheduledEnd && !lastAttempt) {
-    return { state: "locked" };
+    return { state: "locked", unlockAt: scheduledEnd };
   }
 
-  // Already attempted → review
   if (lastAttempt) {
     return { state: "review" };
   }
 
-  // Within the allowed 24h window
   return { state: "start" };
 };
 
