@@ -4,6 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Card, Button, Stack, ListGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import api from "../../api/axios";
 
 const TestOverview = ({ testData, onStartTest }) => {
   const navigate = useNavigate();
@@ -11,10 +12,7 @@ const TestOverview = ({ testData, onStartTest }) => {
     testData;
 
   const handleStart = async () => {
-    await fetch(`/api/tests/${testData.id}/start`, {
-      method: "POST",
-      credentials: "include",
-    });
+    await api.post(`/api/tests/${testData.id}/start`);
 
     onStartTest(); // 🔥 tells TestPage to show TestInterface
   };
