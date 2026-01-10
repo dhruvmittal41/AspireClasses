@@ -3,8 +3,10 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Card, Button, Stack, ListGroup } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 const TestOverview = ({ testData }) => {
+  const navigate = useNavigate();
   const { test_name, subject_topic, num_questions, duration_minutes } =
     testData;
 
