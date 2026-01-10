@@ -102,7 +102,6 @@ app.get("/api/admin/tests/:testId/monitor", async (req, res) => {
       FROM users u
       LEFT JOIN test_attempts ta
         ON ta.user_id = u.id AND ta.test_id = $1
-      WHERE u.assigned_testid = $1
       ORDER BY u.full_name
       `,
             [testId]
@@ -114,6 +113,7 @@ app.get("/api/admin/tests/:testId/monitor", async (req, res) => {
         res.status(500).json({ error: "Failed to load test monitor data" });
     }
 });
+
 
 app.get("/api/admin/tests", async (req, res) => {
     const { rows } = await db.query(`
