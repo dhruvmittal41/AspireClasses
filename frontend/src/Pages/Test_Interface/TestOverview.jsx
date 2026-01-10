@@ -5,17 +5,20 @@ import { motion } from "framer-motion";
 import { Card, Button, Stack, ListGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
-const TestOverview = ({ testData }) => {
+const TestOverview = ({ testData, onStartTest }) => {
   const navigate = useNavigate();
   const { test_name, subject_topic, num_questions, duration_minutes } =
     testData;
 
-  const onStartTest = async () => {
+  const handleStart = async () => {
     await fetch(`/api/tests/${testData.id}/start`, {
       method: "POST",
       credentials: "include",
     });
+
+    onStartTest(); // 🔥 tells TestPage to show TestInterface
   };
+
   const cardVariants = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
@@ -76,7 +79,7 @@ const TestOverview = ({ testData }) => {
 
         {/* Start Button */}
         <div className="d-grid">
-          <Button onClick={onStartTest} size="lg" variant="primary">
+          <Button onClick={handleStart} size="lg" variant="primary">
             Start Test
           </Button>
         </div>
