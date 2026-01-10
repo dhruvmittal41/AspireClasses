@@ -82,32 +82,42 @@ const ResultsView = () => {
   const [totalQuestionsByTest, setTotalQuestionsByTest] = useState({});
 
   useEffect(() => {
-    const fetchResults = async () => {
+    const fetchResultsAndTotals = async () => {
       try {
         const response = await api.get("/api/results");
-        setResults(response.data || []);
+        const resultsData = response.data || [];
+        setResults(resultsData);
+
+        const uniqueTestIds = [...new Set(resultsData.map((r) => r.test_id))];
+
+        const requests = uniqueTestIds.map((id) =>
+          api.get(`/api/tests/${id}`).then((res) => ({
+            id,
+            total: Number(res.data.num_questions) || 0,
+          }))
+        );
+
+        const totals = await Promise.all(requests);
+
+        const totalsMap = {};
+        totals.forEach((t) => {
+          totalsMap[t.id] = t.total;
+        });
+
+        setTotalQuestionsByTest(totalsMap);
       } catch (err) {
+        console.error(err);
         setError("Unable to load results.");
       } finally {
         setLoading(false);
       }
     };
-    fetchResults();
+
+    fetchResultsAndTotals();
   }, []);
 
-  const handleSelectResult = async (result) => {
-    try {
-      if (!totalQuestionsByTest[result.test_id]) {
-        const res = await api.get(`/api/tests/${result.test_id}`);
-        setTotalQuestionsByTest((prev) => ({
-          ...prev,
-          [result.test_id]: Number(res.data.num_questions) || 0,
-        }));
-      }
-      setSelectedResult(result);
-    } catch (err) {
-      console.error("Failed to load test info", err);
-    }
+  const handleSelectResult = (result) => {
+    setSelectedResult(result);
   };
 
   const getTotalForTest = (testId) => totalQuestionsByTest[testId] || 0;
