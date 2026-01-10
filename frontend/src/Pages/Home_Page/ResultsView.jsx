@@ -39,8 +39,6 @@ ChartJS.register(
   Legend
 );
 
-const TOTAL_QUESTIONS = 85;
-
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -54,55 +52,25 @@ const itemVariants = {
   visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } },
 };
 
-const clampScore = (score) => {
+const clampScore = (score, total) => {
   const s = Number(score);
   if (Number.isNaN(s) || s < 0) return 0;
-  return Math.min(s, TOTAL_QUESTIONS);
+  return Math.min(s, total);
 };
 
-const getQuestionCounts = (score) => {
-  const correct = clampScore(score);
-  return {
-    correct,
-    incorrect: TOTAL_QUESTIONS - correct,
-    total: TOTAL_QUESTIONS,
-  };
-};
-
-const formatScoreOutOf85 = (score) => {
-  return `${clampScore(score)} / ${TOTAL_QUESTIONS}`;
-};
-
-const getCounts = (result) => {
-  const correct = clampScore(result?.score || 0);
+const getCounts = (result, total) => {
+  const correct = clampScore(result?.score || 0, total);
   const unattempted = Number(result?.unattempted_count || 0);
-  const total = TOTAL_QUESTIONS;
   const incorrect = Math.max(total - correct - unattempted, 0);
-
   return { correct, incorrect, unattempted, total };
 };
 
-const getPerformanceFeedback = (score) => {
-  const s = clampScore(score);
-  if (s >= 75)
-    return {
-      variant: "success",
-      text: "Excellent work! You have mastered this topic.",
-    };
-  if (s >= 60)
-    return {
-      variant: "info",
-      text: "Great job! A solid performance with a strong understanding.",
-    };
-  if (s >= 40)
-    return {
-      variant: "warning",
-      text: "Good effort. There are some areas where you can improve.",
-    };
-  return {
-    variant: "danger",
-    text: "It looks like this topic was challenging.",
-  };
+const getPerformanceFeedback = (score, total) => {
+  const s = clampScore(score, total);
+  if (s >= total * 0.88) return { variant: "success", text: "Excellent work!" };
+  if (s >= total * 0.7) return { variant: "info", text: "Great job!" };
+  if (s >= total * 0.5) return { variant: "warning", text: "Good effort." };
+  return { variant: "danger", text: "Needs improvement." };
 };
 
 const ResultsView = () => {
@@ -110,15 +78,14 @@ const ResultsView = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedResult, setSelectedResult] = useState(null);
+  const [totalQuestions, setTotalQuestions] = useState(0);
 
   useEffect(() => {
     const fetchResults = async () => {
       try {
         const response = await api.get("/api/results");
-        console.log("API RESULTS:", response.data);
         setResults(response.data || []);
       } catch (err) {
-        console.error("Failed to fetch results:", err);
         setError("Unable to load results.");
       } finally {
         setLoading(false);
@@ -127,12 +94,30 @@ const ResultsView = () => {
     fetchResults();
   }, []);
 
+  const handleSelectResult = async (result) => {
+    try {
+      const res = await api.get(`/api/tests/${result.test_id}`);
+      setTotalQuestions(res.data.num_questions);
+      setSelectedResult(result);
+    } catch (err) {
+      console.error("Failed to load test info", err);
+    }
+  };
+
   const summaryStats = useMemo(() => {
     if (!results.length) return { average: 0, best: null, total: 0 };
 
-    const totalScore = results.reduce((sum, r) => sum + clampScore(r.score), 0);
+    const totalScore = results.reduce(
+      (sum, r) => sum + clampScore(r.score, totalQuestions),
+      0
+    );
+
     const best = results.reduce(
-      (max, r) => (clampScore(r.score) > clampScore(max.score) ? r : max),
+      (max, r) =>
+        clampScore(r.score, totalQuestions) >
+        clampScore(max.score, totalQuestions)
+          ? r
+          : max,
       results[0]
     );
 
@@ -141,14 +126,14 @@ const ResultsView = () => {
       best,
       total: results.length,
     };
-  }, [results]);
+  }, [results, totalQuestions]);
 
   const overallChartData = {
     labels: results.map((r) => r.test_name),
     datasets: [
       {
         label: "Correct Questions",
-        data: results.map((r) => clampScore(r.score)),
+        data: results.map((r) => clampScore(r.score, totalQuestions)),
         fill: true,
         backgroundColor: "rgba(59, 130, 246, 0.2)",
         borderColor: "rgba(59, 130, 246, 1)",
@@ -157,24 +142,24 @@ const ResultsView = () => {
     ],
   };
 
-  const counts = getCounts(selectedResult);
+  const counts = getCounts(selectedResult, totalQuestions);
+
   const modalChartData = {
     bar: {
       labels: [selectedResult?.test_name],
       datasets: [
         {
           label: "Your Score",
-          data: [clampScore(selectedResult?.score)],
+          data: [clampScore(selectedResult?.score, totalQuestions)],
           backgroundColor: "#3B82F6",
         },
         {
           label: "Topper's Score",
-          data: [clampScore(selectedResult?.highest_score)],
+          data: [clampScore(selectedResult?.highest_score, totalQuestions)],
           backgroundColor: "#EF4444",
         },
       ],
     },
-
     doughnut: {
       labels: ["Correct", "Incorrect", "Unattempted"],
       datasets: [
@@ -188,29 +173,13 @@ const ResultsView = () => {
     },
   };
 
-  let modalInsightText = "";
-  if (selectedResult) {
-    const diff =
-      clampScore(selectedResult.score) -
-      clampScore(selectedResult.average_score);
-    if (diff > 0)
-      modalInsightText = `You answered ${diff} more questions correctly than the average.`;
-    else if (diff < 0)
-      modalInsightText = `You answered ${Math.abs(
-        diff
-      )} fewer questions correctly than the average.`;
-    else
-      modalInsightText =
-        "You performed exactly on average with other students.";
-  }
-
   if (loading)
     return (
       <div
         className="d-flex justify-content-center align-items-center"
         style={{ height: "80vh" }}
       >
-        <Spinner animation="border" variant="primary" />
+        <Spinner animation="border" />
         <h4 className="ms-3">Loading your results...</h4>
       </div>
     );
@@ -227,51 +196,6 @@ const ResultsView = () => {
     >
       <h1 className="display-5 mb-4">Results Dashboard</h1>
 
-      <Row className="mb-4">
-        <Col md={4} as={motion.div} variants={itemVariants} className="mb-3">
-          <Card className="text-center shadow-sm h-100">
-            <Card.Body>
-              <Card.Title>Best Performance</Card.Title>
-              <Card.Text className="display-4 fw-bold text-success">
-                {summaryStats.best
-                  ? formatScoreOutOf85(summaryStats.best.score)
-                  : "N/A"}
-              </Card.Text>
-              <Card.Subtitle className="text-muted">
-                {summaryStats.best?.test_name}
-              </Card.Subtitle>
-            </Card.Body>
-          </Card>
-        </Col>
-
-        <Col md={4} as={motion.div} variants={itemVariants} className="mb-3">
-          <Card className="text-center shadow-sm h-100">
-            <Card.Body>
-              <Card.Title>Total Tests Taken</Card.Title>
-              <Card.Text className="display-4 fw-bold text-info">
-                {summaryStats.total}
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-
-      <Card className="shadow-sm mb-5">
-        <Card.Header as="h5">Overall Performance Trend</Card.Header>
-        <Card.Body style={{ height: "300px" }}>
-          <Line
-            data={overallChartData}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              scales: { y: { beginAtZero: true, max: TOTAL_QUESTIONS } },
-            }}
-          />
-        </Card.Body>
-      </Card>
-
-      <h2 className="mb-3">All Test Results</h2>
-
       <Row>
         {results.map((result) => (
           <Col
@@ -283,27 +207,29 @@ const ResultsView = () => {
             variants={itemVariants}
           >
             <Card
-              className="h-100 shadow-sm result-card"
-              onClick={() => setSelectedResult(result)}
+              className="h-100 shadow-sm"
+              onClick={() => handleSelectResult(result)}
             >
               <Card.Body>
                 <Card.Title>{result.test_name}</Card.Title>
                 <div className="d-flex justify-content-between align-items-center my-3">
                   <span className="fw-bold fs-4">
-                    {formatScoreOutOf85(result.score)}
+                    {clampScore(result.score, totalQuestions)} /{" "}
+                    {totalQuestions}
                   </span>
-                  <Badge bg={getPerformanceFeedback(result.score).variant}>
-                    {getPerformanceFeedback(result.score).text.split("!")[0]}
+                  <Badge
+                    bg={
+                      getPerformanceFeedback(result.score, totalQuestions)
+                        .variant
+                    }
+                  >
+                    {getPerformanceFeedback(result.score, totalQuestions).text}
                   </Badge>
                 </div>
                 <ProgressBar
-                  now={clampScore(result.score)}
-                  max={TOTAL_QUESTIONS}
-                  label={formatScoreOutOf85(result.score)}
+                  now={clampScore(result.score, totalQuestions)}
+                  max={totalQuestions}
                 />
-                <Card.Text className="text-muted mt-2 text-end">
-                  Topper's Score: {formatScoreOutOf85(result.highest_score)}
-                </Card.Text>
               </Card.Body>
             </Card>
           </Col>
@@ -322,37 +248,31 @@ const ResultsView = () => {
         <Modal.Body>
           <Row>
             <Col md={8}>
-              <h5 className="text-center mb-3">Score Comparison</h5>
               <div style={{ height: "350px" }}>
                 <Bar
                   data={modalChartData.bar}
                   options={{
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true, max: TOTAL_QUESTIONS } },
+                    scales: { y: { beginAtZero: true, max: totalQuestions } },
                   }}
                 />
               </div>
             </Col>
             <Col md={4}>
-              <div style={{ height: "180px" }} className="mb-4">
-                <p>
-                  <strong>Correct:</strong> {counts.correct}
-                </p>
-                <p>
-                  <strong>Incorrect:</strong> {counts.incorrect}
-                </p>
-                <p>
-                  <strong>Unattempted:</strong> {counts.unattempted}
-                </p>
-                <p>
-                  <strong>Total:</strong> {counts.total}
-                </p>
-
-                <Doughnut data={modalChartData.doughnut} />
-              </div>
-              {/* <h5>Performance Insights</h5>
-              <p>{modalInsightText}</p> */}
+              <p>
+                <strong>Correct:</strong> {counts.correct}
+              </p>
+              <p>
+                <strong>Incorrect:</strong> {counts.incorrect}
+              </p>
+              <p>
+                <strong>Unattempted:</strong> {counts.unattempted}
+              </p>
+              <p>
+                <strong>Total:</strong> {counts.total}
+              </p>
+              <Doughnut data={modalChartData.doughnut} />
             </Col>
           </Row>
         </Modal.Body>
