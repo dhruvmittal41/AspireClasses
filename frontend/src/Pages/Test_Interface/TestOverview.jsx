@@ -15,8 +15,6 @@ const TestOverview = ({ testData }) => {
       method: "POST",
       credentials: "include",
     });
-
-    navigate(`/test/${testData.id}`);
   };
   const cardVariants = {
     hidden: { opacity: 0, y: 50 },
