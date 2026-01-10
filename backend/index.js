@@ -14,6 +14,8 @@ const url = process.env.FRONTEND_URL;
 const cookieParser = require("cookie-parser");
 const UserModel = require('./models/userModel');
 const testProgressRoutes = require("./routes/testProgress.js");
+const { protect } = require("./middleware/authMiddleware.js");
+
 
 
 
@@ -71,7 +73,7 @@ app.post("/api/logout", (req, res) => {
     res.sendStatus(200);
 });
 
-app.post("/api/tests/:testId/start", async (req, res) => {
+app.post("/api/tests/:testId/start", protect, async (req, res) => {
     const userId = req.user.id;
     const { testId } = req.params;
 
