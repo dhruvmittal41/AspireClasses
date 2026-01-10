@@ -60,7 +60,7 @@ const clampScore = (score, total) => {
 
 const getCounts = (result, total) => {
   const correct = clampScore(result?.score || 0, total);
-  const unattempted = Number(result?.unattempted_count || 0);
+  const unattempted = Number(result?.unattempted_count - 1 || 0);
   const incorrect = Math.max(total - correct - unattempted, 0);
   return { correct, incorrect, unattempted, total };
 };
