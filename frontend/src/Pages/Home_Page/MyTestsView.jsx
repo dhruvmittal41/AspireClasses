@@ -49,18 +49,17 @@ const getTestStatus = (test, lastAttemptData = {}) => {
     ? new Date(lastAttemptData.submitted_at)
     : null;
 
+  // Not yet available
   if (scheduledStart && now < scheduledStart) {
     return { state: "scheduled", availableAt: scheduledStart };
   }
 
-  if (scheduledEnd && now >= scheduledEnd && !lastAttempt) {
-    return { state: "locked", unlockAt: scheduledEnd };
-  }
-
+  // Already attempted
   if (lastAttempt) {
     return { state: "review" };
   }
 
+  // Available anytime after scheduledStart
   return { state: "start" };
 };
 
