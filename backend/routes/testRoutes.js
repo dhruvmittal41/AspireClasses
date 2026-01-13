@@ -24,7 +24,7 @@ router.get('/demo-tests', getDemoTests);
 router.get('/upcoming-tests', getUpcomingTests);
 router.get('/tests/:id', getTestById);
 router.get('/tests/:id/questions', protect, getTestQuestions);
-router.post('/tests/:id/submit', protect, submitTest);
+router.post('/tests/:id/submit', submitTest);
 router.put('/questions/:id', protect, updateQuestion);
 router.put('/tests/:id', updateTest);
 router.delete('/questions/:id', protect, deleteQuestion);
