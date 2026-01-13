@@ -178,6 +178,7 @@ const TestInterface = ({ id, onBack }) => {
 
         await api.post(`/api/tests/${id}/submit`, {
           answers: formattedAnswers,
+          userId: user.id,
           testId: id,
           unattemptedCount: unattempted,
         });

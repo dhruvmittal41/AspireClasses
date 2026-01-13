@@ -149,8 +149,7 @@ exports.deleteQuestion = async (req, res, next) => {
 };
 
 exports.submitTest = async (req, res, next) => {
-    const { testId, answers, unattemptedCount } = req.body;
-    const userId = req.user.id;
+    const { userId, testId, answers, unattemptedCount } = req.body;
 
     try {
         let score = 0;
