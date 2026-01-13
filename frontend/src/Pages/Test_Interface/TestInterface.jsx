@@ -185,7 +185,6 @@ const TestInterface = ({ id, onBack }) => {
         if (!isAutoSubmit) alert("✅ Test submitted successfully!");
         onBack();
       } catch (error) {
-        if (!isAutoSubmit) alert("⚠️ There was an error submitting your test.");
         console.log(error);
         setIsSubmitting(false);
       }
