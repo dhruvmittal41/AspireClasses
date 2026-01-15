@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { FaArrowRight, FaBars, FaTimes } from "react-icons/fa";
+import { FaArrowRight, FaBars, FaTimes } from "react-icons/fa"; // Added FaBars, FaTimes
 import {
   Container,
   Row,
@@ -28,28 +28,30 @@ const baseUrl = import.meta.env.VITE_BASE_URL;
 const getOptionKey = (index) => String.fromCharCode(97 + index);
 
 const KatexRenderer = ({ text }) => {
-  if (typeof text !== "string" || !text) return null;
-
+  if (typeof text !== "string" || !text) {
+    return null;
+  }
   const displayParts = text.split("$$");
   return (
     <>
-      {displayParts.map((displayPart, displayIndex) =>
-        displayIndex % 2 === 1 ? (
-          <BlockMath key={displayIndex} math={displayPart} />
-        ) : (
-          <span key={displayIndex}>
-            {displayPart
-              .split("$")
-              .map((inlinePart, inlineIndex) =>
-                inlineIndex % 2 === 1 ? (
-                  <InlineMath key={inlineIndex} math={inlinePart} />
-                ) : (
-                  <span key={inlineIndex}>{inlinePart}</span>
-                )
-              )}
-          </span>
-        )
-      )}
+      {displayParts.map((displayPart, displayIndex) => {
+        if (displayIndex % 2 === 1) {
+          return <BlockMath key={displayIndex} math={displayPart} />;
+        } else {
+          const inlineParts = displayPart.split("$");
+          return (
+            <span key={displayIndex}>
+              {inlineParts.map((inlinePart, inlineIndex) => {
+                if (inlineIndex % 2 === 1) {
+                  return <InlineMath key={inlineIndex} math={inlinePart} />;
+                } else {
+                  return <span key={inlineIndex}>{inlinePart}</span>;
+                }
+              })}
+            </span>
+          );
+        }
+      })}
     </>
   );
 };
@@ -72,13 +74,9 @@ const TestInterface = ({ id, onBack }) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [unattemptedCount, setUnattemptedCount] = useState(0);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
-
-  // 🔥 TIMER FIX
-  const endTimeRef = useRef(null);
-  const handleSubmitRef = useRef(null);
+  const endTimeRef = React.useRef(null);
 
   const { user, authLoading, accessToken } = useContext(AuthContext);
-
   if (authLoading) {
     return (
       <Container className="d-flex justify-content-center align-items-center vh-100">
@@ -89,9 +87,12 @@ const TestInterface = ({ id, onBack }) => {
 
   useEffect(() => {
     if (!testData?.questions) return;
-    setUnattemptedCount(
-      testData.questions.length - Object.keys(answers).length
-    );
+
+    const total = testData.questions.length;
+    const attempted = Object.keys(answers).length;
+    const unattempted = total - attempted;
+
+    setUnattemptedCount(unattempted);
   }, [answers, testData]);
 
   useEffect(() => {
@@ -107,51 +108,98 @@ const TestInterface = ({ id, onBack }) => {
         const durationSeconds = testDetailsRes.data.duration_minutes * 60;
         setTimeLeft(durationSeconds);
         endTimeRef.current = Date.now() + durationSeconds * 1000;
-      } catch {
+      } catch (err) {
         setError("Failed to load the test.");
       } finally {
         setLoading(false);
       }
     };
+
     fetchTest();
   }, [id]);
+
+  const handleBeforeUnload = useCallback((e) => {
+    e.preventDefault();
+    e.returnValue = "Are you sure you want to leave? Test will be submitted.";
+  }, []);
+
+  const saveProgress = useCallback(async () => {
+    if (!user?.id || !id) return;
+
+    const formattedAnswers = Object.entries(answers).map(
+      ([questionId, selectedOption]) => ({
+        questionId: Number(questionId),
+        selectedOption,
+      })
+    );
+
+    try {
+      await api.post(
+        "/api/test-progress/save",
+        {
+          userId: user.id,
+          testId: id,
+          answers: formattedAnswers,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+    } catch (err) {
+      console.error("Failed to save progress:", err);
+    }
+  }, [answers, user?.id, id]);
 
   const handleSubmit = useCallback(
     async (isAutoSubmit = false) => {
       setIsSubmitting(true);
       try {
-        const formattedAnswers = Object.entries(answers).map(
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+
+        const currentQ = testData.questions[currentQuestionIndex];
+        const currentAnswer = answers[currentQ?.id];
+
+        const finalAnswers = {
+          ...answers,
+          ...(currentAnswer !== undefined && { [currentQ.id]: currentAnswer }),
+        };
+
+        const formattedAnswers = Object.entries(finalAnswers).map(
           ([questionId, selectedOption]) => ({
-            questionId: Number(questionId),
+            questionId: parseInt(questionId, 10),
             selectedOption,
           })
         );
+
+        const total = testData.questions.length;
+        const attempted = Object.values(finalAnswers).filter(
+          (v) => v !== null && v !== undefined && v !== ""
+        ).length;
+        const unattempted = total - attempted;
+
+        localStorage.removeItem(`test-${id}`);
 
         await api.post(`/api/tests/${id}/submit`, {
           answers: formattedAnswers,
           userId: user.id,
           testId: id,
-          unattemptedCount,
+          unattemptedCount: unattempted,
         });
 
         if (!isAutoSubmit) alert("✅ Test submitted successfully!");
         onBack();
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.log(error);
         setIsSubmitting(false);
       }
     },
-    [answers, id, onBack, user?.id, unattemptedCount]
+    [id, answers, currentQuestionIndex, testData, onBack, handleBeforeUnload]
   );
 
-  // 🔥 keep latest submit fn without retriggering timer
   useEffect(() => {
-    handleSubmitRef.current = handleSubmit;
-  }, [handleSubmit]);
-
-  // 🔥 TIMER — RUNS ONLY ONCE
-  useEffect(() => {
-    if (!endTimeRef.current) return;
+    if (!endTimeRef.current || isSubmitting) return;
 
     const intervalId = setInterval(() => {
       const remaining = Math.max(
@@ -163,39 +211,166 @@ const TestInterface = ({ id, onBack }) => {
 
       if (remaining === 0) {
         clearInterval(intervalId);
-        handleSubmitRef.current?.(true);
+        handleSubmit(true);
       }
     }, 1000);
 
     return () => clearInterval(intervalId);
+  }, [isSubmitting, handleSubmit]);
+
+  useEffect(() => {
+    if (!user?.id || Object.keys(answers).length === 0) return;
+
+    const timeout = setTimeout(() => {
+      saveProgress();
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [answers, saveProgress, user?.id]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden" && !isSubmitting) {
+        setShowLeaveWarning(true);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, [isSubmitting]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(`test-${id}`);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setAnswers(parsed.answers || {});
+      setCurrentQuestionIndex(parsed.currentQuestionIndex || 0);
+      setTimeLeft(parsed.timeLeft || null);
+      setUnattemptedCount(parsed.unattemptedCount || 0);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (!id) return;
+    localStorage.setItem(
+      `test-${id}`,
+      JSON.stringify({
+        answers,
+        currentQuestionIndex,
+        timeLeft,
+        unattemptedCount,
+      })
+    );
+  }, [answers, currentQuestionIndex, timeLeft, unattemptedCount, id]);
+
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.key === "ArrowRight") handleNext();
+      if (e.key === "ArrowLeft") handlePrevious();
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [currentQuestionIndex, testData]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = "Are you sure you want to leave? Test will be submitted.";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, []);
 
-  const handleNext = () => {
+  const handleAnswerChange = (questionId, optionKey) =>
+    setAnswers((prev) => ({ ...prev, [questionId]: optionKey }));
+
+  const handleMarkReview = () => {
+    const questionId = testData.questions[currentQuestionIndex].id;
+    const newMarked = new Set(markedForReview);
+    newMarked.has(questionId)
+      ? newMarked.delete(questionId)
+      : newMarked.add(questionId);
+    setMarkedForReview(newMarked);
+  };
+
+  const requestNavigation = () => setShowNavBlocker(true);
+
+  const confirmNavigation = async () => {
+    await handleSubmit(true);
+    navigate(-1);
+  };
+
+  const cancelNavigation = () => setShowNavBlocker(false);
+
+  const handleSaveAndNext = () => {
+    const questionId = testData.questions[currentQuestionIndex].id;
+
+    if (markedForReview.has(questionId)) {
+      const newMarked = new Set(markedForReview);
+      newMarked.delete(questionId);
+      setMarkedForReview(newMarked);
+    }
+
     if (currentQuestionIndex < testData.questions.length - 1) {
       setCurrentQuestionIndex((i) => i + 1);
     }
   };
 
-  const handlePrevious = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex((i) => i - 1);
+  const handleNext = () => {
+    if (currentQuestionIndex < testData.questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
     }
   };
 
-  const handleSaveAndNext = () => handleNext();
+  const handlePrevious = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
+  };
 
-  const questions = testData?.questions || [];
-  const currentQuestion = questions[currentQuestionIndex];
+  const goToQuestion = (index) => {
+    setCurrentQuestionIndex(index);
+    if (window.innerWidth < 992) setIsPaletteOpen(false);
+  };
 
+  // --- RENDER SECTION ---
   if (loading) {
     return (
-      <Container className="d-flex justify-content-center align-items-center vh-100">
-        <Spinner />
+      <Container className="d-flex flex-column justify-content-center align-items-center vh-100">
+        <Spinner animation="border" variant="primary" />
+        <p className="mt-3">Loading Test...</p>
       </Container>
     );
   }
 
-  if (!currentQuestion) return null;
+  if (error) {
+    return (
+      <Container className="d-flex flex-column justify-content-center align-items-center vh-100">
+        <Alert variant="danger">{error}</Alert>
+        <Button onClick={onBack} variant="secondary">
+          Go Back
+        </Button>
+      </Container>
+    );
+  }
+
+  if (!testData?.questions?.length) {
+    return (
+      <Alert variant="warning">No questions available for this test.</Alert>
+    );
+  }
+
+  const questions = testData?.questions || [];
+  const currentQuestion = questions[currentQuestionIndex] || null;
+
+  if (!currentQuestion) {
+    return (
+      <Container className="d-flex justify-content-center align-items-center vh-100">
+        <Spinner animation="border" />
+        <p className="mt-2">Preparing questions…</p>
+      </Container>
+    );
+  }
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
