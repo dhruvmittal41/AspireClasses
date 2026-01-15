@@ -97,10 +97,6 @@ const TestInterface = ({ id, onBack }) => {
   }, [answers, testData]);
 
   useEffect(() => {
-    handleSubmitRef.current = handleSubmit;
-  }, [handleSubmit]);
-
-  useEffect(() => {
     const fetchTest = async () => {
       try {
         const [questionsRes, testDetailsRes] = await Promise.all([
@@ -202,6 +198,10 @@ const TestInterface = ({ id, onBack }) => {
     },
     [id, answers, currentQuestionIndex, testData, onBack, handleBeforeUnload]
   );
+
+  useEffect(() => {
+    handleSubmitRef.current = handleSubmit;
+  }, [handleSubmit]);
 
   useEffect(() => {
     if (!endTimeRef.current) return;
