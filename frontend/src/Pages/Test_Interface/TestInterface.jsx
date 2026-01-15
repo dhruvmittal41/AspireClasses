@@ -76,6 +76,7 @@ const TestInterface = ({ id, onBack }) => {
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
   const endTimeRef = React.useRef(null);
   const handleSubmitRef = React.useRef(null);
+  const timerStartedRef = React.useRef(false);
 
   const { user, authLoading, accessToken } = useContext(AuthContext);
   if (authLoading) {
@@ -204,7 +205,11 @@ const TestInterface = ({ id, onBack }) => {
   }, [handleSubmit]);
 
   useEffect(() => {
+    if (!testData) return;
     if (!endTimeRef.current) return;
+    if (timerStartedRef.current) return;
+
+    timerStartedRef.current = true;
 
     const intervalId = setInterval(() => {
       const remaining = Math.max(
@@ -221,7 +226,7 @@ const TestInterface = ({ id, onBack }) => {
     }, 1000);
 
     return () => clearInterval(intervalId);
-  }, []);
+  }, [testData]);
 
   useEffect(() => {
     if (!user?.id || Object.keys(answers).length === 0) return;
