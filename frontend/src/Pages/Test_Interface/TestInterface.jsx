@@ -75,6 +75,7 @@ const TestInterface = ({ id, onBack }) => {
   const [unattemptedCount, setUnattemptedCount] = useState(0);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
   const endTimeRef = React.useRef(null);
+  const handleSubmitRef = React.useRef(null);
 
   const { user, authLoading, accessToken } = useContext(AuthContext);
   if (authLoading) {
@@ -94,6 +95,10 @@ const TestInterface = ({ id, onBack }) => {
 
     setUnattemptedCount(unattempted);
   }, [answers, testData]);
+
+  useEffect(() => {
+    handleSubmitRef.current = handleSubmit;
+  }, [handleSubmit]);
 
   useEffect(() => {
     const fetchTest = async () => {
@@ -199,7 +204,7 @@ const TestInterface = ({ id, onBack }) => {
   );
 
   useEffect(() => {
-    if (!endTimeRef.current || isSubmitting) return;
+    if (!endTimeRef.current) return;
 
     const intervalId = setInterval(() => {
       const remaining = Math.max(
@@ -211,12 +216,12 @@ const TestInterface = ({ id, onBack }) => {
 
       if (remaining === 0) {
         clearInterval(intervalId);
-        handleSubmit(true);
+        handleSubmitRef.current?.(true);
       }
     }, 1000);
 
     return () => clearInterval(intervalId);
-  }, [isSubmitting, handleSubmit]);
+  }, []);
 
   useEffect(() => {
     if (!user?.id || Object.keys(answers).length === 0) return;
