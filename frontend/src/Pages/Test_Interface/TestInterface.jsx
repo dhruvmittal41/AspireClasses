@@ -74,6 +74,7 @@ const TestInterface = ({ id, onBack }) => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [unattemptedCount, setUnattemptedCount] = useState(0);
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
+  const endTimeRef = React.useRef(null);
 
   const { user, authLoading, accessToken } = useContext(AuthContext);
   if (authLoading) {
@@ -103,13 +104,17 @@ const TestInterface = ({ id, onBack }) => {
         ]);
 
         setTestData({ ...testDetailsRes.data, questions: questionsRes.data });
-        setTimeLeft(testDetailsRes.data.duration_minutes * 60);
+
+        const durationSeconds = testDetailsRes.data.duration_minutes * 60;
+        setTimeLeft(durationSeconds);
+        endTimeRef.current = Date.now() + durationSeconds * 1000;
       } catch (err) {
         setError("Failed to load the test.");
       } finally {
         setLoading(false);
       }
     };
+
     fetchTest();
   }, [id]);
 
@@ -194,12 +199,13 @@ const TestInterface = ({ id, onBack }) => {
   );
 
   useEffect(() => {
-    if (timeLeft === null || isSubmitting) return;
-
-    const endTime = Date.now() + timeLeft * 1000;
+    if (!endTimeRef.current || isSubmitting) return;
 
     const intervalId = setInterval(() => {
-      const remaining = Math.max(Math.ceil((endTime - Date.now()) / 1000), 0);
+      const remaining = Math.max(
+        Math.ceil((endTimeRef.current - Date.now()) / 1000),
+        0
+      );
 
       setTimeLeft(remaining);
 
