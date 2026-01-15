@@ -83,7 +83,7 @@ app.post("/api/logout", (req, res) => {
     res.clearCookie("refreshToken", {
         httpOnly: true,
         secure: true,
-        sameSite: "none",
+        sameSite: "lax",
         path: "/",
     });
 
