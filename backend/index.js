@@ -23,12 +23,16 @@ const { protect } = require("./middleware/authMiddleware.js");
 const app = express();
 
 
+
+
+
 const allowedOrigins = [
     url,
     "http://localhost:3000",
     "http://localhost:5173",
     "http://127.0.0.1:3000",
     "https://www.aspireclasses.cloud",
+    "https://aspireclasses.cloud",
 ];
 
 
@@ -57,6 +61,18 @@ app.use('/api', productroutes);
 app.use("/api/test-progress", testProgressRoutes);
 
 
+
+app.options("*", cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true
+}));
+
 const generateAccessToken = (user) =>
     jwt.sign(user, process.env.ACCESS_SECRET, { expiresIn: '15m' });
 
@@ -67,7 +83,7 @@ app.post("/api/logout", (req, res) => {
     res.clearCookie("refreshToken", {
         httpOnly: true,
         secure: true,
-        sameSite: "lax",
+        sameSite: "none",
         path: "/",
     });
 
@@ -79,11 +95,11 @@ app.post("/api/tests/:testId/start", protect, async (req, res) => {
     const { testId } = req.params;
 
     await db.query(`
-    INSERT INTO test_attempts (user_id, test_id, status, started_at)
-    VALUES ($1, $2, 'started', NOW())
-    ON CONFLICT (user_id, test_id)
-    DO UPDATE SET status = 'started', started_at = NOW()
-  `, [userId, testId]);
+        INSERT INTO test_attempts (user_id, test_id, status, started_at)
+        VALUES ($1, $2, 'started', NOW())
+        ON CONFLICT (user_id, test_id)
+        DO UPDATE SET status = 'started', started_at = NOW()
+    `, [userId, testId]);
 
     res.json({ success: true });
 });
@@ -95,18 +111,18 @@ app.get("/api/admin/tests/:testId/monitor", async (req, res) => {
 
         const { rows } = await db.query(
             `
-      SELECT 
-        u.id AS user_id,
-        u.full_name AS name,
-        u.email_or_phone AS email,
-        COALESCE(ta.status, 'not_started') AS status,
-        ta.started_at,
-        ta.completed_at
-      FROM users u
-      LEFT JOIN test_attempts ta
-        ON ta.user_id = u.id AND ta.test_id = $1
-      ORDER BY u.full_name
-      `,
+        SELECT 
+            u.id AS user_id,
+            u.full_name AS name,
+            u.email_or_phone AS email,
+            COALESCE(ta.status, 'not_started') AS status,
+            ta.started_at,
+            ta.completed_at
+        FROM users u
+        LEFT JOIN test_attempts ta
+            ON ta.user_id = u.id AND ta.test_id = $1
+        ORDER BY u.full_name
+        `,
             [testId]
         );
 
@@ -120,10 +136,10 @@ app.get("/api/admin/tests/:testId/monitor", async (req, res) => {
 
 app.get("/api/admin/tests", async (req, res) => {
     const { rows } = await db.query(`
-    SELECT id, test_name, subject_topic, num_questions, duration_minutes
-    FROM tests
-    ORDER BY created_at DESC
-  `);
+        SELECT id, test_name, subject_topic, num_questions, duration_minutes
+        FROM tests
+        ORDER BY created_at DESC
+    `);
 
     res.json(rows);
 });
