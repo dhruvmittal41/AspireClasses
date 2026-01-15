@@ -196,17 +196,21 @@ const TestInterface = ({ id, onBack }) => {
   useEffect(() => {
     if (timeLeft === null || isSubmitting) return;
 
-    if (timeLeft <= 0) {
-      handleSubmit(true);
-      return;
-    }
+    const endTime = Date.now() + timeLeft * 1000;
 
-    const timerId = setTimeout(() => {
-      setTimeLeft((t) => Math.max(t - 1, 0));
+    const intervalId = setInterval(() => {
+      const remaining = Math.max(Math.ceil((endTime - Date.now()) / 1000), 0);
+
+      setTimeLeft(remaining);
+
+      if (remaining === 0) {
+        clearInterval(intervalId);
+        handleSubmit(true);
+      }
     }, 1000);
 
-    return () => clearTimeout(timerId);
-  }, [timeLeft, handleSubmit, isSubmitting]);
+    return () => clearInterval(intervalId);
+  }, [isSubmitting, handleSubmit]);
 
   useEffect(() => {
     if (!user?.id || Object.keys(answers).length === 0) return;
