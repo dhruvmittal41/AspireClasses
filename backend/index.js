@@ -37,18 +37,20 @@ const allowedOrigins = [
 
 
 app.use(cors({
-    origin: function (origin, callback) {
-
+    origin: (origin, callback) => {
         if (!origin) return callback(null, true);
 
         if (allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
+            console.error("CORS BLOCKED:", origin);
             callback(new Error("Not allowed by CORS"));
         }
     },
     credentials: true,
 }));
+
+app.options("/*", cors());
 
 app.use(express.json());
 app.use(cookieParser());
@@ -62,16 +64,7 @@ app.use("/api/test-progress", testProgressRoutes);
 
 
 
-app.options("*", cors({
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error("Not allowed by CORS"));
-        }
-    },
-    credentials: true
-}));
+
 
 const generateAccessToken = (user) =>
     jwt.sign(user, process.env.ACCESS_SECRET, { expiresIn: '15m' });
