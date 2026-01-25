@@ -220,7 +220,7 @@ app.post('/api/admin/login', async (req, res) => {
 
         jwt.sign(
             payload,
-            process.env.JWT_SECRET,
+            process.env.ACCESS_SECRET,
             { expiresIn: '8h' },
             (err, token) => {
                 if (err) throw err;
