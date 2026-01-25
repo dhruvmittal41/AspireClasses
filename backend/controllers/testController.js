@@ -195,12 +195,23 @@ exports.createTest = async (req, res, next) => {
             subject_topic,
             instructions,
             test_category,
-            date_scheduled, // This can be null
+            date_scheduled,
+            has_negative_marking,
+            negative_marks_per_question,
         } = req.body;
 
         // Basic validation
         if (!test_name || !num_questions || !duration_minutes || !subject_topic) {
-            return res.status(400).json({ message: 'Please provide all required fields.' });
+            return res.status(400).json({
+                message: "Please provide all required fields.",
+            });
+        }
+
+        // Conditional validation for negative marking
+        if (has_negative_marking && !negative_marks_per_question) {
+            return res.status(400).json({
+                message: "Please provide negative marks per question.",
+            });
         }
 
         const newTestData = {
@@ -210,18 +221,24 @@ exports.createTest = async (req, res, next) => {
             subject_topic,
             instructions,
             test_category,
-            // Handle optional date: if it's not provided or is an empty string, set it to null
             date_scheduled: date_scheduled ? date_scheduled : null,
+            has_negative_marking: Boolean(has_negative_marking),
+            negative_marks_per_question: has_negative_marking
+                ? negative_marks_per_question
+                : null,
         };
 
         const newTest = await TestModel.create(newTestData);
 
-        res.status(201).json({ message: 'Test created successfully!', test: newTest });
-
+        res.status(201).json({
+            message: "Test created successfully!",
+            test: newTest,
+        });
     } catch (err) {
         next(err);
     }
 };
+
 
 
 exports.updateQuestion = async (req, res, next) => {

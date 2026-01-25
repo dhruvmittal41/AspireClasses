@@ -102,15 +102,27 @@ const create = async (testData) => {
         instructions,
         test_category,
         date_scheduled,
+        has_negative_marking,
+        negative_marks_per_question,
     } = testData;
 
     const sql = `
-        INSERT INTO tests 
-            (test_name, num_questions, duration_minutes, subject_topic, instructions, test_category, date_scheduled) 
-        VALUES 
-            ($1, $2, $3, $4, $5, $6, $7)
-        RETURNING *; 
-    `;
+    INSERT INTO tests (
+      test_name,
+      num_questions,
+      duration_minutes,
+      subject_topic,
+      instructions,
+      test_category,
+      date_scheduled,
+      has_negative_marking,
+      negative_marks_per_question
+    )
+    VALUES (
+      $1, $2, $3, $4, $5, $6, $7, $8, $9
+    )
+    RETURNING *;
+  `;
 
     const params = [
         test_name,
@@ -120,11 +132,16 @@ const create = async (testData) => {
         instructions,
         test_category,
         date_scheduled,
+        has_negative_marking,
+        negative_marks_per_question,
     ];
 
     const { rows } = await db.query(sql, params);
     return rows[0];
 };
+
+
+
 
 const addQuestion = async (questionData) => {
     // 1. Destructure 'imageUrl' from the incoming questionData object

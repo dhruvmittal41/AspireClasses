@@ -27,6 +27,8 @@ const CreateOrUpdateTest = () => {
     instructions: "",
     test_category: "standard",
     date_scheduled: "",
+    has_negative_marking: false,
+    negative_marks_per_question: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -39,6 +41,15 @@ const CreateOrUpdateTest = () => {
       fetchTest();
     }
   }, [testId]);
+
+  useEffect(() => {
+    if (!formData.has_negative_marking) {
+      setFormData((prev) => ({
+        ...prev,
+        negative_marks_per_question: "",
+      }));
+    }
+  }, [formData.has_negative_marking]);
 
   const fetchTest = async () => {
     try {
@@ -53,8 +64,12 @@ const CreateOrUpdateTest = () => {
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -156,6 +171,32 @@ const CreateOrUpdateTest = () => {
                       />
                     </Form.Group>
                   </Col>
+                  <Col xs={12}>
+                    <Form.Group>
+                      <Form.Check
+                        type="checkbox"
+                        label="Enable Negative Marking"
+                        name="has_negative_marking"
+                        checked={formData.has_negative_marking}
+                        onChange={handleChange}
+                      />
+                    </Form.Group>
+                  </Col>
+
+                  <Col md={6}>
+                    <Form.Group>
+                      <Form.Label>Negative Marks per Question</Form.Label>
+                      <Form.Control
+                        type="number"
+                        step="0.01"
+                        name="negative_marks_per_question"
+                        value={formData.negative_marks_per_question}
+                        onChange={handleChange}
+                        disabled={!formData.has_negative_marking}
+                        placeholder="e.g. 0.25"
+                      />
+                    </Form.Group>
+                  </Col>
 
                   <Col md={6}>
                     <Form.Group>
@@ -219,8 +260,8 @@ const CreateOrUpdateTest = () => {
                     {submitting
                       ? "Saving..."
                       : isEditMode
-                      ? "Update Test"
-                      : "Create Test"}
+                        ? "Update Test"
+                        : "Create Test"}
                   </Button>
                 </div>
               </Form>
