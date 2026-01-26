@@ -17,17 +17,29 @@ import { InlineMath, BlockMath } from "react-katex";
 import api from "../../api/axios";
 import "./TestInterface.css";
 import { AuthContext } from "../../context/AuthContext";
+import "katex/dist/katex.min.css";
 
 const getOptionKey = (index) => String.fromCharCode(97 + index);
 
 const KatexRenderer = ({ text }) => {
   if (!text) return null;
-  const parts = text.split("$$");
+
+  const regex = /(\$\$[^$]+\$\$|\$[^$]+\$)/g;
+  const parts = text.split(regex);
+
   return (
     <>
-      {parts.map((p, i) =>
-        i % 2 ? <BlockMath key={i} math={p} /> : <span key={i}>{p}</span>
-      )}
+      {parts.map((part, index) => {
+        if (part.startsWith("$$") && part.endsWith("$$")) {
+          return <BlockMath key={index} math={part.slice(2, -2)} />;
+        }
+
+        if (part.startsWith("$") && part.endsWith("$")) {
+          return <InlineMath key={index} math={part.slice(1, -1)} />;
+        }
+
+        return <span key={index}>{part}</span>;
+      })}
     </>
   );
 };
@@ -230,7 +242,7 @@ const Review_Test = () => {
                             label={<KatexRenderer text={opt} />}
                             className={`option-label ${getOptionStatus(
                               currentQuestion.id,
-                              key
+                              key,
                             )}`}
                           />
                         );
@@ -260,7 +272,7 @@ const Review_Test = () => {
                     disabled={currentQuestionIndex === questions.length - 1}
                     onClick={() =>
                       setCurrentQuestionIndex((i) =>
-                        Math.min(i + 1, questions.length - 1)
+                        Math.min(i + 1, questions.length - 1),
                       )
                     }
                   >
