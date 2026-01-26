@@ -24,7 +24,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { Bar, Line, Doughnut } from "react-chartjs-2";
+import { Bar, Doughnut } from "react-chartjs-2";
 import api from "../../api/axios";
 
 ChartJS.register(
@@ -36,7 +36,7 @@ ChartJS.register(
   ArcElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 );
 
 const containerVariants = {
@@ -58,19 +58,12 @@ const clampScore = (score, total) => {
   return Math.min(s, total);
 };
 
-const getCounts = (result, total) => {
-  const correct = clampScore(result?.score || 0, total);
-  const unattempted = Number(result?.unattempted_count || 0);
-  const incorrect = Math.max(total - correct - unattempted, 0);
-  return { correct, incorrect, unattempted, total };
-};
-
 const getPerformanceFeedback = (score, total) => {
-  const s = clampScore(score, total);
   if (total === 0) return { variant: "secondary", text: "Loading..." };
-  if (s >= total * 0.88) return { variant: "success", text: "Excellent work!" };
-  if (s >= total * 0.7) return { variant: "info", text: "Great job!" };
-  if (s >= total * 0.5) return { variant: "warning", text: "Good effort." };
+  const pct = score / total;
+  if (pct >= 0.88) return { variant: "success", text: "Excellent work!" };
+  if (pct >= 0.7) return { variant: "info", text: "Great job!" };
+  if (pct >= 0.5) return { variant: "warning", text: "Good effort." };
   return { variant: "danger", text: "Needs improvement." };
 };
 
@@ -79,32 +72,34 @@ const ResultsView = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedResult, setSelectedResult] = useState(null);
-  const [totalQuestionsByTest, setTotalQuestionsByTest] = useState({});
+  const [testMetaById, setTestMetaById] = useState({});
 
   useEffect(() => {
-    const fetchResultsAndTotals = async () => {
+    const fetchResultsAndTests = async () => {
       try {
-        const response = await api.get("/api/results");
-        const resultsData = response.data || [];
+        const res = await api.get("/api/results");
+        const resultsData = res.data || [];
         setResults(resultsData);
 
-        const uniqueTestIds = [...new Set(resultsData.map((r) => r.test_id))];
+        const testIds = [...new Set(resultsData.map((r) => r.test_id))];
 
-        const requests = uniqueTestIds.map((id) =>
+        const requests = testIds.map((id) =>
           api.get(`/api/tests/${id}`).then((res) => ({
             id,
-            total: Number(res.data.num_questions) || 0,
-          }))
+            totalQuestions: Number(res.data.num_questions) || 0,
+            hasNegativeMarking: Boolean(res.data.has_negative_marking),
+            negativeMarksPerQuestion:
+              Number(res.data.negative_marks_per_question) || 0,
+          })),
         );
 
-        const totals = await Promise.all(requests);
-
-        const totalsMap = {};
-        totals.forEach((t) => {
-          totalsMap[t.id] = t.total;
+        const meta = await Promise.all(requests);
+        const metaMap = {};
+        meta.forEach((m) => {
+          metaMap[m.id] = m;
         });
 
-        setTotalQuestionsByTest(totalsMap);
+        setTestMetaById(metaMap);
       } catch (err) {
         console.error(err);
         setError("Unable to load results.");
@@ -113,78 +108,44 @@ const ResultsView = () => {
       }
     };
 
-    fetchResultsAndTotals();
+    fetchResultsAndTests();
   }, []);
 
-  const handleSelectResult = (result) => {
-    setSelectedResult(result);
-  };
+  const getTestMeta = (testId) =>
+    testMetaById[testId] || {
+      totalQuestions: 0,
+      hasNegativeMarking: false,
+      negativeMarksPerQuestion: 0,
+    };
 
-  const getTotalForTest = (testId) => totalQuestionsByTest[testId] || 0;
+  const getFinalScoreDetails = (result) => {
+    const meta = getTestMeta(result.test_id);
+    const total = meta.totalQuestions;
+
+    const correct = clampScore(result.score, total);
+    const unattempted = Number(result.unattempted_count || 0);
+    const incorrect = Math.max(total - correct - unattempted, 0);
+
+    const penalty = meta.hasNegativeMarking
+      ? incorrect * meta.negativeMarksPerQuestion
+      : 0;
+
+    const finalScore = Math.max(correct - penalty, 0);
+
+    return { correct, incorrect, unattempted, penalty, finalScore, total };
+  };
 
   const summaryStats = useMemo(() => {
     if (!results.length) return { best: null, total: 0 };
 
     const best = results.reduce((max, r) => {
-      const total = getTotalForTest(r.test_id);
-      return clampScore(r.score, total) >
-        clampScore(max.score, getTotalForTest(max.test_id))
-        ? r
-        : max;
+      const a = getFinalScoreDetails(r).finalScore;
+      const b = getFinalScoreDetails(max).finalScore;
+      return a > b ? r : max;
     }, results[0]);
 
     return { best, total: results.length };
-  }, [results, totalQuestionsByTest]);
-
-  const overallChartData = {
-    labels: results.map((r) => r.test_name),
-    datasets: [
-      {
-        label: "Correct Questions",
-        data: results.map((r) =>
-          clampScore(r.score, getTotalForTest(r.test_id))
-        ),
-        fill: true,
-        backgroundColor: "rgba(59, 130, 246, 0.2)",
-        borderColor: "rgba(59, 130, 246, 1)",
-        tension: 0.3,
-      },
-    ],
-  };
-
-  const selectedTotal = selectedResult
-    ? getTotalForTest(selectedResult.test_id)
-    : 0;
-  const counts = getCounts(selectedResult, selectedTotal);
-
-  const modalChartData = {
-    bar: {
-      labels: [selectedResult?.test_name],
-      datasets: [
-        {
-          label: "Your Score",
-          data: [clampScore(selectedResult?.score, selectedTotal)],
-          backgroundColor: "#3B82F6",
-        },
-        {
-          label: "Topper's Score",
-          data: [clampScore(selectedResult?.highest_score, selectedTotal)],
-          backgroundColor: "#EF4444",
-        },
-      ],
-    },
-    doughnut: {
-      labels: ["Correct", "Incorrect", "Unattempted"],
-      datasets: [
-        {
-          data: [counts.correct, counts.incorrect, counts.unattempted],
-          backgroundColor: ["#3B82F6", "#EF4444", "#FBBF24"],
-          borderColor: ["#FFFFFF", "#FFFFFF", "#FFFFFF"],
-          borderWidth: 2,
-        },
-      ],
-    },
-  };
+  }, [results, testMetaById]);
 
   if (loading)
     return (
@@ -216,9 +177,11 @@ const ResultsView = () => {
               <Card.Title>Best Performance</Card.Title>
               <Card.Text className="display-4 fw-bold text-success">
                 {summaryStats.best
-                  ? `${summaryStats.best.score} / ${getTotalForTest(
-                      summaryStats.best.test_id
-                    )}`
+                  ? `${getFinalScoreDetails(
+                      summaryStats.best,
+                    ).finalScore.toFixed(
+                      2,
+                    )} / ${getTestMeta(summaryStats.best.test_id).totalQuestions}`
                   : "N/A"}
               </Card.Text>
               <Card.Subtitle className="text-muted">
@@ -242,7 +205,7 @@ const ResultsView = () => {
 
       <Row>
         {results.map((result) => {
-          const total = getTotalForTest(result.test_id);
+          const details = getFinalScoreDetails(result);
           return (
             <Col
               md={6}
@@ -254,24 +217,31 @@ const ResultsView = () => {
             >
               <Card
                 className="h-100 shadow-sm"
-                onClick={() => handleSelectResult(result)}
+                onClick={() => setSelectedResult(result)}
               >
                 <Card.Body>
                   <Card.Title>{result.test_name}</Card.Title>
                   <div className="d-flex justify-content-between align-items-center my-3">
                     <span className="fw-bold fs-4">
-                      {clampScore(result.score, total)} / {total || "—"}
+                      {details.finalScore.toFixed(2)} / {details.total || "—"}
                     </span>
                     <Badge
-                      bg={getPerformanceFeedback(result.score, total).variant}
+                      bg={
+                        getPerformanceFeedback(
+                          details.finalScore,
+                          details.total,
+                        ).variant
+                      }
                     >
-                      {getPerformanceFeedback(result.score, total).text}
+                      {
+                        getPerformanceFeedback(
+                          details.finalScore,
+                          details.total,
+                        ).text
+                      }
                     </Badge>
                   </div>
-                  <ProgressBar
-                    now={clampScore(result.score, total)}
-                    max={total}
-                  />
+                  <ProgressBar now={details.finalScore} max={details.total} />
                 </Card.Body>
               </Card>
             </Col>
@@ -289,35 +259,79 @@ const ResultsView = () => {
           <Modal.Title>Analysis for: {selectedResult?.test_name}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Row>
-            <Col md={8}>
-              <div style={{ height: "350px" }}>
-                <Bar
-                  data={modalChartData.bar}
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true, max: selectedTotal } },
-                  }}
-                />
-              </div>
-            </Col>
-            <Col md={4}>
-              <p>
-                <strong>Correct:</strong> {counts.correct}
-              </p>
-              <p>
-                <strong>Incorrect:</strong> {counts.incorrect}
-              </p>
-              <p>
-                <strong>Unattempted:</strong> {counts.unattempted}
-              </p>
-              <p>
-                <strong>Total:</strong> {counts.total}
-              </p>
-              <Doughnut data={modalChartData.doughnut} />
-            </Col>
-          </Row>
+          {selectedResult &&
+            (() => {
+              const d = getFinalScoreDetails(selectedResult);
+              return (
+                <Row>
+                  <Col md={8}>
+                    <div style={{ height: "350px" }}>
+                      <Bar
+                        data={{
+                          labels: [selectedResult.test_name],
+                          datasets: [
+                            {
+                              label: "Your Final Score",
+                              data: [d.finalScore],
+                              backgroundColor: "#3B82F6",
+                            },
+                            {
+                              label: "Topper's Score",
+                              data: [
+                                clampScore(
+                                  selectedResult.highest_score,
+                                  d.total,
+                                ),
+                              ],
+                              backgroundColor: "#EF4444",
+                            },
+                          ],
+                        }}
+                        options={{
+                          responsive: true,
+                          maintainAspectRatio: false,
+                          scales: { y: { beginAtZero: true, max: d.total } },
+                        }}
+                      />
+                    </div>
+                  </Col>
+
+                  <Col md={4}>
+                    <p>
+                      <strong>Correct:</strong> {d.correct}
+                    </p>
+                    <p>
+                      <strong>Incorrect:</strong> {d.incorrect}
+                    </p>
+                    <p>
+                      <strong>Unattempted:</strong> {d.unattempted}
+                    </p>
+
+                    {d.penalty > 0 && (
+                      <p className="text-danger">
+                        <strong>Negative Marks:</strong> -{d.penalty.toFixed(2)}
+                      </p>
+                    )}
+
+                    <p>
+                      <strong>Final Score:</strong> {d.finalScore.toFixed(2)}
+                    </p>
+
+                    <Doughnut
+                      data={{
+                        labels: ["Correct", "Incorrect", "Unattempted"],
+                        datasets: [
+                          {
+                            data: [d.correct, d.incorrect, d.unattempted],
+                            backgroundColor: ["#3B82F6", "#EF4444", "#FBBF24"],
+                          },
+                        ],
+                      }}
+                    />
+                  </Col>
+                </Row>
+              );
+            })()}
         </Modal.Body>
       </Modal>
     </Container>

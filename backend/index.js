@@ -103,18 +103,23 @@ app.get("/api/admin/tests/:testId/monitor", async (req, res) => {
 
         const { rows } = await db.query(
             `
-        SELECT 
-            u.id AS user_id,
-            u.full_name AS name,
-            u.email_or_phone AS email,
-            COALESCE(ta.status, 'not_started') AS status,
-            ta.started_at,
-            ta.completed_at
-        FROM users u
-        LEFT JOIN test_attempts ta
-            ON ta.user_id = u.id AND ta.test_id = $1
-        ORDER BY u.full_name
-        `,
+      SELECT 
+        u.id AS user_id,
+        u.full_name AS name,
+        u.email_or_phone AS email,
+        COALESCE(ta.status, 'not_started') AS status,
+        ta.started_at,
+        ta.completed_at
+      FROM user_tests ut
+      JOIN users u 
+        ON u.id = ut.user_id
+      LEFT JOIN test_attempts ta
+        ON ta.user_id = ut.user_id
+       AND ta.test_id = ut.test_id
+      WHERE ut.test_id = $1
+        AND ut.is_paid = true
+      ORDER BY u.full_name
+      `,
             [testId]
         );
 
@@ -124,6 +129,7 @@ app.get("/api/admin/tests/:testId/monitor", async (req, res) => {
         res.status(500).json({ error: "Failed to load test monitor data" });
     }
 });
+
 
 
 app.get("/api/admin/tests", async (req, res) => {
