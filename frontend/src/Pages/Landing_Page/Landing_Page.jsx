@@ -479,8 +479,8 @@ const Pricing = () => (
                 <span className="fs-5 text-muted fw-normal">/ Full Access</span>
               </Card.Title>
               <ul className="list-unstyled my-4">
-                <li>✓ Access to All Test Series</li>
-                <li>✓ Unlimited Mock Tests</li>
+                <li>✓ Access to AMU 9th Entrance Test Series</li>
+                <li>✓ Unlimited Mock Test</li>
                 <li>✓ Detailed Performance Analytics</li>
                 <li>✓ Previous Year Question Papers</li>
                 <li>✓ 24/7 Doubt Support via Chat</li>

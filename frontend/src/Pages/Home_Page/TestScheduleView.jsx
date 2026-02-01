@@ -37,9 +37,9 @@ const TestScheduleView = () => {
       className="px-md-4 py-5"
     >
       <div className="text-center mb-5">
-        <h1 className="display-5 fw-bold mb-2">Test Dashboard</h1>
+        <h1 className="display-5 fw-bold mb-2">Test Bundles</h1>
         <p className="lead text-muted">
-          Explore your scheduled tests and special offers below.
+          Explore tests and special offers below.
         </p>
       </div>
 
