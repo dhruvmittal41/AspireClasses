@@ -9,7 +9,7 @@ const Sidebar = ({ handleClose }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("admin_token");
+    localStorage.removeItem("adminToken");
     if (handleClose) handleClose();
     navigate("/admin/login");
   };
@@ -42,8 +42,7 @@ const Sidebar = ({ handleClose }) => {
         <Nav.Link as={NavLink} to="/admin/new" onClick={handleNavClick}>
           Create New Test
         </Nav.Link>
-
-        {/* ✅ NEW MONITOR LINK */}
+        
         <Nav.Link
           as={NavLink}
           to="/admin/monitor-tests"

@@ -12,70 +12,49 @@ import {
   Col,
 } from "react-bootstrap";
 import api from "../../api/axios";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUsersAndTests } from "../../features/data/AdminSlice";
 
 const AssignTest = () => {
-  const [users, setUsers] = useState([]);
-  const [tests, setTests] = useState([]);
+  const dispatch = useDispatch();
+
+  const { users, tests, loading, error } = useSelector(
+    (state) => state.data
+  );
+
   const [selectedUser, setSelectedUser] = useState("");
   const [selectedTest, setSelectedTest] = useState("");
   const [isPaid, setIsPaid] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError("");
-        const [usersResponse, testsResponse] = await Promise.all([
-          api.get(`/api/user/all`),
-          api.get(`/api/tests`),
-        ]);
-
-        setUsers(usersResponse.data || []);
-        setTests(testsResponse.data || []);
-      } catch (err) {
-        setError("Failed to fetch data. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+    dispatch(fetchUsersAndTests());
+  }, [dispatch]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedUser || !selectedTest) {
-      setError("Please select a user and a test.");
-      return;
-    }
+    if (!selectedUser || !selectedTest) return;
 
     setSubmitting(true);
-    setError("");
-    setSuccessMessage("");
     try {
-      const response = await api.post(`/api/user/assigntest`, {
+      const res = await api.post("/api/user/assigntest", {
         userId: selectedUser,
         testId: selectedTest,
-        isPaid: isPaid,
+        isPaid,
       });
-      setSuccessMessage(response.data.message || "Test assigned successfully!");
-      setSuccessMessage(response.data.message || "Test assigned successfully!");
+
+      setSuccessMessage(res.data.message);
       setSelectedUser("");
       setSelectedTest("");
       setIsPaid(false);
-      setTimeout(() => setSuccessMessage(""), 3000);
     } catch (err) {
-      const message =
-        err.response?.data?.message ||
-        "An error occurred while assigning the test.";
-      setError(message);
+      console.error(err);
     } finally {
       setSubmitting(false);
     }
   };
+
 
   if (loading) {
     return (

@@ -1,7 +1,7 @@
 // src/components/CreateOrUpdateTest.jsx
 
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams} from "react-router-dom";
 import {
   Container,
   Card,
@@ -12,12 +12,25 @@ import {
   Alert,
   Spinner,
 } from "react-bootstrap";
-import api from "../../api/axios";
+
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchTestById,
+  createTest,
+  updateTest,
+  clearTestState,
+} from "../../features/data/testsSlice";
 
 const CreateOrUpdateTest = () => {
   const { testId } = useParams(); // from route /tests/edit/:testId
-  const navigate = useNavigate();
+
   const isEditMode = Boolean(testId);
+  const dispatch = useDispatch();
+
+const { currentTest, loading, submitting, error, success } = useSelector(
+  (state) => state.tests
+);
+
 
   const [formData, setFormData] = useState({
     test_name: "",
@@ -31,16 +44,23 @@ const CreateOrUpdateTest = () => {
     negative_marks_per_question: "",
   });
 
-  const [loading, setLoading] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
 
-  useEffect(() => {
-    if (isEditMode) {
-      fetchTest();
-    }
-  }, [testId]);
+
+ useEffect(() => {
+  if (isEditMode) {
+    dispatch(fetchTestById(testId));
+  }
+
+  return () => {
+    dispatch(clearTestState());
+  };
+}, [dispatch, testId, isEditMode]);
+useEffect(() => {
+  if (currentTest && isEditMode) {
+    setFormData(currentTest);
+  }
+}, [currentTest, isEditMode]);
+
 
   useEffect(() => {
     if (!formData.has_negative_marking) {
@@ -51,17 +71,6 @@ const CreateOrUpdateTest = () => {
     }
   }, [formData.has_negative_marking]);
 
-  const fetchTest = async () => {
-    try {
-      setLoading(true);
-      const res = await api.get(`/api/tests/${testId}`);
-      setFormData(res.data);
-    } catch (err) {
-      setError("Failed to load test details.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -72,40 +81,21 @@ const CreateOrUpdateTest = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccessMessage("");
+ const handleSubmit = (e) => {
+  e.preventDefault();
 
-    if (
-      !formData.test_name ||
-      !formData.num_questions ||
-      !formData.duration_minutes
-    ) {
-      setError("Test Name, Number of Questions, and Duration are required.");
-      return;
-    }
 
-    setSubmitting(true);
+  if (!formData.test_name || !formData.num_questions || !formData.duration_minutes) {
+    return;
+  }
 
-    try {
-      if (isEditMode) {
-        await api.put(`/api/tests/${testId}`, formData);
-        setSuccessMessage("Test updated successfully!");
-      } else {
-        await api.post(`/api/tests`, formData);
-        setSuccessMessage("Test created successfully!");
-      }
+  if (isEditMode) {
+    dispatch(updateTest({ testId, formData }));
+  } else {
+    dispatch(createTest(formData));
+  }
+};
 
-      setTimeout(() => {
-        setSuccessMessage("");
-      }, 1500);
-    } catch (err) {
-      setError(err.response?.data?.message || "Operation failed.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -125,8 +115,8 @@ const CreateOrUpdateTest = () => {
                 {isEditMode ? "Update Test" : "Create a New Test"}
               </h2>
 
-              {successMessage && (
-                <Alert variant="success">{successMessage}</Alert>
+              {success && (
+                <Alert variant="success">{success}</Alert>
               )}
               {error && <Alert variant="danger">{error}</Alert>}
 

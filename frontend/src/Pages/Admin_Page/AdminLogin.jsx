@@ -25,7 +25,8 @@ const AdminLogin = () => {
     try {
       const res = await api.post("/api/admin/login", { username, password });
 
-      const token = res.data.token; // 👈 backend sends { token }
+      const token = res.data.token;
+      localStorage.setItem("adminToken", token);
 
       setAccessToken(token);
       setUser({ username, role: "admin" });

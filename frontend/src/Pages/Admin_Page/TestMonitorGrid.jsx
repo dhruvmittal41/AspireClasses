@@ -2,6 +2,13 @@
 
 import React, { useEffect, useState } from "react";
 import { Card, Badge, Row, Col, Spinner, Alert, Button } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchMonitorTests,
+  fetchTestMonitor,
+  clearMonitorUsers,
+} from "../../features/data/monitorSlice";
+
 
 const statusVariant = {
   not_started: "secondary",
@@ -10,55 +17,31 @@ const statusVariant = {
 };
 
 const TestMonitorGrid = () => {
-  const [tests, setTests] = useState([]);
   const [selectedTest, setSelectedTest] = useState(null);
-  const [data, setData] = useState([]);
-  const [loadingTests, setLoadingTests] = useState(true);
-  const [loadingUsers, setLoadingUsers] = useState(false);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const {
+  tests,
+  users,
+  loadingTests,
+  loadingUsers,
+  error,
+} = useSelector((state) => state.monitor);
 
-  // Fetch tests on load
   useEffect(() => {
-    const fetchTests = async () => {
-      try {
-        const res = await fetch("/api/admin/tests", { credentials: "include" });
-        if (!res.ok) throw new Error("Failed to load tests");
-        const json = await res.json();
-        setTests(json);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoadingTests(false);
-      }
-    };
+  dispatch(fetchMonitorTests());
+}, [dispatch]);
 
-    fetchTests();
-  }, []);
 
-  // Fetch users when a test is selected
   useEffect(() => {
-    if (!selectedTest) return;
+  if (selectedTest) {
+    dispatch(fetchTestMonitor(selectedTest.id));
+  }
 
-    const fetchUsers = async () => {
-      try {
-        setLoadingUsers(true);
-        const res = await fetch(`/api/admin/tests/${selectedTest.id}/monitor`, {
-          credentials: "include",
-        });
+  return () => {
+    dispatch(clearMonitorUsers());
+  };
+}, [dispatch, selectedTest]);
 
-        if (!res.ok) throw new Error("Failed to load test monitor");
-
-        const json = await res.json();
-        setData(json);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoadingUsers(false);
-      }
-    };
-
-    fetchUsers();
-  }, [selectedTest]);
 
   if (loadingTests) {
     return (
@@ -70,7 +53,7 @@ const TestMonitorGrid = () => {
 
   if (error) return <Alert variant="danger">{error}</Alert>;
 
-  // 🧩 Step 1: Show test list
+
   if (!selectedTest) {
     return (
       <>
@@ -98,7 +81,7 @@ const TestMonitorGrid = () => {
     );
   }
 
-  // 🧩 Step 2: Show monitor grid
+
   return (
     <>
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -117,7 +100,7 @@ const TestMonitorGrid = () => {
         </div>
       ) : (
         <Row className="g-4">
-          {data.map((user) => (
+          {users.map((user) => (
             <Col key={user.user_id} xs={12} sm={6} md={4} lg={3}>
               <Card className="h-100 shadow-sm border-0">
                 <Card.Body>
@@ -141,12 +124,6 @@ const TestMonitorGrid = () => {
                         ? new Date(user.started_at).toLocaleString()
                         : "—"}
                     </div>
-                    {/* <div>
-                      <strong>Completed:</strong>{" "}
-                      {user.completed_at
-                        ? new Date(user.completed_at).toLocaleString()
-                        : "—"}
-                    </div> */}
                   </div>
                 </Card.Body>
               </Card>

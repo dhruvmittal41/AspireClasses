@@ -19,8 +19,17 @@ import "./UpdateQuestions.css";
 import "katex/dist/katex.min.css";
 import { InlineMath } from "react-katex";
 import api from "../../api/axios";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchTests,
+  fetchQuestions,
+  addQuestion,
+  updateQuestion,
+  deleteQuestion,
+} from "../../features/data/questionsSlice";
 
-const baseUrl = import.meta.env.VITE_BASE_URL;
+
+
 
 const KatexRenderer = ({ text }) => {
   if (typeof text !== "string" || !text) {
@@ -51,6 +60,7 @@ const QuestionImageUploader = ({
   const [uploadError, setUploadError] = useState("");
   const [preview, setPreview] = useState(currentImageUrl);
   const fileInputRef = useRef(null);
+  
 
   useEffect(() => {
     setPreview(currentImageUrl);
@@ -74,6 +84,7 @@ const QuestionImageUploader = ({
         },
       });
       onUploadComplete(response.data.image_url);
+    // eslint-disable-next-line no-unused-vars
     } catch (err) {
       setUploadError("Image upload failed.");
       setPreview(currentImageUrl);
@@ -142,7 +153,7 @@ const QuestionImageUploader = ({
   );
 };
 
-const AddQuestionForm = ({ testId, onQuestionAdded, onCancel }) => {
+const AddQuestionForm = ({ testId, onCancel }) => {
   const [newQuestion, setNewQuestion] = useState({
     question_text: "",
     options: ["", "", "", ""],
@@ -152,25 +163,23 @@ const AddQuestionForm = ({ testId, onQuestionAdded, onCancel }) => {
   const [imageUrl, setImageUrl] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const dispatch = useDispatch();
 
-    try {
-      const payload = {
-        ...newQuestion,
-        correct_option: correctAnswer,
-        image_url: imageUrl,
-      };
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-      const response = await api.post(
-        `${baseUrl}/api/tests/${testId}/questions`,
-        payload
-      );
-      onQuestionAdded({ ...response.data.question, ...payload });
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to add question.");
-    }
+  const payload = {
+    ...newQuestion,
+    correct_option: correctAnswer,
+    image_url: imageUrl,
   };
+
+  dispatch(addQuestion({ testId, payload }))
+    .unwrap()
+    .then(() => onCancel())
+    .catch(() => setError("Failed to add question"));
+};
+
 
   return (
     <Card className="mb-4">
@@ -278,72 +287,40 @@ const AddQuestionForm = ({ testId, onQuestionAdded, onCancel }) => {
 };
 
 export const UpdateQuestions = () => {
-  const [tests, setTests] = useState([]);
+
   const [selectedTest, setSelectedTest] = useState("");
-  const [questions, setQuestions] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editedData, setEditedData] = useState({});
+  const dispatch = useDispatch();
+const { tests, questions, loading, error } = useSelector(
+  (state) => state.questions
+);
+
 
   useEffect(() => {
-    const fetchTests = async () => {
-      try {
-        const res = await api.get(`/api/tests`);
-        setTests(res.data);
-      } catch (err) {
-        setError("Failed to fetch tests.");
-      }
-    };
-    fetchTests();
-  }, []);
+  dispatch(fetchTests());
+}, [dispatch]);
 
-  const handleFetchQuestions = async () => {
-    if (!selectedTest) return;
-    setLoading(true);
-    setError("");
-    setIsAdding(false);
-    setQuestions([]);
-    try {
-      const res = await api.get(`/api/tests/${selectedTest}/questions`);
-      const parsed = res.data.map((q) => ({
-        ...q,
-        options:
-          typeof q.options === "string"
-            ? JSON.parse(q.options)
-            : q.options || [],
-        marks: q.marks || 1,
-      }));
-      setQuestions(parsed);
-    } catch (err) {
-      setError("Failed to fetch questions.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const handleSave = async (id) => {
-    try {
-      await api.put(`/api/questions/${id}`, editedData);
-      setQuestions((q) =>
-        q.map((item) => (item.id === id ? { ...editedData, id } : item))
-      );
-      setEditingId(null);
-    } catch (err) {
-      setError("Failed to save.");
-    }
-  };
+  const handleFetchQuestions = () => {
+  if (!selectedTest) return;
+  dispatch(fetchQuestions(selectedTest));
+};
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Delete?")) return;
-    try {
-      await api.delete(`/api/questions/${id}`);
-      setQuestions((q) => q.filter((item) => item.id !== id));
-    } catch (err) {
-      setError("Failed to delete.");
-    }
-  };
+
+ const handleSave = (id) => {
+  dispatch(updateQuestion({ id, data: editedData }));
+  setEditingId(null);
+};
+
+
+  const handleDelete = (id) => {
+  if (!window.confirm("Delete?")) return;
+  dispatch(deleteQuestion(id));
+};
+
 
   return (
     <Container className="py-4">
@@ -396,13 +373,10 @@ export const UpdateQuestions = () => {
 
       {isAdding && (
         <AddQuestionForm
-          testId={selectedTest}
-          onQuestionAdded={(q) => {
-            setQuestions((p) => [...p, { ...q, marks: q.marks }]);
-            setIsAdding(false);
-          }}
-          onCancel={() => setIsAdding(false)}
-        />
+  testId={selectedTest}
+  onCancel={() => setIsAdding(false)}
+/>
+
       )}
 
       <Stack gap={3}>
