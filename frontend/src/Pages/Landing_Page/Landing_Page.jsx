@@ -364,6 +364,17 @@ const Features = () => (
 
 const testSeriesData = [
   {
+    title: "AMU 11th Entrance Test Series",
+    description:
+      "A specially designed test series for AMU 11th Entrance aspirants, structured to strengthen concepts and boost exam confidence.",
+    features: [
+      "10 Mock Tests",
+      "5 Divided Syllabus Tests",
+      "5 Full-Length Tests",
+      "Based on Latest AMU 11th Syllabus",
+    ],
+  },
+  {
     title: "AMU 9th Entrance Test Series",
     description:
       "Our flagship series, meticulously designed to match the latest AMU pattern. Gain the ultimate competitive advantage with tests created by AMU alumni.",
@@ -467,23 +478,28 @@ const Pricing = () => (
   <AnimatedSection id="pricing">
     <Container>
       <h2 className="text-center display-5 mb-3">Simple & Affordable Access</h2>
-      <Row className="justify-content-center">
-        <Col lg={5} md={8}>
-          <Card className="text-center border-primary border-2 shadow-lg">
+      <p className="text-center text-muted mb-5">
+        Choose the plan that fits your entrance exam preparation
+      </p>
+
+      <Row className="justify-content-center g-4">
+        {/* AMU 9th / All Access */}
+        <Col lg={5} md={6}>
+          <Card className="text-center border-primary border-2 shadow-lg h-100">
             <Card.Header as="h3" className="bg-primary text-white">
-              All-Access Pass
+              AMU 9th Entrance Test Series
             </Card.Header>
             <Card.Body>
               <Card.Title className="display-4 fw-bold my-3">
                 ₹699{" "}
-                <span className="fs-5 text-muted fw-normal">/ Full Access</span>
+                <span className="fs-6 text-muted fw-normal">/ Full Access</span>
               </Card.Title>
               <ul className="list-unstyled my-4">
-                <li>✓ Access to AMU 9th Entrance Test Series</li>
-                <li>✓ Unlimited Mock Test</li>
+                <li>✓ AMU 9th Entrance Test Series</li>
+                <li>✓ Unlimited Mock Tests</li>
                 <li>✓ Detailed Performance Analytics</li>
                 <li>✓ Previous Year Question Papers</li>
-                <li>✓ 24/7 Doubt Support via Chat</li>
+                <li>✓ 24/7 Doubt Support</li>
               </ul>
               <Button
                 href="#contact"
@@ -491,7 +507,48 @@ const Pricing = () => (
                 size="lg"
                 className="w-100"
               >
-                Get Started Now
+                Get Started
+              </Button>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        {/* AMU 11th Entrance */}
+        <Col lg={5} md={6}>
+          <Card className="text-center border-success border-2 shadow-lg h-100">
+            <Card.Header as="h3" className="bg-success text-white">
+              AMU 11th Entrance
+            </Card.Header>
+            <Card.Body>
+              <Card.Title className="fw-bold fs-2 my-3">
+                ₹499{" "}
+                <span className="fs-6 text-muted fw-normal">
+                  / AMU Students
+                </span>
+              </Card.Title>
+
+              <Card.Title className="fw-bold fs-2 my-2">
+                ₹799{" "}
+                <span className="fs-6 text-muted fw-normal">
+                  / Non-AMU Students
+                </span>
+              </Card.Title>
+
+              <ul className="list-unstyled my-4">
+                <li>✓ 10 Mock Tests</li>
+                <li>✓ 5 Divided Syllabus Tests</li>
+                <li>✓ 5 Full-Length Tests</li>
+                <li>✓ Latest AMU 11th Syllabus</li>
+                <li>✓ Performance Analysis</li>
+              </ul>
+
+              <Button
+                href="#contact"
+                variant="success"
+                size="lg"
+                className="w-100"
+              >
+                Enroll Now
               </Button>
             </Card.Body>
           </Card>
