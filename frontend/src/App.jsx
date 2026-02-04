@@ -29,6 +29,7 @@ import Review_Test from "./Pages/Test_Interface/Review_Test.jsx";
 import CreateOrUpdateTest from "./Pages/Admin_Page/CreateNewTest.jsx";
 import ManageTests from "./Pages/Admin_Page/ManageTests.jsx";
 import TestMonitorGrid from "./Pages/Admin_Page/TestMonitorGrid.jsx";
+import TestBundles from "./Pages/Home_Page/TestBundles.jsx";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -75,7 +76,7 @@ function App() {
         const res = await axios.post(
           `${baseUrl}/api/refresh`,
           {},
-          { withCredentials: true }
+          { withCredentials: true },
         );
 
         console.log("✅ refresh success", res.data);
@@ -138,10 +139,10 @@ function App() {
         <Route path="/tests/:id/review" element={<Review_Test />} />
 
         <Route
-          path="/details/bundle/:id"
+          path="/bundles"
           element={
             <PrivateRoute>
-              <ProductDetailsPage />
+              <TestBundles />
             </PrivateRoute>
           }
         />

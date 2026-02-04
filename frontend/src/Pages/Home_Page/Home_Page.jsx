@@ -36,11 +36,12 @@ import "./Home_Page.css";
 import api from "../../api/axios.js";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext.jsx";
+import TestBundles from "./TestBundles.jsx";
 
 const navMenuItems = [
   { name: "Dashboard", icon: <DashboardIcon />, view: <DashboardView /> },
   { name: "My Tests", icon: <MyTestsIcon />, view: <MyTestsView /> },
-  { name: "Get Tests", icon: <ShopIcon />, view: <TestScheduleView /> },
+  { name: "Get Tests", icon: <ShopIcon />, view: <TestBundles /> },
   { name: "Results", icon: <ResultsIcon />, view: <ResultsView /> },
   { name: "Ask a Doubt", icon: <DoubtIcon />, view: <AskADoubtView /> },
 ];
@@ -94,9 +95,7 @@ const HomePage = () => {
         return <MyTestsView />;
       case "Get Tests":
         return (
-          <TestScheduleView
-            onNavigateToProfile={() => handleMenuClick("Profile")}
-          />
+          <TestBundles onNavigateToProfile={() => handleMenuClick("Profile")} />
         );
       case "Results":
         return <ResultsView />;
