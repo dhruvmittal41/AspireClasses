@@ -502,7 +502,7 @@ const Pricing = () => (
                 <li>✓ 24/7 Doubt Support</li>
               </ul>
               <Button
-                href="#contact"
+                href="https://aspireclasses.cloud/register"
                 variant="primary"
                 size="lg"
                 className="w-100"
@@ -543,12 +543,12 @@ const Pricing = () => (
               </ul>
 
               <Button
-                href="#contact"
+                href="https://aspireclasses.cloud/register"
                 variant="success"
                 size="lg"
                 className="w-100"
               >
-                Enroll Now
+                Get Started
               </Button>
             </Card.Body>
           </Card>
