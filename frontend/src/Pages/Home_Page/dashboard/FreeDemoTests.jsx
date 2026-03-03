@@ -14,9 +14,14 @@ const FreeDemoTests = React.memo(() => {
       title: "AMU 9th Entrance",
       url: "https://aspireclasses.cloud/tests/12",
     },
-    { id: 2, title: "JEE Mains Mock", comingSoon: true },
-    { id: 3, title: "NEET Biology Basics", comingSoon: true },
-    { id: 4, title: "Navodaya Practice", comingSoon: true },
+    {
+      id: 2,
+      title: "AMU 11th Entrance(SCIENCE)",
+      url: "https://aspireclasses.cloud/tests/14",
+    },
+    { id: 3, title: "JEE Mains Mock", comingSoon: true },
+    { id: 4, title: "NEET Biology Basics", comingSoon: true },
+    { id: 5, title: "Navodaya Practice", comingSoon: true },
   ];
 
   const handleClick = (test) => {
